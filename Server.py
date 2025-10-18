@@ -1,117 +1,112 @@
+# Server.py
 import socket
+import select
 import threading
-import time
+from collections import deque
 
 
-class Server:
-    def __init__(self, host='localhost', port=5555, maxClients=6):
-        # Server host and port
+class Server(threading.Thread):
+    def __init__(self, host="127.0.0.1", port=5555):
+        super().__init__(daemon=True)
         self.host = host
         self.port = port
+        self.stop_event = threading.Event()
+        self.sock = None
+        self.clients = set()
+        self.buffers = {}
+        self.messages = deque(maxlen=100)  # log for GUI
+        self.counts = {"RED": 0, "GREEN": 0}
 
-        # Connected clients
-        self.maxClients = maxClients
-        self.clients = []
+    def log(self, msg):
+        self.messages.append(msg)
+        print(msg)
 
-        # Run status and thread count
-        self.running = False
-        self.numThreads = 0
+    def stop(self):
+        self.stop_event.set()
+        try:
+            if self.sock:
+                self.sock.shutdown(socket.SHUT_RDWR)
+                self.sock.close()
+        except:
+            pass
 
-    def clientListener(self, client):
-        self.numThreads += 1
-
-        client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
-        client.settimeout(1)
-
-        while self.running:
+    def broadcast_counts(self):
+        """
+        Broadcast current counts to all clients in the format:
+        RED:<count>|GREEN:<count>
+        """
+        state = f"RED:{self.counts['RED']}|GREEN:{self.counts['GREEN']}\n".encode(
+            "utf-8"
+        )
+        for c in list(self.clients):
             try:
-                # # Receive data from client
-                # data = client.recv(4096)
-                pass
-            except socket.timeout:
-                pass
-            time.sleep(0.05)
-
-        self.numThreads -= 1
-
-    def connectionListener(self):
-        self.numThreads += 1
-
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            try:
-                # Bind and listen
-                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
-                s.bind((self.host, self.port))
-                s.settimeout(1)
-                s.listen()
-            except OSError:
-                print(
-                    'Server already running on '
-                    + self.host
-                    + ':'
-                    + str(self.port)
-                )
-                self.running = False
-
-            while self.running:
+                c.sendall(state)
+            except:
+                self.clients.discard(c)
+                self.buffers.pop(c, None)
                 try:
-                    # Accept a new connection
-                    conn, addr = s.accept()
-                    print('New Connection:', conn, addr)
-
-                    # Allow up to 6 clients at a time
-                    if len(self.clients) < self.maxClients:
-                        self.clients.append(conn)
-                        threading.Thread(
-                            target=self.clientListener(conn), args=(conn,)
-                        ).start()
-                except socket.timeout:
+                    c.close()
+                except:
                     pass
-                time.sleep(0.05)
-
-        self.numThreads -= 1
-
-    def killServer(self):
-        print('\nKilling Server')
-        self.running = False
-        while self.numThreads:
-            time.sleep(0.05)
 
     def run(self):
-        print('Starting Server')
-        self.running = True
+        try:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.sock.bind((self.host, self.port))
+            self.sock.listen(5)
+            self.sock.setblocking(False)
+            self.log(f"Server listening on {self.host}:{self.port}")
 
-        print('Starting Connection Listener')
-        threading.Thread(target=self.connectionListener).start()
+            while not self.stop_event.is_set():
+                rlist, _, _ = select.select(
+                    [self.sock] + list(self.clients), [], [], 0.05
+                )
+                for s in rlist:
+                    if s is self.sock:
+                        conn, addr = self.sock.accept()
+                        conn.setblocking(False)
+                        self.clients.add(conn)
+                        self.buffers[conn] = b""
+                        self.log(f"Client connected: {addr}")
+                        self.broadcast_counts()  # send current state to new client
+                    else:
+                        try:
+                            data = s.recv(4096)
+                            if not data:
+                                self.clients.discard(s)
+                                self.buffers.pop(s, None)
+                                s.close()
+                                self.log("Client disconnected")
+                                continue
 
-        while self.running:
-            try:
-                time.sleep(0.05)
-                # # Send game state to clients
-                # for client in self.clients:
-                #     try:
-                #         client.sendall(data)
-                #     except OSError:
-                #         # Connection lost to client
-                #         pass
-            except KeyboardInterrupt:
-                self.killServer()
-            time.sleep(0.05)
-        print('Server Killed')
-
-
-if __name__ == '__main__':
-    # Get Server host
-    host = input('Enter host (default = localhost): ').strip()
-    if len(host) == 0:
-        host = 'localhost'
-
-    # Get Server port
-    port = input('Enter port number (default = 5555): ').strip()
-    if len(port) == 0:
-        port = 5555
-    else:
-        port = int(port)
-
-    # Create and run a new Server
-    Server(host, port, 6).run()
+                            self.buffers[s] += data
+                            while b"\n" in self.buffers[s]:
+                                line, self.buffers[s] = self.buffers[s].split(b"\n", 1)
+                                text = line.decode("utf-8", errors="replace")
+                                # Expected format: USER|RED or USER|GREEN
+                                parts = text.split("|")
+                                if len(parts) == 2:
+                                    user, color = parts
+                                    color = color.strip().upper()
+                                    if color in self.counts:
+                                        self.counts[color] += 1
+                                        self.log(
+                                            f"{user} pressed {color} — totals {self.counts}"
+                                        )
+                                        self.broadcast_counts()
+                                else:
+                                    self.log(f"Bad message: {text}")
+                        except Exception:
+                            self.clients.discard(s)
+                            self.buffers.pop(s, None)
+                            try:
+                                s.close()
+                            except:
+                                pass
+        finally:
+            for c in list(self.clients):
+                c.close()
+            if self.sock:
+                self.sock.close()
+            self.log("Server stopped")
