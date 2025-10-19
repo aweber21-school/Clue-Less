@@ -2,21 +2,21 @@ import pygame
 
 from Globals import State, Role
 
-from Server import Server
-from Client import Client, NETWORK_EVENT
+from ClueLessCSA.Client import Client, NETWORK_EVENT
+from ClueLessCSA.Server import Server
 
 
-class ClueLessController:
+class Controller:
     """
     The Controller for the Clue-Less application
 
-    The ClueLessController class serves as the mediator for our Clue-Less
-    Model and View. It acts as the Controller in the Model-View-Controller (MVC)
+    The Controller class serves as the mediator for our Clue-Less Model and
+    View. It acts as the Controller in the Model-View-Controller (MVC)
     architecture.
     """
 
     def __init__(self):
-        """Initializes a new Clue-Less Controller"""
+        """Initializes a new Controller"""
         self.red_count = 0
         self.green_count = 0
 
@@ -27,11 +27,11 @@ class ClueLessController:
         Args:
             event (pygame.event.Event):
                 The Pygame event to handle
-            app (ClueLess):
+            app (Application):
                 The application that facilitates the Client-Server architecture
-            model (ClueLessModel):
+            model (ClueLessMVC.Model):
                 The game state to update
-            view (ClueLessView):
+            view (ClueLessMVC.View):
                 The GUI display of the application
         """
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -46,7 +46,7 @@ class ClueLessController:
                 app.role.start()
                 model.updateState(State.CLIENT_MENU)
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            app.stop("Ended Gracefully")
+            app.running = False
 
     def handleServerMenuInput(self, event, app, model, view):
         """
@@ -55,11 +55,11 @@ class ClueLessController:
         Args:
             event (pygame.event.Event):
                 The Pygame event to handle
-            app (ClueLess):
+            app (Application):
                 The application that facilitates the Client-Server architecture
-            model (ClueLessModel):
+            model (ClueLessMVC.Model):
                 The game state to update
-            view (ClueLessView):
+            view (ClueLessMVC.View):
                 The GUI display of the application
         """
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -80,11 +80,11 @@ class ClueLessController:
         Args:
             event (pygame.event.Event):
                 The Pygame event to handle
-            app (ClueLess):
+            app (Application):
                 The application that facilitates the Client-Server architecture
-            model (ClueLessModel):
+            model (ClueLessMVC.Model):
                 The game state to update
-            view (ClueLessView):
+            view (ClueLessMVC.View):
                 The GUI display of the application
         """
         if event.type == NETWORK_EVENT and model.state == State.CLIENT_MENU:
@@ -116,11 +116,11 @@ class ClueLessController:
         Handles the Clue-Less user input
 
         Args:
-            app (ClueLess):
+            app (Application):
                 The application that facilitates the Client-Server architecture
-            model (ClueLessModel):
+            model (ClueLessMVC.Model):
                 The game state to update
-            view (ClueLessView):
+            view (ClueLessMVC.View):
                 The GUI display of the application
         """
         for event in pygame.event.get():

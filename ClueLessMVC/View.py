@@ -3,13 +3,12 @@ import pygame
 from Globals import Color, Constant, State
 
 
-class ClueLessView:
+class View:
     """
     The View for the Clue-Less application
 
-    The ClueLessView class serves as the GUI for our Clue-Less
-    application. It acts as the View in the Model-View-Controller (MVC)
-    architecture.
+    The View class serves as the GUI for our Clue-Less application. It acts as
+    the View in the Model-View-Controller (MVC) architecture.
 
     Attributes:
         clock (pygame.time.Clock):
@@ -21,7 +20,7 @@ class ClueLessView:
     """
 
     def __init__(self):
-        """Initializes a new Clue-Less View"""
+        """Initializes a new View"""
         pygame.init()
 
         self.screen = pygame.display.set_mode((Constant.WIDTH, Constant.HEIGHT))
@@ -179,11 +178,15 @@ class ClueLessView:
 
     def updateView(self, app, model, controller):
         """
-        Updates the Clue-Less View
+        Updates the View
 
         Args:
-            model (ClueLessModel):
+            app (Application):
+                The top-level Clue-Less application
+            model (ClueLessMVC.Model):
                 The game state to display
+            controller (ClueLessMVC.Controller):
+                The controller in the MVC design
         """
         if model.state == State.MAIN_MENU:
             self.displayMainMenu()

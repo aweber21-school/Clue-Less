@@ -1,17 +1,17 @@
 from Globals import State
 
 
-class ClueLessModel:
+class Model:
     """
     The Model for the Clue-Less application
 
-    The ClueLessModel class serves as the source of truth for our Clue-Less
+    The Model class serves as the source of truth for our Clue-Less
     application. It acts as the Model in the Model-View-Controller (MVC)
     architecture.
     """
 
     def __init__(self):
-        """Initializes a new Clue-Less Model"""
+        """Initializes a new Model"""
         self.state = State.MAIN_MENU
 
     def updateState(self, state):
@@ -25,5 +25,5 @@ class ClueLessModel:
         self.state = state
 
     def updateModel(self):
-        """Updates the Clue-Less game state"""
+        """Updates the game state"""
         pass
