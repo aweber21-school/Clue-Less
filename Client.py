@@ -1,72 +1,74 @@
+# Client.py
 import socket
 import threading
-import time
+import select
+import pygame as pg
+import queue
+
+NETWORK_EVENT = pg.USEREVENT + 1
 
 
-class Client:
-    def __init__(self, host='localhost', port=5555):
-        # Server host and port to connect to
+class Client(threading.Thread):
+    def __init__(
+        self, username="User", host="localhost", port=5555, post_as_event=True
+    ):
+        super().__init__(daemon=True)
+        self.username = username
         self.host = host
         self.port = port
+        self.sock = None
+        self.stop_event = threading.Event()
+        self.post_as_event = post_as_event
+        self.send_queue = queue.Queue()
 
-        # Run status and server socket
-        self.running = False
-        self.server = None
+    def stop(self):
+        self.stop_event.set()
+        try:
+            if self.sock:
+                self.sock.shutdown(socket.SHUT_RDWR)
+                self.sock.close()
+        except:
+            pass
 
-    def serverListener(self):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            try:
-                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
-                s.connect((self.host, self.port))
-                s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, True)
-                s.settimeout(1)
-            except ConnectionRefusedError:
-                print(
-                    'Could not connect to ' + self.host + ':' + str(self.port)
-                )
-                self.running = False
+    def send_text(self, text):
+        self.send_queue.put(text)
 
-            print('Connected to server:', s)
-            self.server = s
-            while self.running:
-                try:
-                    # # Receive data from server
-                    # data = self.server.recv(4096)
-                    pass
-                except KeyboardInterrupt:
-                    self.running = False
-                time.sleep(0.05)
+    def _push_to_gui(self, sender, text):
+        if self.post_as_event and pg.get_init():
+            pg.event.post(pg.event.Event(NETWORK_EVENT, payload=(sender, text)))
 
     def run(self):
-        print('Starting Client')
-        self.running = True
+        try:
+            self.sock = socket.create_connection((self.host, self.port), timeout=5)
+            self.sock.setblocking(False)
+            self._push_to_gui("system", f"Connected to {self.host}:{self.port}")
 
-        print('Starting Server Listener')
-        threading.Thread(target=self.serverListener).start()
+            buffer = b""
+            while not self.stop_event.is_set():
+                # Outgoing
+                try:
+                    while True:
+                        msg = self.send_queue.get_nowait()
+                        wire = (msg.rstrip("\n") + "\n").encode("utf-8")
+                        self.sock.sendall(wire)
+                except queue.Empty:
+                    pass
 
-        # Game Loop
-        while self.running:
-            try:
-                time.sleep(0.05)
-                # # Send move to server
-                # self.server.sendall(data)
-            except KeyboardInterrupt:
-                self.running = False
-        print('\nClient Stopped')
-
-
-if __name__ == '__main__':
-    # Get Server host to connect to
-    host = input('Enter host (default = localhost): ').strip()
-    if len(host) == 0:
-        host = 'localhost'
-
-    # Get Server port to connect to
-    port = input('Enter port number (default = 5555): ').strip()
-    if len(port) == 0:
-        port = 5555
-    else:
-        port = int(port)
-
-    # Create and run a new Client
-    Client(host, port).run()
+                # Incoming
+                rlist, _, _ = select.select([self.sock], [], [], 0.05)
+                if rlist:
+                    chunk = self.sock.recv(4096)
+                    if not chunk:
+                        self._push_to_gui("system", "Server closed")
+                        break
+                    buffer += chunk
+                    while b"\n" in buffer:
+                        line, buffer = buffer.split(b"\n", 1)
+                        text = line.decode("utf-8", errors="replace")
+                        self._push_to_gui("server", text)
+        except Exception as e:
+            self._push_to_gui("system", f"Connection error: {e}")
+        finally:
+            if self.sock:
+                self.sock.close()
+            self._push_to_gui("system", "Disconnected")
