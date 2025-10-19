@@ -27,7 +27,7 @@ class Controller:
         Args:
             event (pygame.event.Event):
                 The Pygame event to handle
-            app (Application):
+            app (ClueLessApp):
                 The application that facilitates the Client-Server architecture
             model (ClueLessMVC.Model):
                 The game state to update
@@ -55,7 +55,7 @@ class Controller:
         Args:
             event (pygame.event.Event):
                 The Pygame event to handle
-            app (Application):
+            app (ClueLessApp):
                 The application that facilitates the Client-Server architecture
             model (ClueLessMVC.Model):
                 The game state to update
@@ -80,7 +80,7 @@ class Controller:
         Args:
             event (pygame.event.Event):
                 The Pygame event to handle
-            app (Application):
+            app (ClueLessApp):
                 The application that facilitates the Client-Server architecture
             model (ClueLessMVC.Model):
                 The game state to update
@@ -116,7 +116,7 @@ class Controller:
         Handles the Clue-Less user input
 
         Args:
-            app (Application):
+            app (ClueLessApp):
                 The application that facilitates the Client-Server architecture
             model (ClueLessMVC.Model):
                 The game state to update

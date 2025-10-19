@@ -181,7 +181,7 @@ class View:
         Updates the View
 
         Args:
-            app (Application):
+            app (ClueLessApp):
                 The top-level Clue-Less application
             model (ClueLessMVC.Model):
                 The game state to display

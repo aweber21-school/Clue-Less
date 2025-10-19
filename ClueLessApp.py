@@ -1,22 +1,16 @@
-# from ClueLessMVC import Model, View, Controller
-# from ClueLessMVC.Model import Model
-# from ClueLessMVC.View import View
-# from ClueLessMVC.Controller import Controller
-# from ClueLessCSA.Client import Client
-# from ClueLessCSA.Server import Server
 from ClueLessMVC import Model, View, Controller
 from ClueLessCSA import Client, Server
 from Globals import Role
 
 
-class Application:
+class ClueLessApp:
     """
     The Clue-Less application
 
-    The Application class serves as the top level class for our Clue-Less
+    The ClueLessApp class serves as the top level class for our Clue-Less
     application. It contains the main Pygame game loop and maintains the
     application's Model-View-Controller (MVC). It also is in charge of
-    facilitating the Client-Server architecture
+    facilitating the Client-Server architecture.
 
     Attributes:
         model (ClueLessMVC.Model):
@@ -31,7 +25,7 @@ class Application:
     """
 
     def __init__(self):
-        """Initializes a new application"""
+        """Initializes a new Clue-Less app"""
         self.model = Model()
         self.view = View()
         self.controller = Controller()
@@ -40,13 +34,13 @@ class Application:
 
     def stop(self, msg):
         """
-        Stops the application
+        Stops the Clue-Less app
 
         Args:
             msg (Anything):
                 The message to display about stopping the application
         """
-        print('Stopping application...')
+        print('Stopping Clue-Less app...')
         print(msg)
         self.running = False
         try:
@@ -56,8 +50,8 @@ class Application:
         self.view.closeView()
 
     def start(self):
-        """Starts the application"""
-        print('Starting application...')
+        """Starts the Clue-Less app"""
+        print('Starting Clue-Less app...')
         self.running = True
         while self.running:
             # Game Loop
@@ -72,4 +66,4 @@ class Application:
         self.stop('Ended Gracefully')
 
 if __name__ == '__main__':
-    Application().start()
+    ClueLessApp().start()
