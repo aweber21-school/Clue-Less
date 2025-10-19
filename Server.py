@@ -104,6 +104,8 @@ class Server(threading.Thread):
                                 s.close()
                             except:
                                 pass
+        except OSError:
+            self.stop()
         finally:
             for c in list(self.clients):
                 c.close()
