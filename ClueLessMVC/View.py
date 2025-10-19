@@ -120,7 +120,7 @@ class View:
             self.fonts['BUTTON'],
         )
 
-    def displayClientMenu(self, controller):
+    def displayClientMenu(self, model):
         """Displays the Client Menu"""
         # Clean display
         self.screen.fill(Color.WHITE)
@@ -132,7 +132,7 @@ class View:
         )
 
         # Counts
-        ctext = self.fonts['TITLE'].render(f"Red: {controller.red_count} Green: {controller.green_count}", True, Color.BLACK)
+        ctext = self.fonts['TITLE'].render(f"Red: {model.redCount}   Green: {model.greenCount}", True, Color.BLACK)
         self.screen.blit(ctext, (Constant.WIDTH // 2 - ctext.get_width() // 2, 200))
 
         # Create Buttons
@@ -193,7 +193,7 @@ class View:
         elif model.state == State.SERVER_MENU:
             self.displayServerMenu(app)
         elif model.state == State.CLIENT_MENU:
-            self.displayClientMenu(controller)
+            self.displayClientMenu(model)
 
         pygame.display.flip()
         self.clock.tick(60)

@@ -87,13 +87,14 @@ class Controller:
             view (ClueLessMVC.View):
                 The GUI display of the application
         """
-        if event.type == NETWORK_EVENT and model.state == State.CLIENT_MENU:
+        if event.type == NETWORK_EVENT:
             sender, text = event.payload
             # Example text: "RED:5|GREEN:3"
             if text.startswith("RED:"):
                 parts = text.split("|")
-                self.red_count = int(parts[0].split(":")[1])
-                self.green_count = int(parts[1].split(":")[1])
+                red = int(parts[0].split(":")[1])
+                green = int(parts[1].split(":")[1])
+                model.updateCounts(red, green)
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if view.red_btn.collidepoint(event.pos):
                 print('Red Pressed')

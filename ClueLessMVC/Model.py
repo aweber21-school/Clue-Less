@@ -13,6 +13,12 @@ class Model:
     def __init__(self):
         """Initializes a new Model"""
         self.state = State.MAIN_MENU
+        self.redCount = 0
+        self.greenCount = 0
+
+    def updateCounts(self, redCount, greenCount):
+        self.redCount = redCount
+        self.greenCount = greenCount
 
     def updateState(self, state):
         """
