@@ -1,4 +1,4 @@
-from Globals import State
+from ClueLess.States import State
 
 
 class Model:
@@ -25,11 +25,12 @@ class Model:
         Updates the game state
 
         Args:
-            state (int, Globals.State):
+            state (int, States.State):
                 The state to update this Model with
         """
         self.state = state
 
     def updateModel(self):
         """Updates the game state"""
+        # Update turn timer?
         pass

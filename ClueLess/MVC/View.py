@@ -1,6 +1,25 @@
 import pygame
 
-from Globals import Color, Constant, State
+from ClueLess.States import State
+
+
+# --- Constants --- #
+class Constant:
+    # WIDTH = 1280
+    # HEIGHT = 720
+    WIDTH = 640
+    HEIGHT = 480
+
+
+# --- Colors --- #
+class Color:
+    WHITE = (255, 255, 255)
+    LIGHT_GRAY = (235, 235, 235)
+    GRAY = (200, 200, 200)
+    DARK_GRAY = (100, 100, 100)
+    BLACK = (0, 0, 0)
+    RED = (200, 40, 40)
+    GREEN = (40, 160, 80)
 
 
 class View:
@@ -19,8 +38,16 @@ class View:
             Dictionary containing predefined fonts
     """
 
-    def __init__(self):
-        """Initializes a new View"""
+    def __init__(self, model):
+        """
+        Initializes a new View
+
+        Args:
+            model (ClueLess.MVC.Model):
+                The model to update this view with
+        """
+        self.model = model
+
         pygame.init()
 
         self.screen = pygame.display.set_mode((Constant.WIDTH, Constant.HEIGHT))
@@ -93,7 +120,7 @@ class View:
             self.fonts['BUTTON'],
         )
 
-    def displayServerMenu(self, app):
+    def displayServerMenu(self):
         """Displays the Server Menu"""
         # Clean display
         self.screen.fill(Color.WHITE)
@@ -105,8 +132,14 @@ class View:
         )
 
         # Counts
-        ctext = self.fonts['TITLE'].render(f"Red: {app.role.getObj().counts["RED"]} Green: {app.role.getObj().counts["GREEN"]}", True, Color.BLACK)
-        self.screen.blit(ctext, (Constant.WIDTH // 2 - ctext.get_width() // 2, 200))
+        ctext = self.fonts['TITLE'].render(
+            f'Red: {self.model.redCount} Green: {self.model.greenCount}',
+            True,
+            Color.BLACK,
+        )
+        self.screen.blit(
+            ctext, (Constant.WIDTH // 2 - ctext.get_width() // 2, 200)
+        )
 
         # Create Buttons
         self.back_btn = pygame.Rect(30, 30, 100, 40)
@@ -120,7 +153,7 @@ class View:
             self.fonts['BUTTON'],
         )
 
-    def displayClientMenu(self, model):
+    def displayClientMenu(self):
         """Displays the Client Menu"""
         # Clean display
         self.screen.fill(Color.WHITE)
@@ -132,8 +165,14 @@ class View:
         )
 
         # Counts
-        ctext = self.fonts['TITLE'].render(f"Red: {model.redCount}   Green: {model.greenCount}", True, Color.BLACK)
-        self.screen.blit(ctext, (Constant.WIDTH // 2 - ctext.get_width() // 2, 200))
+        ctext = self.fonts['TITLE'].render(
+            f'Red: {self.model.redCount} Green: {self.model.greenCount}',
+            True,
+            Color.BLACK,
+        )
+        self.screen.blit(
+            ctext, (Constant.WIDTH // 2 - ctext.get_width() // 2, 200)
+        )
 
         # Create Buttons
         self.red_btn = pygame.Rect(
@@ -176,24 +215,14 @@ class View:
     def closeView(self):
         pygame.quit()
 
-    def updateView(self, app, model, controller):
-        """
-        Updates the View
-
-        Args:
-            app (ClueLessApp):
-                The top-level Clue-Less application
-            model (ClueLessMVC.Model):
-                The game state to display
-            controller (ClueLessMVC.Controller):
-                The controller in the MVC design
-        """
-        if model.state == State.MAIN_MENU:
+    def updateView(self):
+        """Updates the View"""
+        if self.model.state == State.MAIN_MENU:
             self.displayMainMenu()
-        elif model.state == State.SERVER_MENU:
-            self.displayServerMenu(app)
-        elif model.state == State.CLIENT_MENU:
-            self.displayClientMenu(model)
+        elif self.model.state == State.SERVER_MENU:
+            self.displayServerMenu()
+        elif self.model.state == State.CLIENT_MENU:
+            self.displayClientMenu()
 
         pygame.display.flip()
         self.clock.tick(60)

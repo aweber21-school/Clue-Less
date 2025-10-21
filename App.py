@@ -1,6 +1,6 @@
-from ClueLessMVC import Model, View, Controller
-from ClueLessCSA import Client, Server
-from Globals import Role
+from ClueLess.MVC import Model, View, Controller
+from ClueLess.CSA import NetworkManager
+# from Globals import Role
 
 
 class ClueLessApp:
@@ -13,57 +13,55 @@ class ClueLessApp:
     facilitating the Client-Server architecture.
 
     Attributes:
-        model (ClueLessMVC.Model):
+        model (ClueLess.MVC.Model):
             The game state of the application
-        view (ClueLessMVC.View):
+        view (ClueLess.MVC.View):
             The GUI display of the application
-        controller (ClueLessMVC.Controller):
+        controller (ClueLess.MVC.Controller):
             The user input manager of the application
-        ???
-        running (boolean):
-            A flag representing if the application is running
+        networkManager (ClueLess.Network.NetworkManager):
+            The manager of networking as a client or server
     """
 
     def __init__(self):
         """Initializes a new Clue-Less app"""
         self.model = Model()
-        self.view = View()
-        self.controller = Controller()
-        self.role = Role()
-        self.running = False
+        self.view = View(self.model)
+        self.networkManager = NetworkManager()
+        self.controller = Controller(self.model, self.view, self.networkManager)
 
-    def stop(self, msg):
+    def stop(self, log):
         """
         Stops the Clue-Less app
 
         Args:
-            msg (Anything):
-                The message to display about stopping the application
+            log (obj):
+                The object to display about stopping the application
         """
         print('Stopping Clue-Less app...')
-        print(msg)
-        self.running = False
-        try:
-            self.role.stop()
-        except AttributeError:
-            pass
+        print(log)
         self.view.closeView()
+        self.networkManager.stop()
 
     def start(self):
         """Starts the Clue-Less app"""
         print('Starting Clue-Less app...')
-        self.running = True
-        while self.running:
+        running = True
+        log = 'Stopped Gracefully'
+        while running:
             # Game Loop
             try:
-                self.controller.handleInput(self, self.model, self.view)
+                running = self.controller.handleInput()
                 self.model.updateModel()
-                self.view.updateView(self, self.model, self.controller)
+                self.view.updateView()
             except KeyboardInterrupt:
-                self.stop('KeyboardInterrupt')
+                log = 'KeyboardInterrupt'
+                running = False
             except Exception as e:
-                self.stop(e)
-        self.stop('Ended Gracefully')
+                log = e
+                running = False
+        self.stop(log)
+
 
 if __name__ == '__main__':
     ClueLessApp().start()

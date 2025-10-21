@@ -6,7 +6,7 @@ from collections import deque
 
 
 class Server(threading.Thread):
-    def __init__(self, host="127.0.0.1", port=5555):
+    def __init__(self, host="localhost", port=5555):
         super().__init__(daemon=True)
         self.host = host
         self.port = port
