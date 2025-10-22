@@ -2,7 +2,7 @@ from .Client import Client
 from .Server import Server
 
 
-class NetworkManager:
+class Network:
     def __init__(self):
         self.network = None
 

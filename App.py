@@ -1,5 +1,5 @@
 from ClueLess.MVC import Model, View, Controller
-from ClueLess.CSA import NetworkManager
+from ClueLess.CSA import Network
 # from Globals import Role
 
 
@@ -19,7 +19,7 @@ class ClueLessApp:
             The GUI display of the application
         controller (ClueLess.MVC.Controller):
             The user input manager of the application
-        networkManager (ClueLess.Network.NetworkManager):
+        network (ClueLess.CSV.Network):
             The manager of networking as a client or server
     """
 
@@ -27,8 +27,8 @@ class ClueLessApp:
         """Initializes a new Clue-Less app"""
         self.model = Model()
         self.view = View(self.model)
-        self.networkManager = NetworkManager()
-        self.controller = Controller(self.model, self.view, self.networkManager)
+        self.network = Network()
+        self.controller = Controller(self.model, self.view, self.network)
 
     def stop(self, log):
         """
@@ -41,7 +41,7 @@ class ClueLessApp:
         print('Stopping Clue-Less app...')
         print(log)
         self.view.closeView()
-        self.networkManager.stop()
+        self.network.stop()
 
     def start(self):
         """Starts the Clue-Less app"""

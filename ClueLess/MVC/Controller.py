@@ -13,7 +13,7 @@ class Controller:
     architecture.
     """
 
-    def __init__(self, model, view, networkManager):
+    def __init__(self, model, view, network):
         """
         Initializes a new Controller
 
@@ -22,12 +22,12 @@ class Controller:
                 The game state of the application
             view.(ClueLess.MVC.View):
                 The GUI display of the application
-            networkManager (ClueLess.Network.NetworkManager):
+            network (ClueLess.CSV.Network):
                 The manager of networking as a client or server
         """
         self.model = model
         self.view = view
-        self.networkManager = networkManager
+        self.network = network
 
     def handleMainMenuInput(self, event):
         """
@@ -50,7 +50,7 @@ class Controller:
                     print('Host Pressed')
                     # app.role = Role('Server', Server('localhost', 5555))
                     # app.role.start()
-                    self.networkManager.startServer('localhost', 5555)
+                    self.network.startServer('localhost', 5555)
                     self.model.updateState(State.SERVER_MENU)
 
                 # Join Button
@@ -58,7 +58,7 @@ class Controller:
                     print('Join Pressed')
                     # app.role = Role('Client', Client('User', 'localhost', 5555))
                     # app.role.start()
-                    self.networkManager.startClient('User', 'localhost', 5555)
+                    self.network.startClient('User', 'localhost', 5555)
                     self.model.updateState(State.CLIENT_MENU)
 
         return True
@@ -73,7 +73,7 @@ class Controller:
         """
         # Esc Button
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            self.networkManager.stop()
+            self.network.stop()
             self.model.updateState(State.MAIN_MENU)
 
         # Mouse Button Clicked
@@ -85,7 +85,7 @@ class Controller:
                     print('Back Pressed')
                     # app.role.stop()
                     # app.role = Role()
-                    self.networkManager.stop()
+                    self.network.stop()
                     self.model.updateState(State.MAIN_MENU)
 
         return True
@@ -100,7 +100,7 @@ class Controller:
         """
         # Esc Button
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            self.networkManager.stop()
+            self.network.stop()
             self.model.updateState(State.MAIN_MENU)
 
         # Mouse Button Clicked
@@ -109,17 +109,17 @@ class Controller:
             if event.button == 1:
                 if self.view.red_btn.collidepoint(event.pos):
                     print('Red Pressed')
-                    self.networkManager.network.send_text(f'User|RED')
+                    self.network.network.send_text(f'User|RED')
                     # app.role.getObj().send_text(f'User|RED')
                 elif self.view.green_btn.collidepoint(event.pos):
                     print('Green Pressed')
-                    self.networkManager.network.send_text(f'User|GREEN')
+                    self.network.network.send_text(f'User|GREEN')
                     # app.role.getObj().send_text(f'User|GREEN')
                 elif self.view.back_btn.collidepoint(event.pos):
                     print('Back Pressed')
                     # app.role.stop()
                     # app.role = Role()
-                    self.networkManager.stop()
+                    self.network.stop()
                     self.model.updateState(State.MAIN_MENU)
 
         elif event.type == NETWORK_EVENT:

@@ -10,8 +10,8 @@ Modules:
         The server for the network
 """
 
-from .NetworkManager import NetworkManager
+from .Network import Network
 from .Client import Client
 from .Server import Server
 
-__all__ = ['NetworkManager', 'Client', 'Server']
+__all__ = ['Network', 'Client', 'Server']
