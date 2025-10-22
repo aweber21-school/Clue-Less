@@ -1,3 +1,4 @@
+# from ClueLess.States import AppState, MenuState, GameState
 from ClueLess.States import State
 
 
@@ -13,6 +14,9 @@ class Model:
     def __init__(self):
         """Initializes a new Model"""
         self.state = State.MAIN_MENU
+        # self.appState = AppState.MENU
+        # self.menuState = MenuState.MAIN_MENU
+        # self.gameState = GameState.GAME_MENU
         self.redCount = 0
         self.greenCount = 0
 
