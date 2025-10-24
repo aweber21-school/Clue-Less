@@ -1,15 +1,15 @@
-from ClueLess.MVC import Model, View, Controller
 from ClueLess.CSA import Network
+from ClueLess.MVC import Controller, Model, View
 
 
 class App:
     """
     The Clue-Less application
 
-    The ClueLessApp class serves as the top level class for our Clue-Less
-    application. It contains the main Pygame game loop and maintains the
-    application's Model-View-Controller (MVC). It also is in charge of
-    facilitating the Client-Server architecture.
+    The App class serves as the top level class for our Clue-Less application.
+    It contains the main Pygame game loop and maintains the application's
+    Model-View-Controller (MVC). It also is in charge of facilitating the
+    Client-Server architecture.
 
     Attributes:
         model (ClueLess.MVC.Model):
@@ -20,6 +20,8 @@ class App:
             The user input manager of the application
         network (ClueLess.CSV.Network):
             The manager of networking as a client or server
+        running (boolean):
+            A flag to represent whether or not the App is running
     """
 
     def __init__(self):
@@ -32,40 +34,43 @@ class App:
 
     def start(self):
         """Starts the Clue-Less app"""
-        print('Starting Clue-Less app...')
+        print("Starting Clue-Less app...")
         self.running = True
+
         self.run()
 
-    def stop(self, log=''):
+    def stop(self, log):
         """
         Stops the Clue-Less app
 
-        Args:
+        Parameters:
             log (obj):
                 The object to display about stopping the application
         """
-        print('Stopping Clue-Less app...')
+        print("Stopping Clue-Less app...")
         print(log)
-        self.view.closeView()
-        self.network.stop()
         self.running = False
 
+        self.view.closeView()
+        self.network.stop()
+
     def run(self):
-        log = 'Stopped Gracefully'
+        """Runs the Clue-Less app"""
+        log = "Stopped Gracefully"
         while self.running:
-            # Game Loop
+            # Main App Loop
             try:
                 self.running = self.controller.handleInput()
                 self.model.updateModel()
                 self.view.updateView()
             except KeyboardInterrupt:
-                log = 'KeyboardInterrupt'
+                log = "KeyboardInterrupt"
                 self.running = False
             except Exception as e:
-                log = str(e)
+                log = e
                 self.running = False
         self.stop(log)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     App().start()

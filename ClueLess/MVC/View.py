@@ -3,16 +3,18 @@ import pygame
 from ClueLess.States import State
 
 
-# --- Constants --- #
 class Constant:
+    """Constants"""
+
     # WIDTH = 1280
     # HEIGHT = 720
     WIDTH = 640
     HEIGHT = 480
 
 
-# --- Colors --- #
 class Color:
+    """Colors"""
+
     WHITE = (255, 255, 255)
     LIGHT_GRAY = (235, 235, 235)
     GRAY = (200, 200, 200)
@@ -40,9 +42,9 @@ class View:
 
     def __init__(self, model):
         """
-        Initializes a new View
+        Initializes a new view
 
-        Args:
+        Parameters:
             model (ClueLess.MVC.Model):
                 The model to update this view with
         """
@@ -51,18 +53,18 @@ class View:
         pygame.init()
 
         self.screen = pygame.display.set_mode((Constant.WIDTH, Constant.HEIGHT))
-        pygame.display.set_caption('Clue-Less')
+        pygame.display.set_caption("Clue-Less")
         self.clock = pygame.time.Clock()
 
         self.fonts = {}
-        self.fonts['TITLE'] = pygame.font.Font(None, 48)
-        self.fonts['BUTTON'] = pygame.font.Font(None, 28)
+        self.fonts["TITLE"] = pygame.font.Font(None, 48)
+        self.fonts["BUTTON"] = pygame.font.Font(None, 28)
 
     def drawButton(self, screen, rect, text, fill, font):
         """
         Draws a button with the given parameters
 
-        Args:
+        Parameters:
             screen (pygame.display.Surface):
                 The screen to display the button on
             rect (pygame.Rect):
@@ -80,15 +82,13 @@ class View:
         screen.blit(txt, txt.get_rect(center=rect.center))
 
     def displayMainMenu(self):
-        """Displays the Main Menu"""
+        """Displays the main menu"""
         # Clean display
         self.screen.fill(Color.WHITE)
 
         # Title
-        title = self.fonts['TITLE'].render('Clue-Less', True, Color.BLACK)
-        self.screen.blit(
-            title, (Constant.WIDTH // 2 - title.get_width() // 2, 150)
-        )
+        title = self.fonts["TITLE"].render("Clue-Less", True, Color.BLACK)
+        self.screen.blit(title, (Constant.WIDTH // 2 - title.get_width() // 2, 150))
 
         # Create Buttons
         self.host_btn = pygame.Rect(
@@ -108,38 +108,34 @@ class View:
         self.drawButton(
             self.screen,
             self.host_btn,
-            'Host',
+            "Host",
             Color.GRAY,
-            self.fonts['BUTTON'],
+            self.fonts["BUTTON"],
         )
         self.drawButton(
             self.screen,
             self.join_btn,
-            'Join',
+            "Join",
             Color.GRAY,
-            self.fonts['BUTTON'],
+            self.fonts["BUTTON"],
         )
 
     def displayServerMenu(self):
-        """Displays the Server Menu"""
+        """Displays the server menu"""
         # Clean display
         self.screen.fill(Color.WHITE)
 
         # Title
-        title = self.fonts['TITLE'].render('Server Menu', True, Color.BLACK)
-        self.screen.blit(
-            title, (Constant.WIDTH // 2 - title.get_width() // 2, 150)
-        )
+        title = self.fonts["TITLE"].render("Server Menu", True, Color.BLACK)
+        self.screen.blit(title, (Constant.WIDTH // 2 - title.get_width() // 2, 150))
 
         # Counts
-        ctext = self.fonts['TITLE'].render(
-            f'Red: {self.model.redCount} Green: {self.model.greenCount}',
+        ctext = self.fonts["TITLE"].render(
+            f"Red: {self.model.redCount} Green: {self.model.greenCount}",
             True,
             Color.BLACK,
         )
-        self.screen.blit(
-            ctext, (Constant.WIDTH // 2 - ctext.get_width() // 2, 200)
-        )
+        self.screen.blit(ctext, (Constant.WIDTH // 2 - ctext.get_width() // 2, 200))
 
         # Create Buttons
         self.back_btn = pygame.Rect(30, 30, 100, 40)
@@ -148,31 +144,27 @@ class View:
         self.drawButton(
             self.screen,
             self.back_btn,
-            'Back',
+            "Back",
             Color.GRAY,
-            self.fonts['BUTTON'],
+            self.fonts["BUTTON"],
         )
 
     def displayClientMenu(self):
-        """Displays the Client Menu"""
+        """Displays the client menu"""
         # Clean display
         self.screen.fill(Color.WHITE)
 
         # Title
-        title = self.fonts['TITLE'].render('Client Menu', True, Color.BLACK)
-        self.screen.blit(
-            title, (Constant.WIDTH // 2 - title.get_width() // 2, 150)
-        )
+        title = self.fonts["TITLE"].render("Client Menu", True, Color.BLACK)
+        self.screen.blit(title, (Constant.WIDTH // 2 - title.get_width() // 2, 150))
 
         # Counts
-        ctext = self.fonts['TITLE'].render(
-            f'Red: {self.model.redCount} Green: {self.model.greenCount}',
+        ctext = self.fonts["TITLE"].render(
+            f"Red: {self.model.redCount} Green: {self.model.greenCount}",
             True,
             Color.BLACK,
         )
-        self.screen.blit(
-            ctext, (Constant.WIDTH // 2 - ctext.get_width() // 2, 200)
-        )
+        self.screen.blit(ctext, (Constant.WIDTH // 2 - ctext.get_width() // 2, 200))
 
         # Create Buttons
         self.red_btn = pygame.Rect(
@@ -193,30 +185,30 @@ class View:
         self.drawButton(
             self.screen,
             self.red_btn,
-            'RED',
+            "RED",
             Color.RED,
-            self.fonts['TITLE'],
+            self.fonts["TITLE"],
         )
         self.drawButton(
             self.screen,
             self.green_btn,
-            'GREEN',
+            "GREEN",
             Color.GREEN,
-            self.fonts['TITLE'],
+            self.fonts["TITLE"],
         )
         self.drawButton(
             self.screen,
             self.back_btn,
-            'Back',
+            "Back",
             Color.GRAY,
-            self.fonts['BUTTON'],
+            self.fonts["BUTTON"],
         )
 
     def closeView(self):
         pygame.quit()
 
     def updateView(self):
-        """Updates the View"""
+        """Updates the view"""
         if self.model.state == State.MAIN_MENU:
             self.displayMainMenu()
         elif self.model.state == State.SERVER_MENU:

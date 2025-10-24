@@ -1,21 +1,28 @@
-# --- States --- #
 class State:
+    """App States"""
+
     MAIN_MENU = 0
     SERVER_MENU = 1
     CLIENT_MENU = 2
     GAME = 3
 
-# # --- App States --- #
+
 # class AppState:
+#     """App States"""
+#
 #     MENU = 0
 #     GAME = 1
 #
-# # --- Menu States --- #
+#
 # class MenuState:
+#     """Menu States"""
+#
 #     MAIN_MENU = 0
 #     SERVER_MENU = 1
 #     CLIENT_MENU = 2
 #
-# # --- Game States --- #
+#
 # class GameState:
+#     """Game States"""
+#
 #     GAME_MENU = 0

@@ -1,7 +1,7 @@
 import pygame
 
-from ClueLess.States import State
 from ClueLess.Events import CLIENT_MESSAGE_RECEIVED_EVENT, SERVER_MESSAGE_RECEIVED_EVENT
+from ClueLess.States import State
 
 
 class Controller:
@@ -11,19 +11,27 @@ class Controller:
     The Controller class serves as the mediator for our Clue-Less Model and
     View. It acts as the Controller in the Model-View-Controller (MVC)
     architecture.
+
+    Attributes:
+        model (ClueLess.MVC.Model):
+            The game state of the application
+        view.(ClueLess.MVC.View):
+            The GUI display of the application
+        network (ClueLess.CSV.Network):
+            The manager of networking as a client or server
     """
 
     def __init__(self, model, view, network):
         """
-        Initializes a new Controller
+        Initializes a new controller
 
-        Attributes:
+        Parameters:
             model (ClueLess.MVC.Model):
-                The game state of the application
-            view.(ClueLess.MVC.View):
-                The GUI display of the application
-            network (ClueLess.CSV.Network):
-                The manager of networking as a client or server
+                The model of the application
+            view (ClueLess.MVC.View):
+                The view of the application
+            network (ClueLess.CSA.Network):
+                The network of the application
         """
         self.model = model
         self.view = view
@@ -31,9 +39,9 @@ class Controller:
 
     def handleMainMenuInput(self, event):
         """
-        Handles the Main Menu user input
+        Handles the main menu user input
 
-        Args:
+        Parameters:
             event (pygame.event.Event):
                 The Pygame event to handle
         """
@@ -47,23 +55,23 @@ class Controller:
             if event.button == 1:
                 # Host Button
                 if self.view.host_btn.collidepoint(event.pos):
-                    print('Host Pressed')
-                    self.network.startServer('localhost', 5555, 6)
+                    print("Host Pressed")
+                    self.network.startServer("localhost", 5555, 6)
                     self.model.updateState(State.SERVER_MENU)
 
                 # Join Button
                 elif self.view.join_btn.collidepoint(event.pos):
-                    print('Join Pressed')
-                    self.network.startClient('User', 'localhost', 5555)
+                    print("Join Pressed")
+                    self.network.startClient("User", "localhost", 5555)
                     self.model.updateState(State.CLIENT_MENU)
 
         return True
 
     def handleServerMenuInput(self, event):
         """
-        Handles the Server Menu user input
+        Handles the server menu user input
 
-        Args:
+        Parameters:
             event (pygame.event.Event):
                 The Pygame event to handle
         """
@@ -78,28 +86,29 @@ class Controller:
             if event.button == 1:
                 # Back Button
                 if self.view.back_btn.collidepoint(event.pos):
-                    print('Back Pressed')
+                    print("Back Pressed")
                     self.network.stopServer()
                     self.model.updateState(State.MAIN_MENU)
 
+        # Server received message from Client
         elif event.type == CLIENT_MESSAGE_RECEIVED_EVENT:
             sender = event.sender
             message = event.message
             print((sender, message))
             # Example text: "RED:5|GREEN:3"
-            if message.startswith('RED:'):
-                parts = message.split('|')
-                red = int(parts[0].split(':')[1])
-                green = int(parts[1].split(':')[1])
+            if message.startswith("RED:"):
+                parts = message.split("|")
+                red = int(parts[0].split(":")[1])
+                green = int(parts[1].split(":")[1])
                 self.model.updateCounts(red, green)
 
         return True
 
     def handleClientMenuInput(self, event):
         """
-        Handles the Client Menu user input
+        Handles the client menu user input
 
-        Args:
+        Parameters:
             event (pygame.event.Event):
                 The Pygame event to handle
         """
@@ -113,31 +122,32 @@ class Controller:
             # Left Mouse Button Clicked
             if event.button == 1:
                 if self.view.red_btn.collidepoint(event.pos):
-                    print('Red Pressed')
-                    self.network.sendToServer('User|RED')
+                    print("Red Pressed")
+                    self.network.sendToServer("User|RED")
                 elif self.view.green_btn.collidepoint(event.pos):
-                    print('Green Pressed')
-                    self.network.sendToServer('User|GREEN')
+                    print("Green Pressed")
+                    self.network.sendToServer("User|GREEN")
                 elif self.view.back_btn.collidepoint(event.pos):
-                    print('Back Pressed')
+                    print("Back Pressed")
                     self.network.stopClient()
                     self.model.updateState(State.MAIN_MENU)
 
+        # Client received message from server
         elif event.type == SERVER_MESSAGE_RECEIVED_EVENT:
             sender = event.sender
             message = event.message
             print((sender, message))
             # Example text: "RED:5|GREEN:3"
-            if message.startswith('RED:'):
-                parts = message.split('|')
-                red = int(parts[0].split(':')[1])
-                green = int(parts[1].split(':')[1])
+            if message.startswith("RED:"):
+                parts = message.split("|")
+                red = int(parts[0].split(":")[1])
+                green = int(parts[1].split(":")[1])
                 self.model.updateCounts(red, green)
 
         return True
 
     def handleInput(self):
-        """Handles the Clue-Less user input"""
+        """Handles the application input"""
         running = True
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

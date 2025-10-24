@@ -6,12 +6,14 @@ This package contains the Client-Server architecture for the Clue-Less game.
 Modules:
     Client:
         The client for the network
+    Network:
+        The manager for servers and clients
     Server:
         The server for the network
 """
 
-from .Network import Network
 from .Client import Client
+from .Network import Network
 from .Server import Server
 
-__all__ = ['Network', 'Client', 'Server']
+__all__ = ["Client", "Network", "Server"]

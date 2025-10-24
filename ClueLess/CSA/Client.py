@@ -1,13 +1,39 @@
-# Client.py
 import json
 import socket
+
 import pygame
 
 from ClueLess.Events import SERVER_MESSAGE_RECEIVED_EVENT
 
 
 class Client:
-    def __init__(self, username='User', host='localhost', port=5555):
+    """
+    The Client for the Clue-Less application
+
+    The Client class acts as the client in the Client-Server architecture
+    implemented for the Clue-Less application. It is in charge of sending
+    messages to the server.
+
+    Attributes:
+        username (str):
+            The client's username
+        host (str):
+            The hostname or ip address of the server
+        port (int):
+            The port of the server
+    """
+    def __init__(self, username="User", host="localhost", port=5555):
+        """
+        Initializes a new client
+
+        Parameters:
+            username (str):
+                The client's username
+            host (str):
+                The hostname or ip address of the server
+            port (int):
+                The port of the server
+        """
         # Client username
         self.username = username
 
@@ -25,6 +51,7 @@ class Client:
         self.receivingFromServer = False
 
     def receiveFromServer(self):
+        """Receives an object from the server"""
         try:
             data = self.server.recv(4096)
         except BlockingIOError:
@@ -33,12 +60,12 @@ class Client:
         else:
             if not data:
                 # Server disconnected
-                print('Server disconnected')
+                print("Server disconnected")
                 self.stop()
             else:
                 # Message received
-                obj = json.loads(data.decode('utf-8'))
-                print(f'Received payload: {obj}')
+                obj = json.loads(data.decode("utf-8"))
+                print(f"Received object: {obj}")
                 if pygame.get_init():
                     pygame.event.post(
                         pygame.event.Event(
@@ -49,29 +76,38 @@ class Client:
                     )
 
     def sendToServer(self, obj):
-        data = json.dumps(obj).encode('utf-8')
+        """
+        Sends an object to the server
+
+        Parameters:
+            obj (Object):
+                The object to send to the server
+        """
+        data = json.dumps(obj).encode("utf-8")
         try:
             self.server.sendall(data)
         except (BrokenPipeError, ConnectionAbortedError, OSError):
-            print(f'Failed to send to {self.server}')
+            print(f"Failed to send to {self.server}")
 
     def start(self):
+        """Starts the client"""
         try:
             self.server.connect((self.host, self.port))
         except OSError:
-            print(f'Could not connect to server at {self.host}:{self.port}')
+            print(f"Could not connect to server at {self.host}:{self.port}")
         else:
-            print(f'Connected to server at {self.host}:{self.port}')
-
+            print(f"Connected to server at {self.host}:{self.port}")
             self.running = True
+
             self.receivingFromServer = True
 
             self.run()
 
     def stop(self):
-        print('Stopping client')
-
+        """Stops the client"""
+        print("Stopping client")
         self.running = False
+
         self.receivingFromServer = False
 
         try:
@@ -82,6 +118,7 @@ class Client:
         self.server.close()
 
     def run(self):
+        """Runs the client"""
         while self.running:
             if self.receivingFromServer:
                 self.receiveFromServer()
