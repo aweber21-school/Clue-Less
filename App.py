@@ -1,9 +1,8 @@
 from ClueLess.MVC import Model, View, Controller
 from ClueLess.CSA import Network
-# from Globals import Role
 
 
-class ClueLessApp:
+class App:
     """
     The Clue-Less application
 
@@ -29,8 +28,15 @@ class ClueLessApp:
         self.view = View(self.model)
         self.network = Network()
         self.controller = Controller(self.model, self.view, self.network)
+        self.running = False
 
-    def stop(self, log):
+    def start(self):
+        """Starts the Clue-Less app"""
+        print('Starting Clue-Less app...')
+        self.running = True
+        self.run()
+
+    def stop(self, log=''):
         """
         Stops the Clue-Less app
 
@@ -42,26 +48,24 @@ class ClueLessApp:
         print(log)
         self.view.closeView()
         self.network.stop()
+        self.running = False
 
-    def start(self):
-        """Starts the Clue-Less app"""
-        print('Starting Clue-Less app...')
-        running = True
+    def run(self):
         log = 'Stopped Gracefully'
-        while running:
+        while self.running:
             # Game Loop
             try:
-                running = self.controller.handleInput()
+                self.running = self.controller.handleInput()
                 self.model.updateModel()
                 self.view.updateView()
             except KeyboardInterrupt:
                 log = 'KeyboardInterrupt'
-                running = False
+                self.running = False
             except Exception as e:
-                log = e
-                running = False
+                log = str(e)
+                self.running = False
         self.stop(log)
 
 
 if __name__ == '__main__':
-    ClueLessApp().start()
+    App().start()
