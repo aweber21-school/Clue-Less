@@ -1,7 +1,7 @@
 import pygame
 
 from ClueLess.States import State
-from ClueLess.Events import NETWORK_EVENT
+from ClueLess.Events import CLIENT_MESSAGE_RECEIVED_EVENT, SERVER_MESSAGE_RECEIVED_EVENT
 
 
 class Controller:
@@ -48,16 +48,12 @@ class Controller:
                 # Host Button
                 if self.view.host_btn.collidepoint(event.pos):
                     print('Host Pressed')
-                    # app.role = Role('Server', Server('localhost', 5555))
-                    # app.role.start()
-                    self.network.startServer('localhost', 5555)
+                    self.network.startServer('localhost', 5555, 6)
                     self.model.updateState(State.SERVER_MENU)
 
                 # Join Button
                 elif self.view.join_btn.collidepoint(event.pos):
                     print('Join Pressed')
-                    # app.role = Role('Client', Client('User', 'localhost', 5555))
-                    # app.role.start()
                     self.network.startClient('User', 'localhost', 5555)
                     self.model.updateState(State.CLIENT_MENU)
 
@@ -73,7 +69,7 @@ class Controller:
         """
         # Esc Button
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            self.network.stop()
+            self.network.stopServer()
             self.model.updateState(State.MAIN_MENU)
 
         # Mouse Button Clicked
@@ -83,10 +79,19 @@ class Controller:
                 # Back Button
                 if self.view.back_btn.collidepoint(event.pos):
                     print('Back Pressed')
-                    # app.role.stop()
-                    # app.role = Role()
-                    self.network.stop()
+                    self.network.stopServer()
                     self.model.updateState(State.MAIN_MENU)
+
+        elif event.type == CLIENT_MESSAGE_RECEIVED_EVENT:
+            sender = event.sender
+            message = event.message
+            print((sender, message))
+            # Example text: "RED:5|GREEN:3"
+            if message.startswith('RED:'):
+                parts = message.split('|')
+                red = int(parts[0].split(':')[1])
+                green = int(parts[1].split(':')[1])
+                self.model.updateCounts(red, green)
 
         return True
 
@@ -100,7 +105,7 @@ class Controller:
         """
         # Esc Button
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            self.network.stop()
+            self.network.stopClient()
             self.model.updateState(State.MAIN_MENU)
 
         # Mouse Button Clicked
@@ -109,24 +114,22 @@ class Controller:
             if event.button == 1:
                 if self.view.red_btn.collidepoint(event.pos):
                     print('Red Pressed')
-                    self.network.network.send_text(f'User|RED')
-                    # app.role.getObj().send_text(f'User|RED')
+                    self.network.sendToServer('User|RED')
                 elif self.view.green_btn.collidepoint(event.pos):
                     print('Green Pressed')
-                    self.network.network.send_text(f'User|GREEN')
-                    # app.role.getObj().send_text(f'User|GREEN')
+                    self.network.sendToServer('User|GREEN')
                 elif self.view.back_btn.collidepoint(event.pos):
                     print('Back Pressed')
-                    # app.role.stop()
-                    # app.role = Role()
-                    self.network.stop()
+                    self.network.stopClient()
                     self.model.updateState(State.MAIN_MENU)
 
-        elif event.type == NETWORK_EVENT:
-            sender, text = event.payload
+        elif event.type == SERVER_MESSAGE_RECEIVED_EVENT:
+            sender = event.sender
+            message = event.message
+            print((sender, message))
             # Example text: "RED:5|GREEN:3"
-            if text.startswith('RED:'):
-                parts = text.split('|')
+            if message.startswith('RED:'):
+                parts = message.split('|')
                 red = int(parts[0].split(':')[1])
                 green = int(parts[1].split(':')[1])
                 self.model.updateCounts(red, green)
