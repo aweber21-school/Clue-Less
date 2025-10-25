@@ -88,7 +88,6 @@ class Controller:
                 # Left Mouse Button Clicked
                 if self.view.back_btn.collidepoint(event.pos):
                     # Back Button
-                    print("Back Pressed")
                     self.network.stopServer()
                     self.model.endGame()
                     self.model.updateState(menuState=MenuState.MAIN_MENU)
