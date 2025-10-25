@@ -61,7 +61,7 @@ class App:
             # Main App Loop
             try:
                 self.running = self.controller.handleInput()
-                self.model.updateModel()
+                # self.model.updateModel({})
                 self.view.updateView()
             except KeyboardInterrupt:
                 log = "KeyboardInterrupt"

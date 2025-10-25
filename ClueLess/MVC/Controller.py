@@ -1,7 +1,8 @@
 import pygame
 
 from ClueLess.Events import CLIENT_MESSAGE_RECEIVED_EVENT, SERVER_MESSAGE_RECEIVED_EVENT
-from ClueLess.States import State
+from ClueLess.Game import Turn
+from ClueLess.States import AppState, GameState, MenuState
 
 
 class Controller:
@@ -15,7 +16,7 @@ class Controller:
     Attributes:
         model (ClueLess.MVC.Model):
             The game state of the application
-        view.(ClueLess.MVC.View):
+        view (ClueLess.MVC.View):
             The GUI display of the application
         network (ClueLess.CSV.Network):
             The manager of networking as a client or server
@@ -45,25 +46,25 @@ class Controller:
             event (pygame.event.Event):
                 The Pygame event to handle
         """
-        # Esc Button
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            # Esc Button
             return False
 
-        # Mouse Button Clicked
         if event.type == pygame.MOUSEBUTTONDOWN:
-            # Left Mouse Button Clicked
+            # Mouse Button Clicked
             if event.button == 1:
-                # Host Button
+                # Left Mouse Button Clicked
                 if self.view.host_btn.collidepoint(event.pos):
-                    print("Host Pressed")
+                    # Host Button
                     self.network.startServer("localhost", 5555, 6)
-                    self.model.updateState(State.SERVER_MENU)
+                    self.model.newGame()
+                    self.model.updateState(menuState=MenuState.SERVER_MENU)
 
-                # Join Button
                 elif self.view.join_btn.collidepoint(event.pos):
-                    print("Join Pressed")
+                    # Join Button
                     self.network.startClient("User", "localhost", 5555)
-                    self.model.updateState(State.CLIENT_MENU)
+                    self.model.newGame()
+                    self.model.updateState(menuState=MenuState.CLIENT_MENU)
 
         return True
 
@@ -75,32 +76,30 @@ class Controller:
             event (pygame.event.Event):
                 The Pygame event to handle
         """
-        # Esc Button
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            # Esc Button
             self.network.stopServer()
-            self.model.updateState(State.MAIN_MENU)
+            self.model.endGame()
+            self.model.updateState(menuState=MenuState.MAIN_MENU)
 
-        # Mouse Button Clicked
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Left Mouse Button Clicked
+            # Mouse Button Clicked
             if event.button == 1:
-                # Back Button
+                # Left Mouse Button Clicked
                 if self.view.back_btn.collidepoint(event.pos):
+                    # Back Button
                     print("Back Pressed")
                     self.network.stopServer()
-                    self.model.updateState(State.MAIN_MENU)
+                    self.model.endGame()
+                    self.model.updateState(menuState=MenuState.MAIN_MENU)
 
-        # Server received message from Client
         elif event.type == CLIENT_MESSAGE_RECEIVED_EVENT:
-            sender = event.sender
-            message = event.message
-            print((sender, message))
-            # Example text: "RED:5|GREEN:3"
-            if message.startswith("RED:"):
-                parts = message.split("|")
-                red = int(parts[0].split(":")[1])
-                green = int(parts[1].split(":")[1])
-                self.model.updateCounts(red, green)
+            # Server received message from Client
+            client = event.sender
+            turn = event.message
+
+            self.model.makeMove(turn)
+            self.network.sendToClients(self.model.getGame())
 
         return True
 
@@ -112,37 +111,34 @@ class Controller:
             event (pygame.event.Event):
                 The Pygame event to handle
         """
-        # Esc Button
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            # Esc Button
             self.network.stopClient()
-            self.model.updateState(State.MAIN_MENU)
+            self.model.endGame()
+            self.model.updateState(menuState=MenuState.MAIN_MENU)
 
-        # Mouse Button Clicked
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Left Mouse Button Clicked
+            # Mouse Button Clicked
             if event.button == 1:
+                # Left Mouse Button Clicked
                 if self.view.red_btn.collidepoint(event.pos):
-                    print("Red Pressed")
-                    self.network.sendToServer("User|RED")
+                    # Red button
+                    self.network.sendToServer(Turn(red=1))
                 elif self.view.green_btn.collidepoint(event.pos):
-                    print("Green Pressed")
-                    self.network.sendToServer("User|GREEN")
+                    # Green button
+                    self.network.sendToServer(Turn(green=1))
                 elif self.view.back_btn.collidepoint(event.pos):
-                    print("Back Pressed")
+                    # Back button
                     self.network.stopClient()
-                    self.model.updateState(State.MAIN_MENU)
+                    self.model.endGame()
+                    self.model.updateState(menuState=MenuState.MAIN_MENU)
 
-        # Client received message from server
         elif event.type == SERVER_MESSAGE_RECEIVED_EVENT:
-            sender = event.sender
-            message = event.message
-            print((sender, message))
-            # Example text: "RED:5|GREEN:3"
-            if message.startswith("RED:"):
-                parts = message.split("|")
-                red = int(parts[0].split(":")[1])
-                green = int(parts[1].split(":")[1])
-                self.model.updateCounts(red, green)
+            # Client received message from server
+            server = event.sender
+            game = event.message
+
+            self.model.updateGame(game)
 
         return True
 
@@ -152,13 +148,22 @@ class Controller:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif self.model.state == State.MAIN_MENU:
-                if not self.handleMainMenuInput(event):
-                    running = False
-            elif self.model.state == State.SERVER_MENU:
-                if not self.handleServerMenuInput(event):
-                    running = False
-            elif self.model.state == State.CLIENT_MENU:
-                if not self.handleClientMenuInput(event):
-                    running = False
+            elif self.model.appState == AppState.MENU:
+                # Menu
+                if self.model.menuState == MenuState.MAIN_MENU:
+                    # Main Menu
+                    if not self.handleMainMenuInput(event):
+                        running = False
+                elif self.model.menuState == MenuState.SERVER_MENU:
+                    # Server Menu
+                    if not self.handleServerMenuInput(event):
+                        running = False
+                elif self.model.menuState == MenuState.CLIENT_MENU:
+                    # Client Menu
+                    if not self.handleClientMenuInput(event):
+                        running = False
+            elif self.model.appState == AppState.GAME:
+                # Game
+                if self.model.gameState == GameState.GAME_MENU:
+                    pass
         return running

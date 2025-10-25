@@ -1,4 +1,4 @@
-import json
+import pickle
 import socket
 
 import pygame
@@ -22,6 +22,7 @@ class Client:
         port (int):
             The port of the server
     """
+
     def __init__(self, username="User", host="localhost", port=5555):
         """
         Initializes a new client
@@ -64,7 +65,7 @@ class Client:
                 self.stop()
             else:
                 # Message received
-                obj = json.loads(data.decode("utf-8"))
+                obj = pickle.loads(data)
                 print(f"Received object: {obj}")
                 if pygame.get_init():
                     pygame.event.post(
@@ -83,7 +84,7 @@ class Client:
             obj (Object):
                 The object to send to the server
         """
-        data = json.dumps(obj).encode("utf-8")
+        data = pickle.dumps(obj)
         try:
             self.server.sendall(data)
         except (BrokenPipeError, ConnectionAbortedError, OSError):

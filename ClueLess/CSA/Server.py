@@ -1,4 +1,4 @@
-import json
+import pickle
 import socket
 
 import pygame
@@ -85,7 +85,7 @@ class Server:
                     self.clients.remove(client)
                 else:
                     # Message received
-                    obj = json.loads(data.decode("utf-8"))
+                    obj = pickle.loads(data)
                     print(f"Received payload: {obj}")
                     if pygame.get_init():
                         pygame.event.post(
@@ -104,7 +104,7 @@ class Server:
             obj (Object):
                 The object to send to clients
         """
-        data = json.dumps(obj).encode("utf-8")
+        data = pickle.dumps(obj)
         for client in self.clients:
             try:
                 client.sendall(data)

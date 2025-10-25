@@ -1,6 +1,6 @@
 import pygame
 
-from ClueLess.States import State
+from ClueLess.States import AppState, GameState, MenuState
 
 
 class Constant:
@@ -131,7 +131,7 @@ class View:
 
         # Counts
         ctext = self.fonts["TITLE"].render(
-            f"Red: {self.model.redCount} Green: {self.model.greenCount}",
+            f"Red: {self.model.game.red} Green: {self.model.game.green}",
             True,
             Color.BLACK,
         )
@@ -160,7 +160,7 @@ class View:
 
         # Counts
         ctext = self.fonts["TITLE"].render(
-            f"Red: {self.model.redCount} Green: {self.model.greenCount}",
+            f"Red: {self.model.game.red} Green: {self.model.game.green}",
             True,
             Color.BLACK,
         )
@@ -209,12 +209,16 @@ class View:
 
     def updateView(self):
         """Updates the view"""
-        if self.model.state == State.MAIN_MENU:
-            self.displayMainMenu()
-        elif self.model.state == State.SERVER_MENU:
-            self.displayServerMenu()
-        elif self.model.state == State.CLIENT_MENU:
-            self.displayClientMenu()
+        if self.model.appState == AppState.MENU:
+            if self.model.menuState == MenuState.MAIN_MENU:
+                self.displayMainMenu()
+            elif self.model.menuState == MenuState.SERVER_MENU:
+                self.displayServerMenu()
+            elif self.model.menuState == MenuState.CLIENT_MENU:
+                self.displayClientMenu()
+        elif self.model.appState == AppState.GAME:
+            if self.model.gameState == GameState.GAME_MENU:
+                pass
 
         pygame.display.flip()
         self.clock.tick(60)

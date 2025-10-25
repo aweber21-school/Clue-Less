@@ -1,4 +1,5 @@
-from ClueLess.States import State
+from ClueLess.Game import Game, Turn
+from ClueLess.States import AppState, GameState, MenuState
 
 
 class Model:
@@ -9,34 +10,96 @@ class Model:
     acts as the Model in the Model-View-Controller (MVC) architecture.
 
     Attributes:
-        state (ClueLess.State):
+        appState (ClueLess.AppState):
             The current app state
+        menuState (ClueLess.MenuState):
+            The current menu state
+        gameState (ClueLess.GameState):
+            The current game state
+        game (ClueLess.Game):
+            The current game
+        turn (ClueLess.Turn):
+            The current turn
     """
 
     def __init__(self):
         """Initializes a new model"""
-        self.state = State.MAIN_MENU
+        # States
+        self.appState = AppState.MENU
+        self.menuState = MenuState.MAIN_MENU
+        self.gameState = GameState.GAME_MENU
 
-        # Debugging
-        self.redCount = 0
-        self.greenCount = 0
+        # Game
+        self.game = None
+        self.turn = None
 
-    # Debugging
-    def updateCounts(self, redCount, greenCount):
-        self.redCount = redCount
-        self.greenCount = greenCount
-
-    def updateState(self, state):
+    def updateState(self, appState=None, menuState=None, gameState=None):
         """
-        Updates the current app state
+        Updates the state of the model
 
         Parameters:
-            state (States.State):
-                The state to update this model with
+            appState (ClueLess.AppState):
+                The new app state
+            menuState (ClueLess.MenuState):
+                The new menu state
+            gameState (ClueLess.GameState):
+                The new game state
         """
-        self.state = state
+        if appState:
+            self.appState = appState
+        if menuState:
+            self.menuState = menuState
+        if gameState:
+            self.gameState = gameState
 
-    def updateModel(self):
-        """Updates the game state"""
-        # Update turn timer?
-        pass
+    def newGame(self):
+        """Starts a new game"""
+        self.game = Game()
+
+    def endGame(self):
+        """Ends the game"""
+        self.game = None
+
+    def getGame(self):
+        """Gets the game"""
+        return self.game
+
+    def newTurn(self):
+        """Starts a new turn"""
+        self.turn = Turn()
+
+    def endTurn(self):
+        """Ends the turn"""
+        self.turn = None
+
+    def getTurn(self):
+        """Gets the turn"""
+        return self.turn
+
+    def makeMove(self, turn):
+        """
+        Makes a game move
+
+        Parameters:
+            turn (ClueLess.Turn):
+                The turn used to make a move
+        """
+        if not self.game or not turn:
+            # No move to make
+            return
+        else:
+            self.game.makeMove(turn)
+
+    def updateGame(self, game):
+        """
+        Updates the game state
+
+        Parameters:
+            game (ClueLess.Game):
+                The game to update this model's game to
+        """
+        if not game:
+            # Nothing to update
+            return
+
+        self.game = game
