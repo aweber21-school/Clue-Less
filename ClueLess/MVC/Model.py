@@ -45,11 +45,11 @@ class Model:
             gameState (ClueLess.GameState):
                 The new game state
         """
-        if appState:
+        if appState is not None:
             self.appState = appState
-        if menuState:
+        if menuState is not None:
             self.menuState = menuState
-        if gameState:
+        if gameState is not None:
             self.gameState = gameState
 
     def newGame(self):

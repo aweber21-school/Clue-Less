@@ -61,7 +61,7 @@ class App:
             # Main App Loop
             try:
                 self.running = self.controller.handleInput()
-                # self.model.updateModel({})
+                # self.model.updateGame({})
                 self.view.updateView()
             except KeyboardInterrupt:
                 log = "KeyboardInterrupt"

@@ -56,17 +56,18 @@ class Client:
         try:
             data = self.server.recv(4096)
         except BlockingIOError:
-            # No more data from client
+            # No more data from server
             pass
         else:
             if not data:
                 # Server disconnected
                 print("Server disconnected")
-                self.stop()
+                self.running = False
+                self.receivingFromServer = False
             else:
                 # Message received
                 obj = pickle.loads(data)
-                print(f"Received object: {obj}")
+                print(f"Received Object: {obj}")
                 if pygame.get_init():
                     pygame.event.post(
                         pygame.event.Event(
@@ -84,6 +85,7 @@ class Client:
             obj (Object):
                 The object to send to the server
         """
+        print(f"Sending Object: {obj}")
         data = pickle.dumps(obj)
         try:
             self.server.sendall(data)

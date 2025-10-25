@@ -86,7 +86,7 @@ class Server:
                 else:
                     # Message received
                     obj = pickle.loads(data)
-                    print(f"Received payload: {obj}")
+                    print(f"Received Object: {obj}")
                     if pygame.get_init():
                         pygame.event.post(
                             pygame.event.Event(
@@ -104,6 +104,7 @@ class Server:
             obj (Object):
                 The object to send to clients
         """
+        print(f"Sending Object: {obj}")
         data = pickle.dumps(obj)
         for client in self.clients:
             try:
