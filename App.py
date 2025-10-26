@@ -1,3 +1,5 @@
+import pygame
+
 from ClueLess.CSA import Network
 from ClueLess.MVC import Controller, Model, View
 
@@ -22,6 +24,8 @@ class App:
             The manager of networking as a client or server
         running (boolean):
             A flag to represent whether or not the App is running
+        clock (pygame.time.Clock):
+            The clock to manage frame rate
     """
 
     def __init__(self):
@@ -32,10 +36,15 @@ class App:
         self.controller = Controller(self.model, self.view, self.network)
         self.running = False
 
+        pygame.init()
+        self.clock = pygame.time.Clock()
+
     def start(self):
         """Starts the Clue-Less app"""
         print("Starting Clue-Less app...")
         self.running = True
+
+        self.view.prepareView()
 
         self.run()
 
@@ -48,27 +57,30 @@ class App:
                 The object to display about stopping the application
         """
         print("Stopping Clue-Less app...")
-        print(log)
+        if log:
+            print(log)
         self.running = False
 
-        self.view.closeView()
         self.network.stop()
+
+        pygame.quit()
 
     def run(self):
         """Runs the Clue-Less app"""
-        log = "Stopped Gracefully"
+        log = ""
         while self.running:
             # Main App Loop
             try:
                 self.running = self.controller.handleInput()
-                # self.model.updateGame({})
+                # self.model.updateTimer()
                 self.view.updateView()
-            except KeyboardInterrupt:
-                log = "KeyboardInterrupt"
-                self.running = False
             except Exception as e:
                 log = e
                 self.running = False
+
+            # Maintain framerate
+            self.clock.tick(60)
+
         self.stop(log)
 
 

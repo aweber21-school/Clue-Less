@@ -141,7 +141,11 @@ class Server:
             client.close()
             self.clients.remove(client)
 
-        self.sock.shutdown(socket.SHUT_RDWR)
+        try:
+            self.sock.shutdown(socket.SHUT_RDWR)
+        except OSError:
+            # Server was never started
+            pass
         self.sock.close()
 
     def run(self):

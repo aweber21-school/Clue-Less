@@ -1,27 +1,7 @@
 import pygame
 
+from ClueLess.MVC.GuiComponents import Button, Color, Constant, Font, Text
 from ClueLess.States import AppState, GameState, MenuState
-
-
-class Constant:
-    """Constants"""
-
-    # WIDTH = 1280
-    # HEIGHT = 720
-    WIDTH = 640
-    HEIGHT = 480
-
-
-class Color:
-    """Colors"""
-
-    WHITE = (255, 255, 255)
-    LIGHT_GRAY = (235, 235, 235)
-    GRAY = (200, 200, 200)
-    DARK_GRAY = (100, 100, 100)
-    BLACK = (0, 0, 0)
-    RED = (200, 40, 40)
-    GREEN = (40, 160, 80)
 
 
 class View:
@@ -32,12 +12,12 @@ class View:
     the View in the Model-View-Controller (MVC) architecture.
 
     Attributes:
-        clock (pygame.time.Clock):
-            The clock to manage frame rate
+        model (ClueLess.MVC.Model):
+            The model to display in this view
         screen (pygame.display.Surface):
             The main display
-        fonts (Dict):
-            Dictionary containing predefined fonts
+        components (list):
+            The list of GUI components to draw
     """
 
     def __init__(self, model):
@@ -50,175 +30,274 @@ class View:
         """
         self.model = model
 
-        pygame.init()
-
+        # Main screen
         self.screen = pygame.display.set_mode((Constant.WIDTH, Constant.HEIGHT))
         pygame.display.set_caption("Clue-Less")
-        self.clock = pygame.time.Clock()
 
-        self.fonts = {}
-        self.fonts["TITLE"] = pygame.font.Font(None, 48)
-        self.fonts["BUTTON"] = pygame.font.Font(None, 28)
+        # Components to draw on screen
+        self.components = []
 
-    def drawButton(self, screen, rect, text, fill, font):
+    def getTargetComponent(self, point):
         """
-        Draws a button with the given parameters
+        Gets the target component of the given point
 
         Parameters:
-            screen (pygame.display.Surface):
-                The screen to display the button on
-            rect (pygame.Rect):
-                The rectangle to represent the button
-            text (str):
-                The text to display on the button
-            fill (tuple, Globals.Color):
-                The background color for the button
-            font (pygame.font.Font):
-                The font to use for the button text
+            point (tuple):
+                The x and y coordinates of a point to find a component at
         """
-        pygame.draw.rect(screen, fill, rect, border_radius=12)
-        pygame.draw.rect(screen, Color.BLACK, rect, 2, border_radius=12)
-        txt = font.render(text, True, Color.BLACK)
-        screen.blit(txt, txt.get_rect(center=rect.center))
+        for component in self.components:
+            if component.getArea().collidepoint(point):
+                return component
 
-    def displayMainMenu(self):
-        """Displays the main menu"""
-        # Clean display
-        self.screen.fill(Color.WHITE)
+    def prepareMenu(self):
+        """
+        Prepares the menu view
 
-        # Title
-        title = self.fonts["TITLE"].render("Clue-Less", True, Color.BLACK)
-        self.screen.blit(title, (Constant.WIDTH // 2 - title.get_width() // 2, 150))
+        It contains functions that handle each menu view
+        """
 
-        # Create Buttons
-        self.host_btn = pygame.Rect(
-            Constant.WIDTH // 3 - 90,
-            (Constant.HEIGHT // 3) * 2 - 30,
-            180,
-            60,
-        )
-        self.join_btn = pygame.Rect(
-            (Constant.WIDTH // 3) * 2 - 90,
-            (Constant.HEIGHT // 3) * 2 - 30,
-            180,
-            60,
-        )
+        def prepareMainMenu():
+            """Prepares the main menu"""
+            # Reset components
+            self.components = []
 
-        # Draw Buttons
-        self.drawButton(
-            self.screen,
-            self.host_btn,
-            "Host",
-            Color.GRAY,
-            self.fonts["BUTTON"],
-        )
-        self.drawButton(
-            self.screen,
-            self.join_btn,
-            "Join",
-            Color.GRAY,
-            self.fonts["BUTTON"],
-        )
+            # Title
+            self.components.append(
+                Text(
+                    id="Title",
+                    x=Constant.WIDTH // 2,
+                    y=150,
+                    text="Clue-Less",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
 
-    def displayServerMenu(self):
-        """Displays the server menu"""
-        # Clean display
-        self.screen.fill(Color.WHITE)
+            # Buttons
+            self.components.append(
+                Button(
+                    id="QuitButton",
+                    x=80,
+                    y=50,
+                    width=100,
+                    height=40,
+                    borderThickness=2,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    fillColor=Color.GRAY,
+                    text="Quit",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
+            self.components.append(
+                Button(
+                    id="HostButton",
+                    x=Constant.WIDTH // 3,
+                    y=(Constant.HEIGHT // 3) * 2,
+                    width=180,
+                    height=60,
+                    borderThickness=2,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    fillColor=Color.GRAY,
+                    text="Host",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
+            self.components.append(
+                Button(
+                    id="JoinButton",
+                    x=(Constant.WIDTH // 3) * 2,
+                    y=(Constant.HEIGHT // 3) * 2,
+                    width=180,
+                    height=60,
+                    borderThickness=2,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    fillColor=Color.GRAY,
+                    text="Join",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
 
-        # Title
-        title = self.fonts["TITLE"].render("Server Menu", True, Color.BLACK)
-        self.screen.blit(title, (Constant.WIDTH // 2 - title.get_width() // 2, 150))
+        def prepareServerMenu():
+            """Prepares the server menu"""
+            # Reset components
+            self.components = []
 
-        # Counts
-        ctext = self.fonts["TITLE"].render(
-            f"Red: {self.model.game.red} Green: {self.model.game.green}",
-            True,
-            Color.BLACK,
-        )
-        self.screen.blit(ctext, (Constant.WIDTH // 2 - ctext.get_width() // 2, 200))
+            # Title
+            self.components.append(
+                Text(
+                    id="Title",
+                    x=Constant.WIDTH // 2,
+                    y=150,
+                    text="Server Menu",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
 
-        # Create Buttons
-        self.back_btn = pygame.Rect(30, 30, 100, 40)
+            # Counts
+            self.components.append(
+                Text(
+                    id="Counts",
+                    x=Constant.WIDTH // 2,
+                    y=200,
+                    text=f"Red: {self.model.game.red} Green: {self.model.game.green}",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
 
-        # Draw Buttons
-        self.drawButton(
-            self.screen,
-            self.back_btn,
-            "Back",
-            Color.GRAY,
-            self.fonts["BUTTON"],
-        )
+            # Buttons
+            self.components.append(
+                Button(
+                    id="BackButton",
+                    x=80,
+                    y=50,
+                    width=100,
+                    height=40,
+                    borderThickness=2,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    fillColor=Color.GRAY,
+                    text="Back",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
 
-    def displayClientMenu(self):
-        """Displays the client menu"""
-        # Clean display
-        self.screen.fill(Color.WHITE)
+        def prepareClientMenu():
+            """Prepares the client menu"""
+            # Reset components
+            self.components = []
 
-        # Title
-        title = self.fonts["TITLE"].render("Client Menu", True, Color.BLACK)
-        self.screen.blit(title, (Constant.WIDTH // 2 - title.get_width() // 2, 150))
+            # Title
+            self.components.append(
+                Text(
+                    id="Title",
+                    x=Constant.WIDTH // 2,
+                    y=150,
+                    text="Client Menu",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
 
-        # Counts
-        ctext = self.fonts["TITLE"].render(
-            f"Red: {self.model.game.red} Green: {self.model.game.green}",
-            True,
-            Color.BLACK,
-        )
-        self.screen.blit(ctext, (Constant.WIDTH // 2 - ctext.get_width() // 2, 200))
+            # Counts
+            self.components.append(
+                Text(
+                    id="Counts",
+                    x=Constant.WIDTH // 2,
+                    y=200,
+                    text=f"Red: {self.model.game.red} Green: {self.model.game.green}",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
 
-        # Create Buttons
-        self.red_btn = pygame.Rect(
-            Constant.WIDTH // 3 - 90,
-            (Constant.HEIGHT // 3) * 2 - 30,
-            180,
-            60,
-        )
-        self.green_btn = pygame.Rect(
-            (Constant.WIDTH // 3) * 2 - 90,
-            (Constant.HEIGHT // 3) * 2 - 30,
-            180,
-            60,
-        )
-        self.back_btn = pygame.Rect(30, 30, 100, 40)
+            # Buttons
+            self.components.append(
+                Button(
+                    id="BackButton",
+                    x=80,
+                    y=50,
+                    width=100,
+                    height=40,
+                    borderThickness=2,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    fillColor=Color.GRAY,
+                    text="Back",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
 
-        # Draw Buttons
-        self.drawButton(
-            self.screen,
-            self.red_btn,
-            "RED",
-            Color.RED,
-            self.fonts["TITLE"],
-        )
-        self.drawButton(
-            self.screen,
-            self.green_btn,
-            "GREEN",
-            Color.GREEN,
-            self.fonts["TITLE"],
-        )
-        self.drawButton(
-            self.screen,
-            self.back_btn,
-            "Back",
-            Color.GRAY,
-            self.fonts["BUTTON"],
-        )
+            # Buttons
+            self.components.append(
+                Button(
+                    id="RedButton",
+                    x=(Constant.WIDTH // 3),
+                    y=(Constant.HEIGHT // 3) * 2,
+                    width=180,
+                    height=60,
+                    borderThickness=2,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    fillColor=Color.RED,
+                    text="Red",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
+            self.components.append(
+                Button(
+                    id="GreenButton",
+                    x=(Constant.WIDTH // 3) * 2,
+                    y=(Constant.HEIGHT // 3) * 2,
+                    width=180,
+                    height=60,
+                    borderThickness=2,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    fillColor=Color.GREEN,
+                    text="Green",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
 
-    def closeView(self):
-        pygame.quit()
+        if self.model.menuState == MenuState.MAIN_MENU:
+            # Main Menu
+            prepareMainMenu()
+        elif self.model.menuState == MenuState.SERVER_MENU:
+            # Server Menu
+            prepareServerMenu()
+        elif self.model.menuState == MenuState.CLIENT_MENU:
+            # Client Menu
+            prepareClientMenu()
+
+    def prepareGame(self):
+        """
+        Prepares the game view
+
+        It contains functions that handle each game view
+        """
+        if self.model.gameState == GameState.GAME_MENU:
+            pass
+
+    def prepareView(self):
+        """Prepares the view"""
+        if self.model.appState == AppState.MENU:
+            # Menu
+            self.prepareMenu()
+        elif self.model.appState == AppState.GAME:
+            # Game
+            self.prepareGame()
 
     def updateView(self):
         """Updates the view"""
-        if self.model.appState == AppState.MENU:
-            if self.model.menuState == MenuState.MAIN_MENU:
-                self.displayMainMenu()
-            elif self.model.menuState == MenuState.SERVER_MENU:
-                self.displayServerMenu()
-            elif self.model.menuState == MenuState.CLIENT_MENU:
-                self.displayClientMenu()
-        elif self.model.appState == AppState.GAME:
-            if self.model.gameState == GameState.GAME_MENU:
-                pass
+        # Clear display
+        self.screen.fill(Color.WHITE)
+
+        for component in self.components:
+            # Draw each component
+            component.draw(self.screen)
 
         pygame.display.flip()
-        self.clock.tick(60)
