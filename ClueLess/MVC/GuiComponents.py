@@ -1,3 +1,4 @@
+import dis
 import pygame
 
 
@@ -34,7 +35,7 @@ class Font:
 class Text:
     """
     A Text Component for Clue-Less View
-    
+
     The Text class acts as text for the view in the Clue-Less application.
 
     Attributes:
@@ -53,6 +54,7 @@ class Text:
         font (ClueLess.MVC.Font):
             The font of the text
     """
+
     def __init__(
         self,
         id,
@@ -117,11 +119,11 @@ class Text:
         )
 
 
-class Button:
+class TextBox:
     """
-    A Button Component for Clue-Less View
-    
-    The Button class acts as button for the view in the Clue-Less application.
+    A Text Box Component for Clue-Less View
+
+    The TextBox class acts as text for the view in the Clue-Less application.
 
     Attributes:
         id (str):
@@ -140,8 +142,10 @@ class Button:
             The radius of the border
         borderColor (ClueLess.MVC.Color):
             The color of the border
-        fillColor (ClueLess.MVC.Color):
-            The color to fill the background
+        inactiveFillColor (ClueLess.MVC.Color):
+            The color to fill the background when it is disabled
+        activeFillColor (ClueLess.MVC.Color):
+            The color to fill the background when it is enabled
         text (str):
             The string of text
         textColor (ClueLess.MVC.Color):
@@ -150,7 +154,10 @@ class Button:
             The highlight of the text
         font (ClueLess.MVC.Font):
             The font of the text
+        active (boolean):
+            The flag to determine whether it is active
     """
+
     def __init__(
         self,
         id,
@@ -161,11 +168,13 @@ class Button:
         borderThickness=2,
         borderRadius=12,
         borderColor=Color.BLACK,
-        fillColor=Color.GRAY,
+        inactiveFillColor=Color.DARK_GRAY,
+        activeFillColor=Color.GRAY,
         text="Button",
         textColor=Color.BLACK,
         textHighlight=None,
         font=Font.DEFAULT,
+        active=False,
     ):
         """
         Initializes a new button component
@@ -187,8 +196,10 @@ class Button:
                 The radius of the border
             borderColor (ClueLess.MVC.Color):
                 The color of the border
-            fillColor (ClueLess.MVC.Color):
-                The color to fill the background
+            inactiveFillColor (ClueLess.MVC.Color):
+                The color to fill the background when it is disabled
+            activeFillColor (ClueLess.MVC.Color):
+                The color to fill the background when it is enabled
             text (str):
                 The string of text
             textColor (ClueLess.MVC.Color):
@@ -197,6 +208,8 @@ class Button:
                 The highlight of the text
             font (ClueLess.MVC.Font):
                 The font of the text
+            active (boolean):
+                The flag to determine whether it is active
         """
         # ID
         self.id = id
@@ -213,13 +226,44 @@ class Button:
         self.borderColor = borderColor
 
         # Fill
-        self.fillColor = fillColor
+        self.inactiveFillColor = inactiveFillColor
+        self.activeFillColor = activeFillColor
 
         # Text
         self.text = text
         self.textColor = textColor
         self.textHighlight = textHighlight
         self.font = font
+
+        # Active
+        self.active = active
+
+    def isActive(self):
+        """Returns whether the component is active"""
+        return self.active
+
+    def activate(self):
+        """Activates the component"""
+        self.active = True
+
+    def deactivate(self):
+        """Deactivates the component"""
+        self.active = False
+
+    def updateText(self, event):
+        """
+        Updates the text of the component
+
+        Parameters:
+            event (str):
+                The event to use to update the component
+        """
+        if event.key == pygame.K_BACKSPACE:
+            # Backspace
+            self.text = self.text[:-1]
+        else:
+            # Any other key
+            self.text += event.unicode
 
     def getArea(self):
         """Gets the area of the component"""
@@ -235,7 +279,192 @@ class Button:
         # Main rectangle
         pygame.draw.rect(
             surface,
-            self.fillColor,
+            self.activeFillColor if self.active else self.inactiveFillColor,
+            pygame.Rect(
+                self.x - (self.width // 2),
+                self.y - (self.height // 2),
+                self.width,
+                self.height,
+            ),
+            0,
+            self.borderRadius,
+        )
+
+        # Border
+        pygame.draw.rect(
+            surface,
+            self.borderColor,
+            pygame.Rect(
+                self.x - (self.width // 2),
+                self.y - (self.height // 2),
+                self.width,
+                self.height,
+            ),
+            self.borderThickness,
+            self.borderRadius,
+        )
+
+        # Text
+        renderedText = self.font.render(
+            self.text, True, self.textColor, self.textHighlight
+        )
+        surface.blit(
+            renderedText,
+            (
+                self.x - (renderedText.get_width() // 2),
+                self.y - (renderedText.get_height() // 2),
+            ),
+            None,
+            0,
+        )
+
+
+class Button:
+    """
+    A Button Component for Clue-Less View
+
+    The Button class acts as button for the view in the Clue-Less application.
+
+    Attributes:
+        id (str):
+            The id of the text component
+        x (int):
+            The x position
+        y (int):
+            The y position
+        width (int):
+            The width
+        height (int):
+            The height
+        borderThickness (int):
+            The thickness of the border
+        borderRadius (int):
+            The radius of the border
+        borderColor (ClueLess.MVC.Color):
+            The color of the border
+        inactiveFillColor (ClueLess.MVC.Color):
+            The color to fill the background when it is disabled
+        activeFillColor (ClueLess.MVC.Color):
+            The color to fill the background when it is enabled
+        text (str):
+            The string of text
+        textColor (ClueLess.MVC.Color):
+            The color of the text
+        textHighlight (ClueLess.MVC.Color):
+            The highlight of the text
+        font (ClueLess.MVC.Font):
+            The font of the text
+        active (boolean):
+            The flag to determine whether it is active
+    """
+
+    def __init__(
+        self,
+        id,
+        x,
+        y,
+        width=180,
+        height=60,
+        borderThickness=2,
+        borderRadius=12,
+        borderColor=Color.BLACK,
+        inactiveFillColor=Color.DARK_GRAY,
+        activeFillColor=Color.LIGHT_GRAY,
+        text="Button",
+        textColor=Color.BLACK,
+        textHighlight=None,
+        font=Font.DEFAULT,
+        active=False,
+    ):
+        """
+        Initializes a new button component
+
+        Parameters:
+            id (str):
+                The id of the text component
+            x (int):
+                The x position
+            y (int):
+                The y position
+            width (int):
+                The width
+            height (int):
+                The height
+            borderThickness (int):
+                The thickness of the border
+            borderRadius (int):
+                The radius of the border
+            borderColor (ClueLess.MVC.Color):
+                The color of the border
+            inactiveFillColor (ClueLess.MVC.Color):
+                The color to fill the background when it is disabled
+            activeFillColor (ClueLess.MVC.Color):
+                The color to fill the background when it is enabled
+            text (str):
+                The string of text
+            textColor (ClueLess.MVC.Color):
+                The color of the text
+            textHighlight (ClueLess.MVC.Color):
+                The highlight of the text
+            font (ClueLess.MVC.Font):
+                The font of the text
+            active (boolean):
+                The flag to determine whether it is active
+        """
+        # ID
+        self.id = id
+
+        # Position and size
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+        # Border
+        self.borderThickness = borderThickness
+        self.borderRadius = borderRadius
+        self.borderColor = borderColor
+
+        # Fill
+        self.inactiveFillColor = inactiveFillColor
+        self.activeFillColor = activeFillColor
+
+        # Text
+        self.text = text
+        self.textColor = textColor
+        self.textHighlight = textHighlight
+        self.font = font
+
+        # Active
+        self.active = active
+
+    def isActive(self):
+        """Returns whether the component is active"""
+        return self.active
+
+    def activate(self):
+        """Activates the component"""
+        self.active = True
+
+    def deactivate(self):
+        """Deactivates the component"""
+        self.active = False
+
+    def getArea(self):
+        """Gets the area of the component"""
+        return pygame.Rect(
+            self.x - (self.width // 2),
+            self.y - (self.height // 2),
+            self.width,
+            self.height,
+        )
+
+    def draw(self, surface):
+        """Draws the component"""
+        # Main rectangle
+        pygame.draw.rect(
+            surface,
+            self.activeFillColor if self.active else self.inactiveFillColor,
             pygame.Rect(
                 self.x - (self.width // 2),
                 self.y - (self.height // 2),

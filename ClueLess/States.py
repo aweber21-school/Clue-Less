@@ -15,5 +15,6 @@ class MenuState:
 
 class GameState:
     """Game States"""
-
     GAME_MENU = 0
+    SERVER_GAME = 1
+    CLIENT_GAME = 2
