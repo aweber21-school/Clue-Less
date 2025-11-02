@@ -3,7 +3,11 @@ import socket
 
 import pygame
 
-from ClueLess.Events import SERVER_MESSAGE_RECEIVED_EVENT
+from ClueLess.Events import (
+    CLIENT_CONNECTED_EVENT,
+    CLIENT_DISCONNECTED_EVENT,
+    CLIENT_MESSAGE_RECEIVED_EVENT,
+)
 
 
 class Client:
@@ -64,14 +68,24 @@ class Client:
                 print("Server disconnected")
                 self.running = False
                 self.receivingFromServer = False
+
+                # Post Pygame event
+                if pygame.get_init():
+                    pygame.event.post(
+                        pygame.event.Event(
+                            CLIENT_DISCONNECTED_EVENT,
+                        )
+                    )
             else:
                 # Message received
                 obj = pickle.loads(data)
                 print(f"Received Object: {obj}")
+
+                # Post Pygame event
                 if pygame.get_init():
                     pygame.event.post(
                         pygame.event.Event(
-                            SERVER_MESSAGE_RECEIVED_EVENT,
+                            CLIENT_MESSAGE_RECEIVED_EVENT,
                             sender=self.server,
                             message=obj,
                         )
@@ -101,6 +115,14 @@ class Client:
         else:
             print(f"Connected to server at {self.host}:{self.port}")
             self.running = True
+
+            # Post Pygame event
+            if pygame.get_init():
+                pygame.event.post(
+                    pygame.event.Event(
+                        CLIENT_CONNECTED_EVENT,
+                    )
+                )
 
             self.receivingFromServer = True
 

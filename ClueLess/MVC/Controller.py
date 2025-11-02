@@ -1,6 +1,13 @@
 import pygame
 
-from ClueLess.Events import CLIENT_MESSAGE_RECEIVED_EVENT, SERVER_MESSAGE_RECEIVED_EVENT
+from ClueLess.Events import (
+    CLIENT_CONNECTED_EVENT,
+    CLIENT_DISCONNECTED_EVENT,
+    CLIENT_MESSAGE_RECEIVED_EVENT,
+    SERVER_CONNECTED_EVENT,
+    SERVER_DISCONNECTED_EVENT,
+    SERVER_MESSAGE_RECEIVED_EVENT,
+)
 from ClueLess.Game import Turn
 from ClueLess.States import AppState, GameState, MenuState
 
@@ -271,7 +278,12 @@ class Controller:
                     # Any other mouse button clicked
                     pass
 
-            elif event.type == CLIENT_MESSAGE_RECEIVED_EVENT:
+            elif event.type == SERVER_CONNECTED_EVENT:
+                # Server connected to new client
+                # Rebroadcast game to sync all clients
+                self.network.sendToClients(self.model.getGame())
+
+            elif event.type == SERVER_MESSAGE_RECEIVED_EVENT:
                 # Server received message from client
                 client = event.sender
                 turn = event.message
@@ -279,6 +291,10 @@ class Controller:
                 self.model.makeMove(turn)
                 self.network.sendToClients(self.model.getGame())
                 self.view.prepareView()
+
+            elif event.type == SERVER_DISCONNECTED_EVENT:
+                # Server disconnected from client
+                pass
 
             return True
 
@@ -333,13 +349,21 @@ class Controller:
                     # Any other mouse button clicked
                     pass
 
-            elif event.type == SERVER_MESSAGE_RECEIVED_EVENT:
+            elif event.type == CLIENT_CONNECTED_EVENT:
+                # Client connected to server
+                pass
+
+            elif event.type == CLIENT_MESSAGE_RECEIVED_EVENT:
                 # Client received message from server
                 server = event.sender
                 game = event.message
 
                 self.model.updateGame(game)
                 self.view.prepareView()
+
+            elif event.type == CLIENT_DISCONNECTED_EVENT:
+                # Client disconnected from server
+                pass
 
             return True
 

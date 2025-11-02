@@ -3,7 +3,11 @@ import socket
 
 import pygame
 
-from ClueLess.Events import CLIENT_MESSAGE_RECEIVED_EVENT
+from ClueLess.Events import (
+    SERVER_CONNECTED_EVENT,
+    SERVER_DISCONNECTED_EVENT,
+    SERVER_MESSAGE_RECEIVED_EVENT,
+)
 
 
 class Server:
@@ -68,6 +72,10 @@ class Server:
                 if len(self.clients) >= self.maxClients:
                     self.acceptingNewClients = False
 
+                # Post Pygame event
+                if pygame.get_init():
+                    pygame.event.post(pygame.event.Event(SERVER_CONNECTED_EVENT))
+
     def receiveFromClients(self):
         """Receives an object from the clients"""
         for client in list(self.clients):
@@ -83,14 +91,24 @@ class Server:
                     client.shutdown(socket.SHUT_RDWR)
                     client.close()
                     self.clients.remove(client)
+
+                    # Post Pygame event
+                    if pygame.get_init():
+                        pygame.event.post(
+                            pygame.event.Event(
+                                SERVER_DISCONNECTED_EVENT,
+                            )
+                        )
                 else:
                     # Message received
                     obj = pickle.loads(data)
                     print(f"Received Object: {obj}")
+
+                    # Post Pygame event
                     if pygame.get_init():
                         pygame.event.post(
                             pygame.event.Event(
-                                CLIENT_MESSAGE_RECEIVED_EVENT,
+                                SERVER_MESSAGE_RECEIVED_EVENT,
                                 sender=client,
                                 message=obj,
                             )
