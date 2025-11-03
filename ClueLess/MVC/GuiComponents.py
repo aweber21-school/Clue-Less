@@ -327,6 +327,21 @@ class TextBox:
             0,
         )
 
+        # Cursor
+        if self.active:
+            pygame.draw.rect(
+                surface,
+                self.borderColor,
+                pygame.Rect(
+                    self.x + (renderedText.get_width() // 2),
+                    self.y - (renderedText.get_height() // 2),
+                    2,
+                    renderedText.get_height(),
+                ),
+                0,
+                self.borderRadius,
+            )
+
 
 class Button:
     """

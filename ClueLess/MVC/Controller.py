@@ -364,7 +364,7 @@ class Controller:
                             self.network.stopClient()
                             self.model.endGame()
                             self.model.updateState(
-                                appState=AppState.MENU, MenuState=MenuState.CLIENT_MENU
+                                appState=AppState.MENU, menuState=MenuState.CLIENT_MENU
                             )
                             self.view.prepareView()
 
