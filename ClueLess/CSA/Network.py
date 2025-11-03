@@ -56,19 +56,19 @@ class Network:
             self.server.stop()
             self.server = None
 
-    def startClient(self, username="User", host="localhost", port=5555):
+    def startClient(self, host="localhost", port=5555, username="User"):
         """
         Starts a new client
 
         Parameters:
-            username (str):
-                The client's username
             host (str):
                 The hostname or ip address of the server
             port (int):
                 The port of the server
+            username (str):
+                The client's username
         """
-        self.client = Client(username, host, port)
+        self.client = Client(host, port, username)
         Thread(target=self.client.start).start()
 
     def sendToServer(self, obj):
@@ -88,22 +88,22 @@ class Network:
             self.client.stop()
             self.client = None
 
-    def start(self, username="User", host="localhost", port=5555, maxClients=1):
+    def start(self, host="localhost", port=5555, maxClients=1, username="User"):
         """
         Starts a new server and a new client
 
         Parameters:
-            username (str):
-                The client's username
             host (str):
                 The hostname or ip address of the server
             port (int):
                 The port of the server
             maxClients (int):
                 The max number of clients that can connect to the server
+            username (str):
+                The client's username
         """
         self.startServer(host, port, maxClients)
-        self.startClient(username, host, port)
+        self.startClient(host, port, username)
 
     def stop(self):
         """Stops the server and the client"""

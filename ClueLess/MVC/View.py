@@ -37,6 +37,18 @@ class View:
         # Components to draw on screen
         self.components = []
 
+    def getComponentById(self, id):
+        """
+        Gets the component with the given ID
+
+        Parameters:
+            id (str):
+                The component's ID
+        """
+        for component in self.components:
+            if component.getID() == id:
+                return component
+
     def getClickedComponent(self, point):
         """
         Gets the clicked component of the given point
@@ -49,18 +61,6 @@ class View:
             if component.getArea().collidepoint(point):
                 return component
 
-    def activateAllButtons(self):
-        """Activates all button components"""
-        for component in self.components:
-            if isinstance(component, Button) and hasattr(component, "active"):
-                component.activate()
-
-    def deactivateAllButtons(self):
-        """Deactivates all button components"""
-        for component in self.components:
-            if isinstance(component, Button) and hasattr(component, "active"):
-                component.deactivate()
-
     def deactivateAllButTargetTextBox(self, target):
         """
         Deactivates all of the text boxes except for the target text box
@@ -70,7 +70,7 @@ class View:
                 The text box to activate
         """
         for component in self.components:
-            if isinstance(component, TextBox) and hasattr(component, "active"):
+            if isinstance(component, TextBox):
                 if component == target:
                     component.activate()
                 else:
@@ -85,9 +85,22 @@ class View:
                 The event to use to update the text box
         """
         for component in self.components:
-            if isinstance(component, TextBox) and hasattr(component, "active"):
+            if isinstance(component, TextBox):
                 if component.isActive():
                     component.updateText(event)
+
+    def activateAllButtons(self):
+        """Activates all button components"""
+        for component in self.components:
+            if isinstance(component, Button):
+                component.activate()
+
+    def deactivateAllButtons(self):
+        """Deactivates all button components"""
+        for component in self.components:
+            if isinstance(component, Button):
+                component.deactivate()
+
 
     def prepareMenu(self):
         """
@@ -216,11 +229,22 @@ class View:
                 )
             )
 
-            # IP Address Text Box
+            # IP Address
+            self.components.append(
+                Text(
+                    id="IpAddressText",
+                    x=480,
+                    y=250,
+                    text="IP Address",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
             self.components.append(
                 TextBox(
                     id="IpAddressTextBox",
-                    x=Constant.WIDTH // 2,
+                    x=700,
                     y=250,
                     width=300,
                     height=40,
@@ -229,7 +253,7 @@ class View:
                     borderColor=Color.BLACK,
                     inactiveFillColor=Color.DARK_GRAY,
                     activeFillColor=Color.GRAY,
-                    text="Enter IP address...",
+                    text="",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
@@ -237,11 +261,22 @@ class View:
                 )
             )
 
-            # Port Text Box
+            # Port
+            self.components.append(
+                Text(
+                    id="PortText",
+                    x=480,
+                    y=300,
+                    text="Port",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
             self.components.append(
                 TextBox(
                     id="PortTextBox",
-                    x=Constant.WIDTH // 2,
+                    x=700,
                     y=300,
                     width=300,
                     height=40,
@@ -250,7 +285,39 @@ class View:
                     borderColor=Color.BLACK,
                     inactiveFillColor=Color.DARK_GRAY,
                     activeFillColor=Color.GRAY,
-                    text="Enter port...",
+                    text="",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                    active=False,
+                )
+            )
+
+            # Max Players
+            self.components.append(
+                Text(
+                    id="MaxPlayersText",
+                    x=480,
+                    y=350,
+                    text="Max Players",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
+            self.components.append(
+                TextBox(
+                    id="MaxPlayersTextBox",
+                    x=700,
+                    y=350,
+                    width=300,
+                    height=40,
+                    borderThickness=2,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    inactiveFillColor=Color.DARK_GRAY,
+                    activeFillColor=Color.GRAY,
+                    text="",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
@@ -263,7 +330,7 @@ class View:
                 Button(
                     id="HostButton",
                     x=Constant.WIDTH // 2,
-                    y=400,
+                    y=500,
                     width=180,
                     height=60,
                     borderThickness=2,
@@ -318,11 +385,22 @@ class View:
                 )
             )
 
-            # IP Address Text Box
+            # IP Address
+            self.components.append(
+                Text(
+                    id="IpAddressText",
+                    x=480,
+                    y=250,
+                    text="IP Address",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
             self.components.append(
                 TextBox(
                     id="IpAddressTextBox",
-                    x=Constant.WIDTH // 2,
+                    x=700,
                     y=250,
                     width=300,
                     height=40,
@@ -331,7 +409,7 @@ class View:
                     borderColor=Color.BLACK,
                     inactiveFillColor=Color.DARK_GRAY,
                     activeFillColor=Color.GRAY,
-                    text="Enter IP address...",
+                    text="",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
@@ -339,11 +417,22 @@ class View:
                 )
             )
 
-            # Port Text Box
+            # Port
+            self.components.append(
+                Text(
+                    id="PortText",
+                    x=480,
+                    y=300,
+                    text="Port",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
             self.components.append(
                 TextBox(
                     id="PortTextBox",
-                    x=Constant.WIDTH // 2,
+                    x=700,
                     y=300,
                     width=300,
                     height=40,
@@ -352,7 +441,39 @@ class View:
                     borderColor=Color.BLACK,
                     inactiveFillColor=Color.DARK_GRAY,
                     activeFillColor=Color.GRAY,
-                    text="Enter port...",
+                    text="",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                    active=False,
+                )
+            )
+
+            # Username
+            self.components.append(
+                Text(
+                    id="UsernameText",
+                    x=480,
+                    y=350,
+                    text="Username",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
+            self.components.append(
+                TextBox(
+                    id="UsernameTextBox",
+                    x=700,
+                    y=350,
+                    width=300,
+                    height=40,
+                    borderThickness=2,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    inactiveFillColor=Color.DARK_GRAY,
+                    activeFillColor=Color.GRAY,
+                    text="",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
@@ -365,7 +486,7 @@ class View:
                 Button(
                     id="JoinButton",
                     x=Constant.WIDTH // 2,
-                    y=400,
+                    y=500,
                     width=180,
                     height=60,
                     borderThickness=2,

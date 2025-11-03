@@ -19,12 +19,12 @@ class Server:
     multiple client connections and sending messages to all clients.
 
     Attributes:
-        username (str):
-            The client's username
         host (str):
             The hostname or ip address of the server
         port (int):
             The port of the server
+        maxClients (int):
+            The max number of clients that can connect to the server
     """
 
     def __init__(self, host="localhost", port=5555, maxClients=2):
@@ -135,7 +135,7 @@ class Server:
         try:
             self.sock.bind((self.host, self.port))
         except OSError:
-            print(f"Server already running on {self.host}:{self.port}")
+            print(f"Unable to start server on {self.host}:{self.port}")
         else:
             print(f"Starting server on {self.host}:{self.port}")
             self.running = True

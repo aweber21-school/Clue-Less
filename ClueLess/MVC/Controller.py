@@ -136,7 +136,22 @@ class Controller:
                         # A component was clicked
                         if component.id == "HostButton":
                             # Host button
-                            self.network.startServer("localhost", 5555, 6)
+                            # Get the values from the text boxes
+                            # Get the values from the text boxes
+                            ipAddress = (
+                                self.view.getComponentById("IpAddressTextBox")
+                            ).getText() or "localhost"
+                            port = (
+                                self.view.getComponentById("PortTextBox")
+                            ).getText() or "5555"
+                            maxPlayers = (
+                                self.view.getComponentById("MaxPlayersTextBox")
+                            ).getText() or "6"
+
+                            # Start the server
+                            self.network.startServer(
+                                ipAddress, int(port), int(maxPlayers)
+                            )
                             self.model.newGame()
                             self.model.updateState(
                                 appState=AppState.GAME, gameState=GameState.SERVER_GAME
@@ -187,7 +202,19 @@ class Controller:
                         # A component was clicked
                         if component.id == "JoinButton":
                             # Join button
-                            self.network.startClient("User", "localhost", 5555)
+                            # Get the values from the text boxes
+                            ipAddress = (
+                                self.view.getComponentById("IpAddressTextBox")
+                            ).getText() or "localhost"
+                            port = (
+                                self.view.getComponentById("PortTextBox")
+                            ).getText() or "5555"
+                            username = (
+                                self.view.getComponentById("UsernameTextBox")
+                            ).getText() or "User"
+
+                            # Start the client
+                            self.network.startClient(ipAddress, int(port), username)
                             self.model.newGame()
                             self.model.updateState(
                                 appState=AppState.GAME, gameState=GameState.CLIENT_GAME
@@ -307,7 +334,7 @@ class Controller:
                     self.network.stopClient()
                     self.model.endGame()
                     self.model.updateState(
-                        appState=AppState.MENU, MenuState=MenuState.CLIENT_MENU
+                        appState=AppState.MENU, menuState=MenuState.CLIENT_MENU
                     )
                     self.view.prepareView()
                 else:

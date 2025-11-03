@@ -1,14 +1,11 @@
-import dis
 import pygame
 
 
 class Constant:
     """Constants"""
 
-    # WIDTH = 1280
-    # HEIGHT = 720
-    WIDTH = 640
-    HEIGHT = 480
+    WIDTH = 1280
+    HEIGHT = 720
 
 
 class Color:
@@ -96,6 +93,10 @@ class Text:
         self.textColor = textColor
         self.textHighlight = textHighlight
         self.font = font
+
+    def getID(self):
+        """Returns the component's ID"""
+        return self.id
 
     def getArea(self):
         """Gets the area of the component"""
@@ -238,6 +239,10 @@ class TextBox:
         # Active
         self.active = active
 
+    def getID(self):
+        """Returns the component's ID"""
+        return self.id
+
     def isActive(self):
         """Returns whether the component is active"""
         return self.active
@@ -249,6 +254,10 @@ class TextBox:
     def deactivate(self):
         """Deactivates the component"""
         self.active = False
+
+    def getText(self):
+        """Returns the text within the component"""
+        return self.text
 
     def updateText(self, event):
         """
@@ -437,6 +446,10 @@ class Button:
 
         # Active
         self.active = active
+
+    def getID(self):
+        """Returns the component's ID"""
+        return self.id
 
     def isActive(self):
         """Returns whether the component is active"""
