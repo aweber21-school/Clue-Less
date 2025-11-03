@@ -101,7 +101,6 @@ class View:
             if isinstance(component, Button):
                 component.deactivate()
 
-
     def prepareMenu(self):
         """
         Prepares the menu view
@@ -519,60 +518,7 @@ class View:
         It contains functions that handle each game view
         """
 
-        def prepareServerGame():
-            """Prepares the server game"""
-            # Reset components
-            self.components = []
-
-            # Title
-            self.components.append(
-                Text(
-                    id="Title",
-                    x=Constant.WIDTH // 2,
-                    y=150,
-                    text="Server Game",
-                    textColor=Color.BLACK,
-                    textHighlight=None,
-                    font=Font.DEFAULT,
-                )
-            )
-
-            # Counts
-            self.components.append(
-                Text(
-                    id="Counts",
-                    x=Constant.WIDTH // 2,
-                    y=200,
-                    text=f"Red: {self.model.game.red} Green: {self.model.game.green}",
-                    textColor=Color.BLACK,
-                    textHighlight=None,
-                    font=Font.DEFAULT,
-                )
-            )
-
-            # Back Button
-            self.components.append(
-                Button(
-                    id="BackButton",
-                    x=80,
-                    y=50,
-                    width=100,
-                    height=40,
-                    borderThickness=2,
-                    borderRadius=12,
-                    borderColor=Color.BLACK,
-                    inactiveFillColor=Color.DARK_GRAY,
-                    activeFillColor=Color.GRAY,
-                    text="Back",
-                    textColor=Color.BLACK,
-                    textHighlight=None,
-                    font=Font.DEFAULT,
-                    active=True,
-                )
-            )
-
-        def prepareClientGame():
-            """Prepares the client game"""
+        def prepareGameMenu():
             # Reset components
             self.components = []
 
@@ -665,10 +611,8 @@ class View:
                 )
             )
 
-        if self.model.gameState == GameState.SERVER_GAME:
-            prepareServerGame()
-        elif self.model.gameState == GameState.CLIENT_GAME:
-            prepareClientGame()
+        if self.model.gameState == GameState.GAME_MENU:
+            prepareGameMenu()
 
     def prepareView(self):
         """Prepares the view"""

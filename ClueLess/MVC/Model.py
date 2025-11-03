@@ -16,6 +16,8 @@ class Model:
             The current menu state
         gameState (ClueLess.GameState):
             The current game state
+        isServer (boolean):
+            The flag of whether this model is a server model
         game (ClueLess.Game):
             The current game
         turn (ClueLess.Turn):
@@ -28,6 +30,9 @@ class Model:
         self.appState = AppState.MENU
         self.menuState = MenuState.MAIN_MENU
         self.gameState = GameState.GAME_MENU
+
+        # Server Flag
+        self.isServer = False
 
         # Game
         self.game = None

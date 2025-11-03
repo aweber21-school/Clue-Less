@@ -24,6 +24,10 @@ class Network:
         self.server = None
         self.client = None
 
+    def isServer(self):
+        """Returns whether this network is a server"""
+        return self.server is not None
+
     def startServer(self, host="localhost", port=5555, maxClients=1):
         """
         Starts a new server

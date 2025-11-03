@@ -11,10 +11,9 @@ class MenuState:
     MAIN_MENU = 0
     SERVER_MENU = 1
     CLIENT_MENU = 2
+    SETTINGS_MENU = 3
 
 
 class GameState:
     """Game States"""
     GAME_MENU = 0
-    SERVER_GAME = 1
-    CLIENT_GAME = 2
