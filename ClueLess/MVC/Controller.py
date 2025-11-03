@@ -151,7 +151,6 @@ class Controller:
                             self.network.startServer(
                                 ipAddress, int(port), int(maxPlayers)
                             )
-                            self.model.isServer = True
 
                             # Start the client
                             self.network.startClient(ipAddress, int(port), "ServerHost")
@@ -279,7 +278,6 @@ class Controller:
 
                         # Stop server
                         self.network.stopServer()
-                        self.model.isServer = False
                     else:
                         # The network is a client
                         self.model.updateState(
@@ -323,7 +321,6 @@ class Controller:
 
                                 # Stop server
                                 self.network.stopServer()
-                                self.model.isServer = False
                             else:
                                 # The network is a client
                                 self.model.updateState(
@@ -347,23 +344,33 @@ class Controller:
             elif event.type == SERVER_CONNECTED_EVENT:
                 # Server connected to new client
                 if self.network.isServer():
+                    # Update turn order
+                    clientPorts = event.clientPorts
+                    self.model.updateTurnOrder(clientPorts)
+
                     # Rebroadcast game to sync all clients
                     self.network.sendToClients(self.model.getGame())
 
             elif event.type == SERVER_MESSAGE_RECEIVED_EVENT:
                 # Server received message from client
                 if self.network.isServer():
-                    client = event.sender
+                    clientPorts = event.clientPorts
                     turn = event.message
 
+                    # Update turn order and make the move
+                    self.model.updateTurnOrder(clientPorts)
                     self.model.makeMove(turn)
+
+                    # Broadcast to clients
                     self.network.sendToClients(self.model.getGame())
-                    self.view.prepareView()
+                    # self.view.prepareView()
 
             elif event.type == SERVER_DISCONNECTED_EVENT:
                 # Server disconnected from client
                 if self.network.isServer():
-                    pass
+                    # Update turn order
+                    clientPorts = event.clientPorts
+                    self.model.updateTurnOrder(clientPorts)
 
             elif event.type == CLIENT_CONNECTED_EVENT:
                 # Client connected to server
@@ -374,8 +381,17 @@ class Controller:
                 server = event.sender
                 game = event.message
 
+                # Extract client port to save for turn ID
+                self.model.updateTurnId(game.__dict__.pop("clientPort"))
+
                 self.model.updateGame(game)
                 self.view.prepareView()
+
+                # Activate or deactivate as needed
+                if self.model.isMyTurn():
+                    self.view.activateAllButtons()
+                else:
+                    self.view.deactivateAllButtons()
 
             elif event.type == CLIENT_DISCONNECTED_EVENT:
                 # Client disconnected from server

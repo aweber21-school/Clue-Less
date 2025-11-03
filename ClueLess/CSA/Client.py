@@ -100,6 +100,7 @@ class Client:
                 The object to send to the server
         """
         print(f"Sending Object: {obj}")
+        obj.clientPort = self.server.getsockname()[1]
         data = pickle.dumps(obj)
         try:
             self.server.sendall(data)

@@ -5,6 +5,10 @@ class Game:
     The Game class acts as the Clue-Less game.
 
     Attributes:
+        turnOrder (list):
+            List of client ports as turn order identifiers
+        currentTurnIndex (int):
+            Index of the current turn in the turn order
         # Debugging
         red (int):
             Red button counter
@@ -14,9 +18,27 @@ class Game:
 
     def __init__(self):
         """Initializes a new Clue-Less game"""
+        # Turns
+        self.turnOrder = []
+        self.currentTurnIndex = 0
+
         # Debugging
         self.red = 0
         self.green = 0
+
+    def getCurrentTurnId(self):
+        """Returns the current turn ID"""
+        return self.turnOrder[self.currentTurnIndex]
+
+    def updateTurnOrder(self, turnOrder):
+        """
+        Updates the game's turn order
+
+        Parameters:
+            turnOrder (list):
+                The updated turn order
+        """
+        self.turnOrder = turnOrder
 
     def makeMove(self, turn):
         """
@@ -28,11 +50,20 @@ class Game:
         """
         attributes = vars(turn)
 
-        # Debugging
-        if "red" in attributes.keys():
-            self.red += attributes["red"]
-        if "green" in attributes.keys():
-            self.green += attributes["green"]
+        if int(attributes["clientPort"]) == self.turnOrder[self.currentTurnIndex]:
+            # The turn came from the correct player
+
+            # Debugging
+            if "red" in attributes.keys():
+                self.red += attributes["red"]
+            if "green" in attributes.keys():
+                self.green += attributes["green"]
+
+            self.currentTurnIndex = (self.currentTurnIndex + 1) % len(self.turnOrder)
+
+        else:
+            # The turn came from the wrong player
+            pass
 
 
 class Turn:

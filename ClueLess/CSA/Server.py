@@ -50,7 +50,7 @@ class Server:
 
         # Connected clients
         self.maxClients = maxClients
-        self.clients = set()
+        self.clients = []
 
         # Server state
         self.running = False
@@ -68,13 +68,20 @@ class Server:
             else:
                 print(f"Client connected: {connection}, {address}")
                 connection.settimeout(0.0)
-                self.clients.add(connection)
+                self.clients.append(connection)
                 if len(self.clients) >= self.maxClients:
                     self.acceptingNewClients = False
 
                 # Post Pygame event
                 if pygame.get_init():
-                    pygame.event.post(pygame.event.Event(SERVER_CONNECTED_EVENT))
+                    pygame.event.post(
+                        pygame.event.Event(
+                            SERVER_CONNECTED_EVENT,
+                            clientPorts=[
+                                client.getpeername()[1] for client in self.clients
+                            ],
+                        )
+                    )
 
     def receiveFromClients(self):
         """Receives an object from the clients"""
@@ -97,6 +104,9 @@ class Server:
                         pygame.event.post(
                             pygame.event.Event(
                                 SERVER_DISCONNECTED_EVENT,
+                                clientPorts=[
+                                    client.getpeername()[1] for client in self.clients
+                                ],
                             )
                         )
                 else:
@@ -109,7 +119,9 @@ class Server:
                         pygame.event.post(
                             pygame.event.Event(
                                 SERVER_MESSAGE_RECEIVED_EVENT,
-                                sender=client,
+                                clientPorts=[
+                                    client.getpeername()[1] for client in self.clients
+                                ],
                                 message=obj,
                             )
                         )
@@ -123,8 +135,9 @@ class Server:
                 The object to send to clients
         """
         print(f"Sending Object: {obj}")
-        data = pickle.dumps(obj)
         for client in self.clients:
+            obj.clientPort = client.getpeername()[1]
+            data = pickle.dumps(obj)
             try:
                 client.sendall(data)
             except (BrokenPipeError, ConnectionAbortedError, OSError):

@@ -35,6 +35,7 @@ class Model:
         self.isServer = False
 
         # Game
+        self.turnId = None
         self.game = None
         self.turn = None
 
@@ -68,6 +69,30 @@ class Model:
     def getGame(self):
         """Gets the game"""
         return self.game
+
+    def updateTurnOrder(self, turnOrder):
+        """
+        Updates the game's turn order
+
+        Parameters:
+            turnOrder (list):
+                The updated turn order
+        """
+        self.game.updateTurnOrder(turnOrder)
+
+    def updateTurnId(self, turnId):
+        """
+        Updates the model's turn ID
+
+        Parameters:
+            turnId (list):
+                The updated turn ID
+        """
+        self.turnId = turnId
+
+    def isMyTurn(self):
+        """Gets whether it's my turn"""
+        return self.turnId == self.game.getCurrentTurnId()
 
     def newTurn(self):
         """Starts a new turn"""
