@@ -1,3 +1,5 @@
+import time
+
 import pygame
 
 from ClueLess.Events import (
@@ -154,8 +156,12 @@ class Controller:
                             self.model.isServer = True
 
                             # Start the client after the server starts up
-                            while not self.network.server.running:
-                                pass
+                            for i in range(10000):
+                                # Loop until server is up but don't run
+                                # infinitely in case incorrect ip address and
+                                # port are used so server startup fails
+                                if self.network.server.running:
+                                    break
                             self.network.startClient(ipAddress, int(port), "ServerHost")
 
                             self.model.newGame()
