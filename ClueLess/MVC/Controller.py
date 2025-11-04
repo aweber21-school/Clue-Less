@@ -306,10 +306,12 @@ class Controller:
                         # A component was clicked
                         if component.id == "RedButton":
                             # Red button
-                            self.network.sendToServer(Turn(red=1))
+                            if component.isActive():
+                                self.network.sendToServer(Turn(red=1))
                         elif component.id == "GreenButton":
                             # Green button
-                            self.network.sendToServer(Turn(green=1))
+                            if component.isActive():
+                                self.network.sendToServer(Turn(green=1))
                         elif component.id == "BackButton":
                             # Back button
                             if self.network.isServer():
