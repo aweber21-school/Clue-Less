@@ -59,16 +59,28 @@ class Model:
             self.gameState = gameState
 
     def newGame(self):
-        """Starts a new game"""
+        """Creates a new game"""
         self.game = Game()
 
     def endGame(self):
         """Ends the game"""
         self.game = None
 
+    def startGame(self):
+        """Start the game"""
+        self.game.start()
+
+    def stopGame(self):
+        """Stop the game"""
+        self.game.stop()
+
     def getGame(self):
         """Gets the game"""
         return self.game
+
+    def getPlayers(self):
+        """Gets the players"""
+        return self.game.getPlayers()
 
     def updatePlayers(self, players):
         """
@@ -79,6 +91,10 @@ class Model:
                 The updated list of players
         """
         self.game.updatePlayers(players)
+
+    def getPlayerId(self):
+        """Gets the model's player ID"""
+        return self.playerId
 
     def updatePlayerId(self, playerId):
         """

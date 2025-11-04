@@ -18,6 +18,9 @@ class Game:
 
     def __init__(self):
         """Initializes a new Clue-Less game"""
+        # Running
+        self.running = False
+
         # Players
         self.players = []
         self.currentPlayerIndex = 0
@@ -26,9 +29,21 @@ class Game:
         self.red = 0
         self.green = 0
 
+    def start(self):
+        """Starts the game"""
+        self.running = True
+
+    def stop(self):
+        """Stops the game"""
+        self.running = False
+
     def getCurrentPlayerId(self):
         """Returns the current player ID"""
         return self.players[self.currentPlayerIndex]
+
+    def getPlayers(self):
+        """Gets the players"""
+        return self.players
 
     def updatePlayers(self, players):
         """

@@ -179,7 +179,7 @@ class View:
                     borderThickness=2,
                     borderRadius=12,
                     borderColor=Color.BLACK,
-                    inactiveFillColor=Color.DARK_GRAY,
+                    inactiveFillColor=Color.GRAY,
                     activeFillColor=Color.GRAY,
                     text="Join",
                     textColor=Color.BLACK,
@@ -200,7 +200,7 @@ class View:
                     id="Title",
                     x=Constant.WIDTH // 2,
                     y=150,
-                    text="TEST SERVER MENU",
+                    text="Server Menu",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
@@ -335,7 +335,7 @@ class View:
                     borderThickness=2,
                     borderRadius=12,
                     borderColor=Color.BLACK,
-                    inactiveFillColor=Color.DARK_GRAY,
+                    inactiveFillColor=Color.GRAY,
                     activeFillColor=Color.GRAY,
                     text="Host",
                     textColor=Color.BLACK,
@@ -356,7 +356,7 @@ class View:
                     id="Title",
                     x=Constant.WIDTH // 2,
                     y=150,
-                    text="TEST CLIENT MENU",
+                    text="Client Menu",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
@@ -491,7 +491,7 @@ class View:
                     borderThickness=2,
                     borderRadius=12,
                     borderColor=Color.BLACK,
-                    inactiveFillColor=Color.DARK_GRAY,
+                    inactiveFillColor=Color.GRAY,
                     activeFillColor=Color.GRAY,
                     text="Join",
                     textColor=Color.BLACK,
@@ -519,6 +519,7 @@ class View:
         """
 
         def prepareGameMenu():
+            """Prepares the game menu"""
             # Reset components
             self.components = []
 
@@ -528,7 +529,89 @@ class View:
                     id="Title",
                     x=Constant.WIDTH // 2,
                     y=150,
-                    text="Client Game",
+                    text="Game Menu",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                )
+            )
+
+            # Back Button
+            self.components.append(
+                Button(
+                    id="BackButton",
+                    x=80,
+                    y=50,
+                    width=100,
+                    height=40,
+                    borderThickness=2,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    inactiveFillColor=Color.GRAY,
+                    activeFillColor=Color.GRAY,
+                    text="Back",
+                    textColor=Color.BLACK,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                    active=True,
+                )
+            )
+
+            # Display all players
+            players = self.model.getPlayers()
+            for playerIndex in range(len(players)):
+                player = players[playerIndex]
+                self.components.append(
+                    Text(
+                        id="Player" + str(playerIndex + 1) + "Text",
+                        x=(Constant.WIDTH // (len(players) + 1)) * (playerIndex + 1),
+                        y=300,
+                        text="Player "
+                        + str(playerIndex + 1)
+                        + ": "
+                        + str(player)
+                        + " "
+                        + ("(ME)" if self.model.getPlayerId() == player else ""),
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                    )
+                )
+
+            if self.model.isServer:
+                # Start Button
+                self.components.append(
+                    Button(
+                        id="StartButton",
+                        x=Constant.WIDTH // 2,
+                        y=500,
+                        width=180,
+                        height=60,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.GRAY,
+                        activeFillColor=Color.GRAY,
+                        text="Start",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
+        def prepareGameplay():
+            """Prepares the gameplay"""
+            # Reset components
+            self.components = []
+
+            # Title
+            self.components.append(
+                Text(
+                    id="Title",
+                    x=Constant.WIDTH // 2,
+                    y=150,
+                    text="Gameplay",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
@@ -612,7 +695,11 @@ class View:
             )
 
         if self.model.gameState == GameState.GAME_MENU:
+            # Game Menu
             prepareGameMenu()
+        elif self.model.gameState == GameState.GAMEPLAY:
+            # Game Play
+            prepareGameplay()
 
     def prepareView(self):
         """Prepares the view"""

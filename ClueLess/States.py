@@ -16,4 +16,6 @@ class MenuState:
 
 class GameState:
     """Game States"""
+
     GAME_MENU = 0
+    GAMEPLAY = 1
