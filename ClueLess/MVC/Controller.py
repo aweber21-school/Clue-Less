@@ -153,7 +153,9 @@ class Controller:
                             )
                             self.model.isServer = True
 
-                            # Start the client
+                            # Start the client after the server starts up
+                            while not self.network.server.running:
+                                pass
                             self.network.startClient(ipAddress, int(port), "ServerHost")
 
                             self.model.newGame()
