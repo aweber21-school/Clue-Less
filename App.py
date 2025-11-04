@@ -10,8 +10,8 @@ class App:
 
     The App class serves as the top level class for our Clue-Less application.
     It contains the main Pygame game loop and maintains the application's
-    Model-View-Controller (MVC). It also is in charge of facilitating the
-    Client-Server architecture.
+    Model-View-Controller Architecture (MVC). It also is in charge of
+    facilitating the Client-Server Architecture (CSA).
 
     Attributes:
         model (ClueLess.MVC.Model):
