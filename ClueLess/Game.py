@@ -18,27 +18,27 @@ class Game:
 
     def __init__(self):
         """Initializes a new Clue-Less game"""
-        # Turns
-        self.turnOrder = []
-        self.currentTurnIndex = 0
+        # Players
+        self.players = []
+        self.currentPlayerIndex = 0
 
         # Debugging
         self.red = 0
         self.green = 0
 
-    def getCurrentTurnId(self):
-        """Returns the current turn ID"""
-        return self.turnOrder[self.currentTurnIndex]
+    def getCurrentPlayerId(self):
+        """Returns the current player ID"""
+        return self.players[self.currentPlayerIndex]
 
-    def updateTurnOrder(self, turnOrder):
+    def updatePlayers(self, players):
         """
-        Updates the game's turn order
+        Updates the game's players
 
         Parameters:
-            turnOrder (list):
-                The updated turn order
+            players (list):
+                The updated list of players
         """
-        self.turnOrder = turnOrder
+        self.players = players
 
     def makeMove(self, turn):
         """
@@ -50,7 +50,7 @@ class Game:
         """
         attributes = vars(turn)
 
-        if int(attributes["clientPort"]) == self.turnOrder[self.currentTurnIndex]:
+        if int(attributes["clientPort"]) == self.players[self.currentPlayerIndex]:
             # The turn came from the correct player
 
             # Debugging
@@ -59,7 +59,7 @@ class Game:
             if "green" in attributes.keys():
                 self.green += attributes["green"]
 
-            self.currentTurnIndex = (self.currentTurnIndex + 1) % len(self.turnOrder)
+            self.currentPlayerIndex = (self.currentPlayerIndex + 1) % len(self.players)
 
         else:
             # The turn came from the wrong player

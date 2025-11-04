@@ -136,7 +136,9 @@ class Server:
         """
         print(f"Sending Object: {obj}")
         for client in self.clients:
+            # Add client port to object
             obj.clientPort = client.getpeername()[1]
+
             data = pickle.dumps(obj)
             try:
                 client.sendall(data)
