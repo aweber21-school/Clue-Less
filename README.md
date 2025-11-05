@@ -17,7 +17,7 @@ The Clue-Less MVC package contains the Model-View-Controller architecture for ou
 ### Model
 The Model class maintains the app state for our Clue-Less application. It acts as the Model in the Model-View-Controller (MVC) architecture.
 
-## View
+### View
 The View class serves as the GUI for our Clue-Less application. It acts as the View in the Model-View-Controller (MVC) architecture.
 
 ### Controller

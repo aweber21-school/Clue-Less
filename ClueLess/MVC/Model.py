@@ -6,7 +6,7 @@ class Model:
     """
     The Model for the Clue-Less application
 
-    The Model class maintains the game state for our Clue-Less application. It
+    The Model class maintains the app state for our Clue-Less application. It
     acts as the Model in the Model-View-Controller (MVC) architecture.
 
     Attributes:

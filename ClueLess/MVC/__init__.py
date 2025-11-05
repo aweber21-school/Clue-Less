@@ -1,7 +1,7 @@
 """
 Clue-Less Model-View-Controller package
 
-This package contains the MVC architecture for the Clue-Less game.
+This package contains the MVC architecture for our Clue-Less game.
 
 Modules:
     Controller:

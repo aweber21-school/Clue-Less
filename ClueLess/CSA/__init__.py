@@ -1,7 +1,7 @@
 """
 Clue-Less Client-Server Architecture package
 
-This package contains the Client-Server architecture for the Clue-Less game.
+This package contains the Client-Server Architecture for our Clue-Less game.
 
 Modules:
     Client:
