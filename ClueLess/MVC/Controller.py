@@ -1,0 +1,632 @@
+import time
+
+import pygame
+
+from ClueLess.Events import (
+    CLIENT_CONNECTED_EVENT,
+    CLIENT_COULD_NOT_CONNECT_EVENT,
+    CLIENT_DISCONNECTED_EVENT,
+    CLIENT_MESSAGE_RECEIVED_EVENT,
+    SERVER_CONNECTED_EVENT,
+    SERVER_COULD_NOT_START_EVENT,
+    SERVER_DISCONNECTED_EVENT,
+    SERVER_MESSAGE_RECEIVED_EVENT,
+)
+from ClueLess.Game import Turn
+from ClueLess.States import AppState, GameState, MenuState
+
+
+class Controller:
+    """
+    The Controller for the Clue-Less application
+
+    The Controller class serves as the mediator for our Clue-Less Model and
+    View. It acts as the Controller in the Model-View-Controller (MVC)
+    architecture.
+
+    Attributes:
+        model (ClueLess.MVC.Model):
+            The game state of the application
+        view (ClueLess.MVC.View):
+            The GUI display of the application
+        network (ClueLess.CSV.Network):
+            The manager of networking as a client or server
+    """
+
+    def __init__(self, model, view, network):
+        """
+        Initializes a new controller
+
+        Parameters:
+            model (ClueLess.MVC.Model):
+                The model of the application
+            view (ClueLess.MVC.View):
+                The view of the application
+            network (ClueLess.CSA.Network):
+                The network of the application
+        """
+        self.model = model
+        self.view = view
+        self.network = network
+
+    def handleMenuInput(self, event):
+        """
+        Handles the menu input
+
+        It contains functions that handle each menu state.
+
+        Parameters:
+            event (pygame.event.Event):
+                The Pygame event to handle
+        """
+
+        def handleMainMenuInput():
+            """Handles the main menu input"""
+            if event.type == pygame.KEYDOWN:
+                # Key pressed
+                if event.key == pygame.K_ESCAPE:
+                    # Esc key pressed
+                    return False
+                else:
+                    # Any other key pressed
+                    pass
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # Mouse button clicked
+                if event.button == 1:
+                    # Left mouse button clicked
+                    component = self.view.getClickedComponent(event.pos)
+
+                    # Activates text box if one is clicked
+                    # Deactivates all if none are clicked
+                    self.view.deactivateAllButTargetTextBox(component)
+
+                    if component is not None:
+                        # A component was clicked
+                        if component.id == "HostButton":
+                            # Host button
+                            self.model.updateState(
+                                appState=AppState.MENU, menuState=MenuState.SERVER_MENU
+                            )
+                            self.view.prepareView()
+                        elif component.id == "JoinButton":
+                            # Join button
+                            self.model.updateState(
+                                appState=AppState.MENU, menuState=MenuState.CLIENT_MENU
+                            )
+                            self.view.prepareView()
+                        elif component.id == "QuitButton":
+                            # Quit button
+                            return False
+                        else:
+                            # Any other component was clicked
+                            pass
+
+                elif event.button == 2:
+                    # Right mouse button clicked
+                    pass
+
+                else:
+                    # Any other mouse button clicked
+                    pass
+
+            return True
+
+        def handleServerMenuInput():
+            """Handles the server menu input"""
+            if event.type == pygame.KEYDOWN:
+                # Key pressed
+                if event.key == pygame.K_ESCAPE:
+                    # Esc key pressed
+                    self.model.updateState(
+                        appState=AppState.MENU, menuState=MenuState.MAIN_MENU
+                    )
+                    self.view.prepareView()
+                else:
+                    # Any other key pressed
+                    self.view.updateActiveTextBox(event)
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # Mouse button clicked
+                if event.button == 1:
+                    # Left mouse button clicked
+                    component = self.view.getClickedComponent(event.pos)
+
+                    # Activates text box if one is clicked
+                    # Deactivates all if none are clicked
+                    self.view.deactivateAllButTargetTextBox(component)
+
+                    if component is not None:
+                        # A component was clicked
+                        if component.id == "HostButton":
+                            # Host button
+                            # Get the values from the text boxes
+                            ipAddress = (
+                                self.view.getComponentById("IpAddressTextBox")
+                            ).getText() or "localhost"
+                            port = (
+                                self.view.getComponentById("PortTextBox")
+                            ).getText() or "5555"
+                            maxPlayers = (
+                                self.view.getComponentById("MaxPlayersTextBox")
+                            ).getText() or "6"
+
+                            # Start the server
+                            self.network.startServer(
+                                ipAddress, int(port), int(maxPlayers)
+                            )
+                            self.model.isServer = True
+
+                            # Start the client after the server starts up
+                            for i in range(10000):
+                                # Loop until server is up but don't run
+                                # infinitely in case incorrect ip address and
+                                # port are used so server startup fails
+                                if self.network.server.running:
+                                    break
+                            self.network.startClient(ipAddress, int(port))
+
+                            self.model.newGame()
+                            self.model.updateState(
+                                appState=AppState.GAME, gameState=GameState.GAME_MENU
+                            )
+                            self.view.prepareView()
+                        elif component.id == "BackButton":
+                            # Back button
+                            self.model.updateState(
+                                appState=AppState.MENU, menuState=MenuState.MAIN_MENU
+                            )
+                            self.view.prepareView()
+
+                elif event.button == 2:
+                    # Right mouse button clicked
+                    pass
+
+                else:
+                    # Any other mouse button clicked
+                    pass
+
+            return True
+
+        def handleClientMenuInput():
+            """Handles the client menu input"""
+            if event.type == pygame.KEYDOWN:
+                # Key pressed
+                if event.key == pygame.K_ESCAPE:
+                    # Esc key pressed
+                    self.model.updateState(
+                        appState=AppState.MENU, menuState=MenuState.MAIN_MENU
+                    )
+                    self.view.prepareView()
+                else:
+                    # Any other key pressed
+                    self.view.updateActiveTextBox(event)
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # Mouse button clicked
+                if event.button == 1:
+                    # Left mouse button clicked
+                    component = self.view.getClickedComponent(event.pos)
+
+                    # Activates text box if one is clicked
+                    # Deactivates all if none are clicked
+                    self.view.deactivateAllButTargetTextBox(component)
+
+                    if component is not None:
+                        # A component was clicked
+                        if component.id == "JoinButton":
+                            # Join button
+                            # Get the values from the text boxes
+                            ipAddress = (
+                                self.view.getComponentById("IpAddressTextBox")
+                            ).getText() or "localhost"
+                            port = (
+                                self.view.getComponentById("PortTextBox")
+                            ).getText() or "5555"
+
+                            # Start the client
+                            self.network.startClient(ipAddress, int(port))
+
+                            self.model.newGame()
+                            self.model.updateState(
+                                appState=AppState.GAME, gameState=GameState.GAME_MENU
+                            )
+                            self.view.prepareView()
+                        elif component.id == "BackButton":
+                            # Back button
+                            self.model.updateState(
+                                appState=AppState.MENU, menuState=MenuState.MAIN_MENU
+                            )
+                            self.view.prepareView()
+
+                elif event.button == 2:
+                    # Right mouse button clicked
+                    pass
+
+                else:
+                    # Any other mouse button clicked
+                    pass
+
+            return True
+
+        if self.model.menuState == MenuState.MAIN_MENU:
+            # Main Menu
+            return handleMainMenuInput()
+        elif self.model.menuState == MenuState.SERVER_MENU:
+            # Server Menu
+            return handleServerMenuInput()
+        elif self.model.menuState == MenuState.CLIENT_MENU:
+            # Client Menu
+            return handleClientMenuInput()
+
+        return True
+
+    def handleGameInput(self, event):
+        """
+        Handles the game input
+
+        It contains functions that handle each game state.
+
+        Parameters:
+            event (pygame.event.Event):
+                The Pygame event to handle
+        """
+
+        def handleGameMenuInput():
+            """Handles the game menu input"""
+            if event.type == pygame.KEYDOWN:
+                # Key pressed
+                if event.key == pygame.K_ESCAPE:
+                    # Esc key pressed
+                    if self.network.isServer():
+                        # The network is a server
+                        self.model.updateState(
+                            appState=AppState.MENU, menuState=MenuState.SERVER_MENU
+                        )
+
+                        # Stop server
+                        self.network.stopServer()
+                        self.model.isServer = False
+                    else:
+                        # The network is a client
+                        self.model.updateState(
+                            appState=AppState.MENU, menuState=MenuState.CLIENT_MENU
+                        )
+                    # Stop client
+                    self.network.stopClient()
+
+                    self.model.endGame()
+                    self.view.prepareView()
+                else:
+                    # Any other key pressed
+                    self.view.updateActiveTextBox(event)
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # Mouse button clicked
+                if event.button == 1:
+                    # Left mouse button clicked
+                    component = self.view.getClickedComponent(event.pos)
+
+                    # Activates text box if one is clicked
+                    # Deactivates all if none are clicked
+                    self.view.deactivateAllButTargetTextBox(component)
+
+                    if component is not None:
+                        # A component was clicked
+                        if component.id == "StartButton":
+                            # Start button
+                            self.model.updateState(
+                                appState=AppState.GAME, gameState=GameState.GAMEPLAY
+                            )
+
+                            # Start game to signal clients to start
+                            self.model.startGame()
+                            self.network.sendToClients(self.model.getGame())
+
+                            self.view.prepareView()
+                        elif component.id == "BackButton":
+                            # Back button
+                            if self.network.isServer():
+                                # The network is a server
+                                self.model.updateState(
+                                    appState=AppState.MENU,
+                                    menuState=MenuState.SERVER_MENU,
+                                )
+
+                                # Stop server
+                                self.network.stopServer()
+                                self.model.isServer = False
+                            else:
+                                # The network is a client
+                                self.model.updateState(
+                                    appState=AppState.MENU,
+                                    menuState=MenuState.CLIENT_MENU,
+                                )
+                            # Stop client
+                            self.network.stopClient()
+
+                            self.model.endGame()
+                            self.view.prepareView()
+
+                elif event.button == 2:
+                    # Right mouse button clicked
+                    pass
+
+                else:
+                    # Any other mouse button clicked
+                    pass
+
+            elif event.type == SERVER_COULD_NOT_START_EVENT:
+                # Server could not start
+                if self.network.isServer():
+                    # The network is a server
+                    self.model.updateState(
+                        appState=AppState.MENU, menuState=MenuState.SERVER_MENU
+                    )
+
+                    # Stop server
+                    self.network.stopServer()
+                    self.model.isServer = False
+                else:
+                    # The network is a client
+                    self.model.updateState(
+                        appState=AppState.MENU, menuState=MenuState.CLIENT_MENU
+                    )
+                # Stop client
+                self.network.stopClient()
+
+                self.model.endGame()
+                self.view.prepareView()
+
+            elif event.type == SERVER_CONNECTED_EVENT:
+                # Server connected to new client
+                if self.network.isServer():
+                    # Update players
+                    players = event.clientPorts
+                    self.model.updatePlayers(players)
+
+                    # Rebroadcast players to sync all clients
+                    self.network.sendToClients(self.model.getGame())
+
+            elif event.type == SERVER_MESSAGE_RECEIVED_EVENT:
+                # Server received message from client
+                pass
+
+            elif event.type == SERVER_DISCONNECTED_EVENT:
+                # Server disconnected from client
+                if self.network.isServer():
+                    # Update players
+                    players = event.clientPorts
+                    self.model.updatePlayers(players)
+
+                    # Rebroadcast players to sync all clients
+                    self.network.sendToClients(self.model.getGame())
+
+            elif event.type == CLIENT_COULD_NOT_CONNECT_EVENT:
+                # Client could not connect to server
+                self.model.updateState(
+                    appState=AppState.MENU,
+                    menuState=MenuState.CLIENT_MENU,
+                )
+                self.network.stopClient()
+
+                self.model.endGame()
+                self.view.prepareView()
+
+            elif event.type == CLIENT_CONNECTED_EVENT:
+                # Client connected to server
+                pass
+
+            elif event.type == CLIENT_MESSAGE_RECEIVED_EVENT:
+                # Client received message from server
+                server = event.sender
+                game = event.message
+
+                if game.running:
+                    # Game running attribute signals clients to run
+                    self.model.updateState(
+                        appState=AppState.GAME, gameState=GameState.GAMEPLAY
+                    )
+
+                # Extract client port to save for player ID
+                self.model.updatePlayerId(game.__dict__.pop("clientPort"))
+
+                self.model.updateGame(game)
+                self.view.prepareView()
+
+                if not self.model.isServer:
+                    self.view.deactivateAllButtons()
+
+            elif event.type == CLIENT_DISCONNECTED_EVENT:
+                # Client disconnected from server
+                self.model.updateState(
+                    appState=AppState.MENU,
+                    menuState=MenuState.CLIENT_MENU,
+                )
+                self.network.stopClient()
+
+                self.model.endGame()
+                self.view.prepareView()
+
+            return True
+
+        def handleGameplayInput():
+            """Handles the game input"""
+            if event.type == pygame.KEYDOWN:
+                # Key pressed
+                if event.key == pygame.K_ESCAPE:
+                    # Esc key pressed
+                    if self.network.isServer():
+                        # The network is a server
+                        self.model.updateState(
+                            appState=AppState.MENU, menuState=MenuState.SERVER_MENU
+                        )
+
+                        # Stop server
+                        self.network.stopServer()
+                    else:
+                        # The network is a client
+                        self.model.updateState(
+                            appState=AppState.MENU, menuState=MenuState.CLIENT_MENU
+                        )
+                    # Stop client
+                    self.network.stopClient()
+
+                    self.model.endGame()
+                    self.view.prepareView()
+                else:
+                    # Any other key pressed
+                    self.view.updateActiveTextBox(event)
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # Mouse button clicked
+                if event.button == 1:
+                    # Left mouse button clicked
+                    component = self.view.getClickedComponent(event.pos)
+
+                    # Activates text box if one is clicked
+                    # Deactivates all if none are clicked
+                    self.view.deactivateAllButTargetTextBox(component)
+
+                    if component is not None:
+                        # A component was clicked
+                        if component.id == "RedButton":
+                            # Red button
+                            if component.isActive():
+                                self.network.sendToServer(Turn(red=1))
+                        elif component.id == "GreenButton":
+                            # Green button
+                            if component.isActive():
+                                self.network.sendToServer(Turn(green=1))
+                        elif component.id == "BackButton":
+                            # Back button
+                            if self.network.isServer():
+                                # The network is a server
+                                self.model.updateState(
+                                    appState=AppState.MENU,
+                                    menuState=MenuState.SERVER_MENU,
+                                )
+
+                                # Stop server
+                                self.network.stopServer()
+                            else:
+                                # The network is a client
+                                self.model.updateState(
+                                    appState=AppState.MENU,
+                                    menuState=MenuState.CLIENT_MENU,
+                                )
+                            # Stop client
+                            self.network.stopClient()
+
+                            self.model.endGame()
+                            self.view.prepareView()
+
+                elif event.button == 2:
+                    # Right mouse button clicked
+                    pass
+
+                else:
+                    # Any other mouse button clicked
+                    pass
+
+            elif event.type == SERVER_CONNECTED_EVENT:
+                # Server connected to new client
+                if self.network.isServer():
+                    # Update players
+                    players = event.clientPorts
+                    self.model.updatePlayers(players)
+
+                    # Rebroadcast game to sync all clients
+                    self.network.sendToClients(self.model.getGame())
+
+            elif event.type == SERVER_MESSAGE_RECEIVED_EVENT:
+                # Server received message from client
+                if self.network.isServer():
+                    players = event.clientPorts
+                    turn = event.message
+
+                    # Update players and make the move
+                    self.model.updatePlayers(players)
+                    self.model.makeMove(turn)
+
+                    # Broadcast to clients
+                    self.network.sendToClients(self.model.getGame())
+
+            elif event.type == SERVER_DISCONNECTED_EVENT:
+                # Server disconnected from client
+                if self.network.isServer():
+                    # Update players
+                    players = event.clientPorts
+                    self.model.updatePlayers(players)
+
+                    # Stop game temporarily
+                    self.model.stopGame()
+
+                    # Rebroadcast game to sync all clients
+                    self.network.sendToClients(self.model.getGame())
+
+            elif event.type == CLIENT_CONNECTED_EVENT:
+                # Client connected to server
+                pass
+
+            elif event.type == CLIENT_MESSAGE_RECEIVED_EVENT:
+                # Client received message from server
+                server = event.sender
+                game = event.message
+
+                if not game.running:
+                    # Game running attribute signals clients to stop running
+                    self.model.updateState(
+                        appState=AppState.GAME, gameState=GameState.GAME_MENU
+                    )
+
+                # Extract client port to save for player ID
+                self.model.updatePlayerId(game.__dict__.pop("clientPort"))
+
+                self.model.updateGame(game)
+                self.view.prepareView()
+
+                # Activate or deactivate inputs as needed
+                if self.model.isMyTurn():
+                    self.view.activateAllButtons()
+                else:
+                    self.view.deactivateAllButtons()
+
+            elif event.type == CLIENT_DISCONNECTED_EVENT:
+                # Client disconnected from server
+                self.model.updateState(
+                    appState=AppState.MENU,
+                    menuState=MenuState.CLIENT_MENU,
+                )
+                self.network.stopClient()
+
+                self.model.endGame()
+                self.view.prepareView()
+
+            return True
+
+        if self.model.gameState == GameState.GAME_MENU:
+            # Game Menu
+            return handleGameMenuInput()
+        elif self.model.gameState == GameState.GAMEPLAY:
+            # Gameplay
+            return handleGameplayInput()
+
+        return True
+
+    def handleInput(self):
+        """Handles the application input"""
+        running = True
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                # Quit Pygame
+                running = False
+            elif self.model.appState == AppState.MENU:
+                # Menu
+                if not self.handleMenuInput(event):
+                    running = False
+            elif self.model.appState == AppState.GAME:
+                # Game
+                if not self.handleGameInput(event):
+                    running = False
+        return running
