@@ -5,6 +5,7 @@ import pygame
 
 from ClueLess.Events import (
     CLIENT_CONNECTED_EVENT,
+    CLIENT_COULD_NOT_CONNECT_EVENT,
     CLIENT_DISCONNECTED_EVENT,
     CLIENT_MESSAGE_RECEIVED_EVENT,
 )
@@ -115,6 +116,9 @@ class Client:
             self.server.connect((self.host, self.port))
         except OSError:
             print(f"Could not connect to server at {self.host}:{self.port}")
+            # Post Pygame event
+            if pygame.get_init():
+                pygame.event.post(pygame.event.Event(CLIENT_COULD_NOT_CONNECT_EVENT))
         else:
             print(f"Connected to server at {self.host}:{self.port}")
             self.running = True

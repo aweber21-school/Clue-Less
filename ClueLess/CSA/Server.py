@@ -5,6 +5,7 @@ import pygame
 
 from ClueLess.Events import (
     SERVER_CONNECTED_EVENT,
+    SERVER_COULD_NOT_START_EVENT,
     SERVER_DISCONNECTED_EVENT,
     SERVER_MESSAGE_RECEIVED_EVENT,
 )
@@ -57,9 +58,25 @@ class Server:
         self.acceptingNewClients = False
         self.receivingFromClients = False
 
+    def startAcceptingNewClients(self):
+        """Starts accepting new clients"""
+        self.acceptingNewClients = True
+
+    def stopAcceptingNewClients(self):
+        """Stops accepting new clients"""
+        self.acceptingNewClients = False
+
+    def startReceivingFromClients(self):
+        """Starts receiving from clients"""
+        self.receivingFromClients = True
+
+    def stopReceivingFromClients(self):
+        """Stops receiving from clients"""
+        self.receivingFromClients = False
+
     def acceptNewClients(self):
         """Accepts new clients trying to connect"""
-        while True:
+        while len(self.clients) < self.maxClients:
             try:
                 connection, address = self.sock.accept()
             except BlockingIOError:
@@ -69,8 +86,6 @@ class Server:
                 print(f"Client connected: {connection}, {address}")
                 connection.settimeout(0.0)
                 self.clients.append(connection)
-                if len(self.clients) >= self.maxClients:
-                    self.acceptingNewClients = False
 
                 # Post Pygame event
                 if pygame.get_init():
@@ -151,6 +166,9 @@ class Server:
             self.sock.bind((self.host, self.port))
         except OSError:
             print(f"Unable to start server on {self.host}:{self.port}")
+            # Post Pygame event
+            if pygame.get_init():
+                pygame.event.post(pygame.event.Event(SERVER_COULD_NOT_START_EVENT))
         else:
             print(f"Starting server on {self.host}:{self.port}")
             self.running = True

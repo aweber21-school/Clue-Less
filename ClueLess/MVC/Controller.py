@@ -4,9 +4,11 @@ import pygame
 
 from ClueLess.Events import (
     CLIENT_CONNECTED_EVENT,
+    CLIENT_COULD_NOT_CONNECT_EVENT,
     CLIENT_DISCONNECTED_EVENT,
     CLIENT_MESSAGE_RECEIVED_EVENT,
     SERVER_CONNECTED_EVENT,
+    SERVER_COULD_NOT_START_EVENT,
     SERVER_DISCONNECTED_EVENT,
     SERVER_MESSAGE_RECEIVED_EVENT,
 )
@@ -357,6 +359,28 @@ class Controller:
                     # Any other mouse button clicked
                     pass
 
+            elif event.type == SERVER_COULD_NOT_START_EVENT:
+                # Server could not start
+                if self.network.isServer():
+                    # The network is a server
+                    self.model.updateState(
+                        appState=AppState.MENU, menuState=MenuState.SERVER_MENU
+                    )
+
+                    # Stop server
+                    self.network.stopServer()
+                    self.model.isServer = False
+                else:
+                    # The network is a client
+                    self.model.updateState(
+                        appState=AppState.MENU, menuState=MenuState.CLIENT_MENU
+                    )
+                # Stop client
+                self.network.stopClient()
+
+                self.model.endGame()
+                self.view.prepareView()
+
             elif event.type == SERVER_CONNECTED_EVENT:
                 # Server connected to new client
                 if self.network.isServer():
@@ -380,6 +404,17 @@ class Controller:
 
                     # Rebroadcast players to sync all clients
                     self.network.sendToClients(self.model.getGame())
+
+            elif event.type == CLIENT_COULD_NOT_CONNECT_EVENT:
+                # Client could not connect to server
+                self.model.updateState(
+                    appState=AppState.MENU,
+                    menuState=MenuState.CLIENT_MENU,
+                )
+                self.network.stopClient()
+
+                self.model.endGame()
+                self.view.prepareView()
 
             elif event.type == CLIENT_CONNECTED_EVENT:
                 # Client connected to server

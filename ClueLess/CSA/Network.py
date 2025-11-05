@@ -43,6 +43,22 @@ class Network:
         self.server = Server(host, port, maxClients)
         Thread(target=self.server.start).start()
 
+    def startAcceptingNewClients(self):
+        """Starts accepting new clients"""
+        self.server.startAcceptingNewClients()
+
+    def stopAcceptingNewClients(self):
+        """Stops accepting new clients"""
+        self.server.stopAcceptingNewClients()
+
+    def startReceivingFromClients(self):
+        """Starts receiving from clients"""
+        self.server.startReceivingFromClients()
+
+    def stopReceivingFromClients(self):
+        """Stops receiving from clients"""
+        self.server.stopReceivingFromClients()
+
     def sendToClients(self, obj):
         """
         Sends an object to all of the server's clients
