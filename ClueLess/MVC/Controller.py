@@ -164,7 +164,7 @@ class Controller:
                                 # port are used so server startup fails
                                 if self.network.server.running:
                                     break
-                            self.network.startClient(ipAddress, int(port), "ServerHost")
+                            self.network.startClient(ipAddress, int(port))
 
                             self.model.newGame()
                             self.model.updateState(
@@ -223,12 +223,9 @@ class Controller:
                             port = (
                                 self.view.getComponentById("PortTextBox")
                             ).getText() or "5555"
-                            username = (
-                                self.view.getComponentById("UsernameTextBox")
-                            ).getText() or "User"
 
                             # Start the client
-                            self.network.startClient(ipAddress, int(port), username)
+                            self.network.startClient(ipAddress, int(port))
 
                             self.model.newGame()
                             self.model.updateState(

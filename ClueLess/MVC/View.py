@@ -448,38 +448,6 @@ class View:
                 )
             )
 
-            # Username
-            self.components.append(
-                Text(
-                    id="UsernameText",
-                    x=480,
-                    y=350,
-                    text="Username",
-                    textColor=Color.BLACK,
-                    textHighlight=None,
-                    font=Font.DEFAULT,
-                )
-            )
-            self.components.append(
-                TextBox(
-                    id="UsernameTextBox",
-                    x=700,
-                    y=350,
-                    width=300,
-                    height=40,
-                    borderThickness=2,
-                    borderRadius=12,
-                    borderColor=Color.BLACK,
-                    inactiveFillColor=Color.DARK_GRAY,
-                    activeFillColor=Color.GRAY,
-                    text="",
-                    textColor=Color.BLACK,
-                    textHighlight=None,
-                    font=Font.DEFAULT,
-                    active=False,
-                )
-            )
-
             # Join Button
             self.components.append(
                 Button(

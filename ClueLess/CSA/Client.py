@@ -24,11 +24,9 @@ class Client:
             The hostname or ip address of the server
         port (int):
             The port of the server
-        username (str):
-            The client's username
     """
 
-    def __init__(self, host="localhost", port=5555, username="User"):
+    def __init__(self, host="localhost", port=5555):
         """
         Initializes a new client
 
@@ -37,15 +35,10 @@ class Client:
                 The hostname or ip address of the server
             port (int):
                 The port of the server
-            username (str):
-                The client's username
         """
         # Server host and port
         self.host = host
         self.port = port
-
-        # Client username
-        self.username = username
 
         # Server socket
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
