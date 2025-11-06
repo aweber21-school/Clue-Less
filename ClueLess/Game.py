@@ -18,16 +18,76 @@ class Game:
 
     def __init__(self):
         """Initializes a new Clue-Less game"""
-        # Running
-        self.running = False
+        # Rooms
+        self.rooms = [
+            "Study",
+            "Hall",
+            "Lounge",
+            "Library",
+            "Billiard",
+            "Dining",
+            "Conservatory",
+            "Ballroom",
+            "Kitchen",
+        ]
+
+        # Weapons
+        self.weapons = [
+            "Candlestick",
+            "Dagger",
+            "LeadPipe",
+            "Revolver",
+            "Rope",
+            "Wrench",
+        ]
+
+        # Characters
+        self.characters = [
+            "MissScarlett",
+            "ColonelMustard",
+            "MrsWhite",
+            "MrGreen",
+            "MrsPeacock",
+            "ProfessorPlum",
+        ]
+
+        # Tilemap
+        # Even rows and columns are hallways
+        # Odd rows and columns are rooms
+        self.tilemap = [
+            [[], [], [], ["MissScarlett"], []],
+            [["ProfessorPlum"], None, [], None, ["ColonelMustard"]],
+            [[], [], [], [], []],
+            [["MrsPeacock"], None, [], None, []],
+            [[], ["MrGreen"], [], ["MrsWhite"], []],
+        ]
 
         # Players
         self.players = []
         self.currentPlayerIndex = 0
 
+        # Running
+        self.running = False
+
         # Debugging
         self.red = 0
         self.green = 0
+
+    def getRooms(self):
+        """Gets the list of rooms"""
+        return self.rooms
+
+    def getWeapons(self):
+        """Gets the list of weapons"""
+        return self.weapons
+
+    def getCharacters(self):
+        """Gets the list of characters"""
+        return self.characters
+
+    def getTilemap(self):
+        """Gets the tilemap"""
+        return self.tilemap
 
     def start(self):
         """Starts the game"""

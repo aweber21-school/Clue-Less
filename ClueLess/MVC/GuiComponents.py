@@ -20,11 +20,11 @@ class Color:
     DARK_BROWN = (139, 69, 19)
     BLACK = (0, 0, 0)
     RED = (255, 0, 0)
-    ORANGE = ()
-    YELLOW = ()
+    ORANGE = (255, 140, 0)
+    YELLOW = (255, 255, 0)
     GREEN = (0, 255, 0)
     BLUE = (0, 0, 255)
-    PURPLE = ()
+    PURPLE = (128, 0, 128)
 
 
 class Font:

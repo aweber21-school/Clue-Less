@@ -653,24 +653,14 @@ class View:
 
             def prepareGameBoard():
                 """Prepares the game board"""
-                size = 150
-                spacing = 50
-                boardSpan = (size + spacing) * 3
-                rooms = [
-                    "Study",
-                    "Hall",
-                    "Lounge",
-                    "Library",
-                    "Billiard",
-                    "Dining",
-                    "Conservatory",
-                    "Ballroom",
-                    "Kitchen",
-                ]
-
-                # Hallways
                 startX = 125
                 startY = 220
+                roomSize = 150
+                roomSpacing = 50
+                boardSpan = (roomSize + roomSpacing) * 3
+                rooms = self.model.getGame().getRooms()
+
+                # Hallways
                 currentX = startX
                 currentY = startY
                 for roomIndex in range(len(rooms)):
@@ -680,10 +670,10 @@ class View:
                         self.components.append(
                             Box(
                                 id=rooms[roomIndex] + rooms[roomIndex + 1] + "Hallway",
-                                x=currentX + ((size + spacing) // 2),
+                                x=currentX + ((roomSize + roomSpacing) // 2),
                                 y=currentY,
-                                width=(size + spacing),
-                                height=spacing,
+                                width=(roomSize + roomSpacing),
+                                height=roomSpacing,
                                 borderThickness=2,
                                 borderRadius=2,
                                 borderColor=Color.BLACK,
@@ -702,9 +692,9 @@ class View:
                             Box(
                                 id=rooms[roomIndex] + rooms[roomIndex + 1] + "Hallway",
                                 x=currentX,
-                                y=currentY + ((size + spacing) // 2),
-                                width=spacing,
-                                height=(size + spacing),
+                                y=currentY + ((roomSize + roomSpacing) // 2),
+                                width=roomSpacing,
+                                height=(roomSize + roomSpacing),
                                 borderThickness=2,
                                 borderRadius=2,
                                 borderColor=Color.BLACK,
@@ -719,14 +709,12 @@ class View:
                         )
 
                     # Compute next room X and Y values
-                    currentY += (size + spacing) * (
-                        (currentX + (size + spacing)) // boardSpan
+                    currentY += (roomSize + roomSpacing) * (
+                        (currentX + (roomSize + roomSpacing)) // boardSpan
                     )
-                    currentX = (currentX + (size + spacing)) % boardSpan
+                    currentX = (currentX + (roomSize + roomSpacing)) % boardSpan
 
                 # Rooms
-                startX = 125
-                startY = 220
                 currentX = startX
                 currentY = startY
                 for roomIndex in range(len(rooms)):
@@ -737,8 +725,8 @@ class View:
                             id=room + "Room",
                             x=currentX,
                             y=currentY,
-                            width=size,
-                            height=size,
+                            width=roomSize,
+                            height=roomSize,
                             borderThickness=2,
                             borderRadius=2,
                             borderColor=Color.BLACK,
@@ -753,11 +741,116 @@ class View:
                     )
 
                     # Compute next room X and Y values
-                    currentY += (size + spacing) * (
-                        (currentX + (size + spacing)) // boardSpan
+                    currentY += (roomSize + roomSpacing) * (
+                        (currentX + (roomSize + roomSpacing)) // boardSpan
                     )
-                    currentX = (currentX + (size + spacing)) % boardSpan
+                    currentX = (currentX + (roomSize + roomSpacing)) % boardSpan
 
+                # Characters
+                characterSize = 20
+                currentX = startX
+                currentY = startY
+                row = 0
+                column = 0
+                colors = {
+                    "MissScarlett": Color.RED,
+                    "ColonelMustard": Color.YELLOW,
+                    "MrsWhite": Color.LIGHT_GRAY,
+                    "MrGreen": Color.GREEN,
+                    "MrsPeacock": Color.BLUE,
+                    "ProfessorPlum": Color.PURPLE,
+                }
+                tilemap = self.model.getGame().getTilemap()
+                for roomIndex in range(len(rooms)):
+                    room = rooms[roomIndex]
+
+                    # Room
+                    characters = tilemap[row][column]
+                    for character in characters:
+                        self.components.append(
+                            Box(
+                                id=character + "Character",
+                                x=currentX,
+                                y=currentY,
+                                width=characterSize,
+                                height=characterSize,
+                                borderThickness=2,
+                                borderRadius=2,
+                                borderColor=Color.BLACK,
+                                inactiveFillColor=colors[character],
+                                activeFillColor=colors[character],
+                                text="",
+                                textColor=Color.BLACK,
+                                textHighlight=None,
+                                font=Font.DEFAULT,
+                                active=True,
+                            )
+                        )
+
+                    # Horizontal
+                    if (
+                        room not in ["Lounge", "Dining", "Kitchen"]
+                        and tilemap[row][column + 1] is not None
+                    ):
+                        characters = tilemap[row][column + 1]
+
+                        for character in characters:
+                            self.components.append(
+                                Box(
+                                    id=character + "Character",
+                                    x=currentX + ((roomSize + roomSpacing) // 2),
+                                    y=currentY,
+                                    width=characterSize,
+                                    height=characterSize,
+                                    borderThickness=2,
+                                    borderRadius=2,
+                                    borderColor=Color.BLACK,
+                                    inactiveFillColor=colors[character],
+                                    activeFillColor=colors[character],
+                                    text="",
+                                    textColor=Color.BLACK,
+                                    textHighlight=None,
+                                    font=Font.DEFAULT,
+                                    active=True,
+                                )
+                            )
+
+                    # Vertical
+                    if (
+                        room not in ["Conservatory", "Ballroom", "Kitchen"]
+                        and tilemap[row + 1][column] is not None
+                    ):
+                        characters = tilemap[row + 1][column]
+                        for character in characters:
+                            self.components.append(
+                                Box(
+                                    id=character + "Character",
+                                    x=currentX,
+                                    y=currentY + ((roomSize + roomSpacing) // 2),
+                                    width=characterSize,
+                                    height=characterSize,
+                                    borderThickness=2,
+                                    borderRadius=2,
+                                    borderColor=Color.BLACK,
+                                    inactiveFillColor=colors[character],
+                                    activeFillColor=colors[character],
+                                    text="",
+                                    textColor=Color.BLACK,
+                                    textHighlight=None,
+                                    font=Font.DEFAULT,
+                                    active=True,
+                                )
+                            )
+
+                    # Compute next room X and Y values
+                    currentY += (roomSize + roomSpacing) * (
+                        (currentX + (roomSize + roomSpacing)) // boardSpan
+                    )
+                    currentX = (currentX + (roomSize + roomSpacing)) % boardSpan
+
+                    # Compute next room row and column values
+                    row += 2 if (column + 2 > len(tilemap[0])) else 0
+                    column = 0 if (column + 2 > len(tilemap[0])) else column + 2
 
             def prepareTurnDisplay():
                 """Prepares the turn display"""
@@ -774,8 +867,8 @@ class View:
                         borderColor=Color.BLACK,
                         inactiveFillColor=Color.BLACK,
                         activeFillColor=Color.BLACK,
-                        # text=f"Red: {self.model.game.red} Green: {self.model.game.green}",
-                        text=f"{vars(self.model.game)}",
+                        text=f"Red: {self.model.game.red} Green: {self.model.game.green}",
+                        # text=f"{vars(self.model.game)}",
                         textColor=Color.BLACK,
                         textHighlight=None,
                         font=Font.DEFAULT,
