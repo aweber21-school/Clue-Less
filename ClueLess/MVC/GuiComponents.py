@@ -15,9 +15,16 @@ class Color:
     LIGHT_GRAY = (235, 235, 235)
     GRAY = (200, 200, 200)
     DARK_GRAY = (100, 100, 100)
+    LIGHT_BROWN = (210, 180, 140)
+    BROWN = (160, 82, 45)
+    DARK_BROWN = (139, 69, 19)
     BLACK = (0, 0, 0)
-    RED = (200, 40, 40)
-    GREEN = (40, 160, 80)
+    RED = (255, 0, 0)
+    ORANGE = ()
+    YELLOW = ()
+    GREEN = (0, 255, 0)
+    BLUE = (0, 0, 255)
+    PURPLE = ()
 
 
 class Font:
@@ -385,6 +392,120 @@ class Text(Component):
             ),
             None,
             0,
+        )
+
+
+class Box(Component):
+    """
+    A Box Component for Clue-Less View
+
+    The Box class acts as a box component for the view in the Clue-Less
+    application.
+
+    Implements:
+        ClueLess.MVC.Component
+    Attributes:
+        id (str):
+            The id of the component
+        x (int):
+            The x position
+        y (int):
+            The y position
+        width (int):
+            The width
+        height (int):
+            The height
+        borderThickness (int):
+            The thickness of the border
+        borderRadius (int):
+            The radius of the border
+        borderColor (ClueLess.MVC.Color):
+            The color of the border
+        inactiveFillColor (ClueLess.MVC.Color):
+            The color to fill the background when it is disabled
+        activeFillColor (ClueLess.MVC.Color):
+            The color to fill the background when it is enabled
+        text (str):
+            The string of text
+        textColor (ClueLess.MVC.Color):
+            The color of the text
+        textHighlight (ClueLess.MVC.Color):
+            The highlight of the text
+        font (ClueLess.MVC.Font):
+            The font of the text
+        active (boolean):
+            The flag to determine whether it is active
+    """
+
+    def __init__(
+        self,
+        id,
+        x,
+        y,
+        width=180,
+        height=60,
+        borderThickness=2,
+        borderRadius=12,
+        borderColor=Color.BLACK,
+        inactiveFillColor=Color.DARK_GRAY,
+        activeFillColor=Color.LIGHT_GRAY,
+        text="Button",
+        textColor=Color.BLACK,
+        textHighlight=None,
+        font=Font.DEFAULT,
+        active=False,
+    ):
+        """
+        Initializes a new button component
+
+        Parameters:
+            id (str):
+                The id of the component
+            x (int):
+                The x position
+            y (int):
+                The y position
+            width (int):
+                The width
+            height (int):
+                The height
+            borderThickness (int):
+                The thickness of the border
+            borderRadius (int):
+                The radius of the border
+            borderColor (ClueLess.MVC.Color):
+                The color of the border
+            inactiveFillColor (ClueLess.MVC.Color):
+                The color to fill the background when it is disabled
+            activeFillColor (ClueLess.MVC.Color):
+                The color to fill the background when it is enabled
+            text (str):
+                The string of text
+            textColor (ClueLess.MVC.Color):
+                The color of the text
+            textHighlight (ClueLess.MVC.Color):
+                The highlight of the text
+            font (ClueLess.MVC.Font):
+                The font of the text
+            active (boolean):
+                The flag to determine whether it is active
+        """
+        super().__init__(
+            id,
+            x,
+            y,
+            width,
+            height,
+            borderThickness,
+            borderRadius,
+            borderColor,
+            inactiveFillColor,
+            activeFillColor,
+            text,
+            textColor,
+            textHighlight,
+            font,
+            active,
         )
 
 
