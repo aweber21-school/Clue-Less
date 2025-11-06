@@ -52,8 +52,6 @@ class Game:
         ]
 
         # Tilemap
-        # Even rows and columns are hallways
-        # Odd rows and columns are rooms
         self.tilemap = [
             [[], [], [], ["MissScarlett"], []],
             [["ProfessorPlum"], None, [], None, ["ColonelMustard"]],
