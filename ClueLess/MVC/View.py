@@ -1,6 +1,6 @@
 import pygame
 
-from ClueLess.MVC.GuiComponents import Button, Color, Constant, Font, Text, TextBox
+from ClueLess.MVC.GuiComponents import Box, Button, Color, Constant, Font, Text, TextBox
 from ClueLess.States import AppState, GameState, MenuState
 
 
@@ -119,10 +119,18 @@ class View:
                     id="Title",
                     x=Constant.WIDTH // 2,
                     y=150,
+                    width=180,
+                    height=60,
+                    borderThickness=0,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    inactiveFillColor=Color.BLACK,
+                    activeFillColor=Color.BLACK,
                     text="Clue-Less",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
+                    active=False,
                 )
             )
 
@@ -200,10 +208,18 @@ class View:
                     id="Title",
                     x=Constant.WIDTH // 2,
                     y=150,
+                    width=180,
+                    height=60,
+                    borderThickness=0,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    inactiveFillColor=Color.BLACK,
+                    activeFillColor=Color.BLACK,
                     text="Server Menu",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
+                    active=False,
                 )
             )
 
@@ -234,10 +250,18 @@ class View:
                     id="IpAddressText",
                     x=480,
                     y=250,
+                    width=180,
+                    height=60,
+                    borderThickness=0,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    inactiveFillColor=Color.BLACK,
+                    activeFillColor=Color.BLACK,
                     text="IP Address",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
+                    active=False,
                 )
             )
             self.components.append(
@@ -266,10 +290,18 @@ class View:
                     id="PortText",
                     x=480,
                     y=300,
+                    width=180,
+                    height=60,
+                    borderThickness=0,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    inactiveFillColor=Color.BLACK,
+                    activeFillColor=Color.BLACK,
                     text="Port",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
+                    active=False,
                 )
             )
             self.components.append(
@@ -298,10 +330,18 @@ class View:
                     id="MaxPlayersText",
                     x=480,
                     y=350,
+                    width=180,
+                    height=60,
+                    borderThickness=0,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    inactiveFillColor=Color.BLACK,
+                    activeFillColor=Color.BLACK,
                     text="Max Players",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
+                    active=False,
                 )
             )
             self.components.append(
@@ -356,10 +396,18 @@ class View:
                     id="Title",
                     x=Constant.WIDTH // 2,
                     y=150,
+                    width=180,
+                    height=60,
+                    borderThickness=0,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    inactiveFillColor=Color.BLACK,
+                    activeFillColor=Color.BLACK,
                     text="Client Menu",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
+                    active=False,
                 )
             )
 
@@ -390,10 +438,18 @@ class View:
                     id="IpAddressText",
                     x=480,
                     y=250,
+                    width=180,
+                    height=60,
+                    borderThickness=0,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    inactiveFillColor=Color.BLACK,
+                    activeFillColor=Color.BLACK,
                     text="IP Address",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
+                    active=False,
                 )
             )
             self.components.append(
@@ -422,10 +478,18 @@ class View:
                     id="PortText",
                     x=480,
                     y=300,
+                    width=180,
+                    height=60,
+                    borderThickness=0,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    inactiveFillColor=Color.BLACK,
+                    activeFillColor=Color.BLACK,
                     text="Port",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
+                    active=False,
                 )
             )
             self.components.append(
@@ -497,10 +561,18 @@ class View:
                     id="Title",
                     x=Constant.WIDTH // 2,
                     y=150,
+                    width=180,
+                    height=60,
+                    borderThickness=0,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    inactiveFillColor=Color.BLACK,
+                    activeFillColor=Color.BLACK,
                     text="Game Menu",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
+                    active=False,
                 )
             )
 
@@ -534,6 +606,13 @@ class View:
                         id="Player" + str(playerIndex + 1) + "Text",
                         x=(Constant.WIDTH // (len(players) + 1)) * (playerIndex + 1),
                         y=300,
+                        width=180,
+                        height=60,
+                        borderThickness=0,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.BLACK,
+                        activeFillColor=Color.BLACK,
                         text="Player "
                         + str(playerIndex + 1)
                         + ": "
@@ -543,6 +622,7 @@ class View:
                         textColor=Color.BLACK,
                         textHighlight=None,
                         font=Font.DEFAULT,
+                        active=False,
                     )
                 )
 
@@ -570,6 +650,181 @@ class View:
 
         def prepareGameplay():
             """Prepares the gameplay"""
+
+            def prepareGameBoard():
+                """Prepares the game board"""
+                size = 150
+                spacing = 50
+                boardSpan = (size + spacing) * 3
+                rooms = [
+                    "Study",
+                    "Hall",
+                    "Lounge",
+                    "Library",
+                    "Billiard",
+                    "Dining",
+                    "Conservatory",
+                    "Ballroom",
+                    "Kitchen",
+                ]
+
+                # Hallways
+                startX = 125
+                startY = 220
+                currentX = startX
+                currentY = startY
+                for roomIndex in range(len(rooms)):
+                    room = rooms[roomIndex]
+                    # Horizontal
+                    if room not in ["Lounge", "Dining", "Kitchen"]:
+                        self.components.append(
+                            Box(
+                                id=rooms[roomIndex] + rooms[roomIndex + 1] + "Hallway",
+                                x=currentX + ((size + spacing) // 2),
+                                y=currentY,
+                                width=(size + spacing),
+                                height=spacing,
+                                borderThickness=2,
+                                borderRadius=2,
+                                borderColor=Color.BLACK,
+                                inactiveFillColor=Color.LIGHT_BROWN,
+                                activeFillColor=Color.LIGHT_BROWN,
+                                text="",
+                                textColor=Color.BLACK,
+                                textHighlight=None,
+                                font=Font.DEFAULT,
+                                active=True,
+                            )
+                        )
+                    # Vertical
+                    if room not in ["Conservatory", "Ballroom", "Kitchen"]:
+                        self.components.append(
+                            Box(
+                                id=rooms[roomIndex] + rooms[roomIndex + 1] + "Hallway",
+                                x=currentX,
+                                y=currentY + ((size + spacing) // 2),
+                                width=spacing,
+                                height=(size + spacing),
+                                borderThickness=2,
+                                borderRadius=2,
+                                borderColor=Color.BLACK,
+                                inactiveFillColor=Color.LIGHT_BROWN,
+                                activeFillColor=Color.LIGHT_BROWN,
+                                text="",
+                                textColor=Color.BLACK,
+                                textHighlight=None,
+                                font=Font.DEFAULT,
+                                active=True,
+                            )
+                        )
+
+                    # Compute next room X and Y values
+                    currentY += (size + spacing) * (
+                        (currentX + (size + spacing)) // boardSpan
+                    )
+                    currentX = (currentX + (size + spacing)) % boardSpan
+
+                # Rooms
+                startX = 125
+                startY = 220
+                currentX = startX
+                currentY = startY
+                for roomIndex in range(len(rooms)):
+                    room = rooms[roomIndex]
+
+                    self.components.append(
+                        Box(
+                            id=room + "Room",
+                            x=currentX,
+                            y=currentY,
+                            width=size,
+                            height=size,
+                            borderThickness=2,
+                            borderRadius=2,
+                            borderColor=Color.BLACK,
+                            inactiveFillColor=Color.BROWN,
+                            activeFillColor=Color.BROWN,
+                            text=room,
+                            textColor=Color.BLACK,
+                            textHighlight=None,
+                            font=Font.DEFAULT,
+                            active=True,
+                        )
+                    )
+
+                    # Compute next room X and Y values
+                    currentY += (size + spacing) * (
+                        (currentX + (size + spacing)) // boardSpan
+                    )
+                    currentX = (currentX + (size + spacing)) % boardSpan
+
+
+            def prepareTurnDisplay():
+                """Prepares the turn display"""
+                # Counts
+                self.components.append(
+                    Text(
+                        id="Counts",
+                        x=(Constant.WIDTH // 4) * 3,
+                        y=(Constant.HEIGHT // 4),
+                        width=180,
+                        height=60,
+                        borderThickness=0,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.BLACK,
+                        activeFillColor=Color.BLACK,
+                        # text=f"Red: {self.model.game.red} Green: {self.model.game.green}",
+                        text=f"{vars(self.model.game)}",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=False,
+                    )
+                )
+
+                # Red Button
+                self.components.append(
+                    Button(
+                        id="RedButton",
+                        x=(Constant.WIDTH // 4) * 3,
+                        y=(Constant.HEIGHT // 4) * 2,
+                        width=180,
+                        height=60,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.RED,
+                        text="Red",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
+                # Green Button
+                self.components.append(
+                    Button(
+                        id="GreenButton",
+                        x=(Constant.WIDTH // 4) * 3,
+                        y=(Constant.HEIGHT // 4) * 3,
+                        width=180,
+                        height=60,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="Green",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
             # Reset components
             self.components = []
 
@@ -578,24 +833,19 @@ class View:
                 Text(
                     id="Title",
                     x=Constant.WIDTH // 2,
-                    y=150,
+                    y=100,
+                    width=180,
+                    height=60,
+                    borderThickness=0,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    inactiveFillColor=Color.BLACK,
+                    activeFillColor=Color.BLACK,
                     text="Gameplay",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
-                )
-            )
-
-            # Counts
-            self.components.append(
-                Text(
-                    id="Counts",
-                    x=Constant.WIDTH // 2,
-                    y=200,
-                    text=f"Red: {self.model.game.red} Green: {self.model.game.green}",
-                    textColor=Color.BLACK,
-                    textHighlight=None,
-                    font=Font.DEFAULT,
+                    active=False,
                 )
             )
 
@@ -620,45 +870,30 @@ class View:
                 )
             )
 
-            # Red Button
-            self.components.append(
-                Button(
-                    id="RedButton",
-                    x=(Constant.WIDTH // 3),
-                    y=(Constant.HEIGHT // 3) * 2,
-                    width=180,
-                    height=60,
-                    borderThickness=2,
-                    borderRadius=12,
-                    borderColor=Color.BLACK,
-                    inactiveFillColor=Color.DARK_GRAY,
-                    activeFillColor=Color.RED,
-                    text="Red",
-                    textColor=Color.BLACK,
-                    textHighlight=None,
-                    font=Font.DEFAULT,
-                    active=True,
-                )
-            )
+            # Game Board
+            prepareGameBoard()
 
-            # Green Button
+            # Turn Interaction
+            prepareTurnDisplay()
+
+            # Log
             self.components.append(
-                Button(
-                    id="GreenButton",
-                    x=(Constant.WIDTH // 3) * 2,
-                    y=(Constant.HEIGHT // 3) * 2,
+                Text(
+                    id="LogText",
+                    x=(Constant.WIDTH // 4) * 3,
+                    y=(Constant.HEIGHT // 10) * 9,
                     width=180,
                     height=60,
-                    borderThickness=2,
+                    borderThickness=0,
                     borderRadius=12,
                     borderColor=Color.BLACK,
-                    inactiveFillColor=Color.DARK_GRAY,
-                    activeFillColor=Color.GREEN,
-                    text="Green",
+                    inactiveFillColor=Color.BLACK,
+                    activeFillColor=Color.BLACK,
+                    text=f"This is the log output",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
-                    active=True,
+                    active=False,
                 )
             )
 
