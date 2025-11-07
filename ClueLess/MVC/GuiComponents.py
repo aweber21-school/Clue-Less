@@ -1,11 +1,9 @@
+"""GUI Components for the Clue-Less Application"""
+
 import pygame
 
-
-class Constant:
-    """Constants"""
-
-    WIDTH = 1280
-    HEIGHT = 720
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
 
 
 class Color:
@@ -44,19 +42,19 @@ class Component:
     application.
 
     Attributes:
-        id (str):
+        id (string):
             The id of the component
-        x (int):
+        x (integer):
             The x position
-        y (int):
+        y (integer):
             The y position
-        width (int):
+        width (integer):
             The width
-        height (int):
+        height (integer):
             The height
-        borderThickness (int):
+        borderThickness (integer):
             The thickness of the border
-        borderRadius (int):
+        borderRadius (integer):
             The radius of the border
         borderColor (ClueLess.MVC.Color):
             The color of the border
@@ -64,7 +62,7 @@ class Component:
             The color to fill the background when it is disabled
         activeFillColor (ClueLess.MVC.Color):
             The color to fill the background when it is enabled
-        text (str):
+        text (string):
             The string of text
         textColor (ClueLess.MVC.Color):
             The color of the text
@@ -98,19 +96,19 @@ class Component:
         Initializes a new component
 
         Parameters:
-            id (str):
+            id (string):
                 The id of the component
-            x (int):
+            x (integer):
                 The x position
-            y (int):
+            y (integer):
                 The y position
-            width (int):
+            width (integer):
                 The width
-            height (int):
+            height (integer):
                 The height
-            borderThickness (int):
+            borderThickness (integer):
                 The thickness of the border
-            borderRadius (int):
+            borderRadius (integer):
                 The radius of the border
             borderColor (ClueLess.MVC.Color):
                 The color of the border
@@ -118,7 +116,7 @@ class Component:
                 The color to fill the background when it is disabled
             activeFillColor (ClueLess.MVC.Color):
                 The color to fill the background when it is enabled
-            text (str):
+            text (string):
                 The string of text
             textColor (ClueLess.MVC.Color):
                 The color of the text
@@ -181,7 +179,7 @@ class Component:
         Updates the text of the component
 
         Parameters:
-            event (str):
+            event (string):
                 The event to use to update the component
         """
         if event.key == pygame.K_BACKSPACE:
@@ -255,19 +253,19 @@ class Text(Component):
     Implements:
         ClueLess.MVC.Component
     Attributes:
-        id (str):
+        id (string):
             The id of the component
-        x (int):
+        x (integer):
             The x position
-        y (int):
+        y (integer):
             The y position
-        width (int):
+        width (integer):
             The width
-        height (int):
+        height (integer):
             The height
-        borderThickness (int):
+        borderThickness (integer):
             The thickness of the border
-        borderRadius (int):
+        borderRadius (integer):
             The radius of the border
         borderColor (ClueLess.MVC.Color):
             The color of the border
@@ -275,7 +273,7 @@ class Text(Component):
             The color to fill the background when it is disabled
         activeFillColor (ClueLess.MVC.Color):
             The color to fill the background when it is enabled
-        text (str):
+        text (string):
             The string of text
         textColor (ClueLess.MVC.Color):
             The color of the text
@@ -309,19 +307,19 @@ class Text(Component):
         Initializes a new text component
 
         Parameters:
-        id (str):
+        id (string):
             The id of the component
-        x (int):
+        x (integer):
             The x position
-        y (int):
+        y (integer):
             The y position
-        width (int):
+        width (integer):
             The width
-        height (int):
+        height (integer):
             The height
-        borderThickness (int):
+        borderThickness (integer):
             The thickness of the border
-        borderRadius (int):
+        borderRadius (integer):
             The radius of the border
         borderColor (ClueLess.MVC.Color):
             The color of the border
@@ -329,7 +327,7 @@ class Text(Component):
             The color to fill the background when it is disabled
         activeFillColor (ClueLess.MVC.Color):
             The color to fill the background when it is enabled
-        text (str):
+        text (string):
             The string of text
         textColor (ClueLess.MVC.Color):
             The color of the text
@@ -405,19 +403,19 @@ class Box(Component):
     Implements:
         ClueLess.MVC.Component
     Attributes:
-        id (str):
+        id (string):
             The id of the component
-        x (int):
+        x (integer):
             The x position
-        y (int):
+        y (integer):
             The y position
-        width (int):
+        width (integer):
             The width
-        height (int):
+        height (integer):
             The height
-        borderThickness (int):
+        borderThickness (integer):
             The thickness of the border
-        borderRadius (int):
+        borderRadius (integer):
             The radius of the border
         borderColor (ClueLess.MVC.Color):
             The color of the border
@@ -425,7 +423,7 @@ class Box(Component):
             The color to fill the background when it is disabled
         activeFillColor (ClueLess.MVC.Color):
             The color to fill the background when it is enabled
-        text (str):
+        text (string):
             The string of text
         textColor (ClueLess.MVC.Color):
             The color of the text
@@ -459,19 +457,19 @@ class Box(Component):
         Initializes a new button component
 
         Parameters:
-            id (str):
+            id (string):
                 The id of the component
-            x (int):
+            x (integer):
                 The x position
-            y (int):
+            y (integer):
                 The y position
-            width (int):
+            width (integer):
                 The width
-            height (int):
+            height (integer):
                 The height
-            borderThickness (int):
+            borderThickness (integer):
                 The thickness of the border
-            borderRadius (int):
+            borderRadius (integer):
                 The radius of the border
             borderColor (ClueLess.MVC.Color):
                 The color of the border
@@ -479,7 +477,7 @@ class Box(Component):
                 The color to fill the background when it is disabled
             activeFillColor (ClueLess.MVC.Color):
                 The color to fill the background when it is enabled
-            text (str):
+            text (string):
                 The string of text
             textColor (ClueLess.MVC.Color):
                 The color of the text
@@ -519,19 +517,19 @@ class TextBox(Component):
     Implements:
         ClueLess.MVC.Component
     Attributes:
-        id (str):
+        id (string):
             The id of the component
-        x (int):
+        x (integer):
             The x position
-        y (int):
+        y (integer):
             The y position
-        width (int):
+        width (integer):
             The width
-        height (int):
+        height (integer):
             The height
-        borderThickness (int):
+        borderThickness (integer):
             The thickness of the border
-        borderRadius (int):
+        borderRadius (integer):
             The radius of the border
         borderColor (ClueLess.MVC.Color):
             The color of the border
@@ -539,7 +537,7 @@ class TextBox(Component):
             The color to fill the background when it is disabled
         activeFillColor (ClueLess.MVC.Color):
             The color to fill the background when it is enabled
-        text (str):
+        text (string):
             The string of text
         textColor (ClueLess.MVC.Color):
             The color of the text
@@ -573,19 +571,19 @@ class TextBox(Component):
         Initializes a new text box component
 
         Parameters:
-            id (str):
+            id (string):
                 The id of the component
-            x (int):
+            x (integer):
                 The x position
-            y (int):
+            y (integer):
                 The y position
-            width (int):
+            width (integer):
                 The width
-            height (int):
+            height (integer):
                 The height
-            borderThickness (int):
+            borderThickness (integer):
                 The thickness of the border
-            borderRadius (int):
+            borderRadius (integer):
                 The radius of the border
             borderColor (ClueLess.MVC.Color):
                 The color of the border
@@ -593,7 +591,7 @@ class TextBox(Component):
                 The color to fill the background when it is disabled
             activeFillColor (ClueLess.MVC.Color):
                 The color to fill the background when it is enabled
-            text (str):
+            text (string):
                 The string of text
             textColor (ClueLess.MVC.Color):
                 The color of the text
@@ -655,19 +653,19 @@ class Button(Component):
     Implements:
         ClueLess.MVC.Component
     Attributes:
-        id (str):
+        id (string):
             The id of the component
-        x (int):
+        x (integer):
             The x position
-        y (int):
+        y (integer):
             The y position
-        width (int):
+        width (integer):
             The width
-        height (int):
+        height (integer):
             The height
-        borderThickness (int):
+        borderThickness (integer):
             The thickness of the border
-        borderRadius (int):
+        borderRadius (integer):
             The radius of the border
         borderColor (ClueLess.MVC.Color):
             The color of the border
@@ -675,7 +673,7 @@ class Button(Component):
             The color to fill the background when it is disabled
         activeFillColor (ClueLess.MVC.Color):
             The color to fill the background when it is enabled
-        text (str):
+        text (string):
             The string of text
         textColor (ClueLess.MVC.Color):
             The color of the text
@@ -709,19 +707,19 @@ class Button(Component):
         Initializes a new button component
 
         Parameters:
-            id (str):
+            id (string):
                 The id of the component
-            x (int):
+            x (integer):
                 The x position
-            y (int):
+            y (integer):
                 The y position
-            width (int):
+            width (integer):
                 The width
-            height (int):
+            height (integer):
                 The height
-            borderThickness (int):
+            borderThickness (integer):
                 The thickness of the border
-            borderRadius (int):
+            borderRadius (integer):
                 The radius of the border
             borderColor (ClueLess.MVC.Color):
                 The color of the border
@@ -729,7 +727,7 @@ class Button(Component):
                 The color to fill the background when it is disabled
             activeFillColor (ClueLess.MVC.Color):
                 The color to fill the background when it is enabled
-            text (str):
+            text (string):
                 The string of text
             textColor (ClueLess.MVC.Color):
                 The color of the text

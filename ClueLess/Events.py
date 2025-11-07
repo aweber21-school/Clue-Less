@@ -1,3 +1,5 @@
+"""Events for the Clue-Less Application"""
+
 import pygame
 
 # Events for Server

@@ -1,5 +1,3 @@
-import time
-
 import pygame
 
 from ClueLess.Events import (
@@ -382,8 +380,8 @@ class Controller:
                 # Server connected to new client
                 if self.network.isServer():
                     # Update players
-                    players = event.clientPorts
-                    self.model.updatePlayers(players)
+                    playerIds = event.clientPorts
+                    self.model.updatePlayers(playerIds)
 
                     # Rebroadcast players to sync all clients
                     self.network.sendToClients(self.model.getGame())
@@ -396,8 +394,8 @@ class Controller:
                 # Server disconnected from client
                 if self.network.isServer():
                     # Update players
-                    players = event.clientPorts
-                    self.model.updatePlayers(players)
+                    playerIds = event.clientPorts
+                    self.model.updatePlayers(playerIds)
 
                     # Rebroadcast players to sync all clients
                     self.network.sendToClients(self.model.getGame())
@@ -493,6 +491,7 @@ class Controller:
                         if component.id == "RedButton":
                             # Red button
                             if component.isActive():
+                                turn = Turn(red=1)
                                 self.network.sendToServer(Turn(red=1))
                         elif component.id == "GreenButton":
                             # Green button
@@ -521,6 +520,10 @@ class Controller:
                             self.model.endGame()
                             self.view.prepareView()
 
+                        #################################
+                        # ADD TURN BUTTON HANDLING HERE #
+                        #################################
+
                 elif event.button == 2:
                     # Right mouse button clicked
                     pass
@@ -533,8 +536,8 @@ class Controller:
                 # Server connected to new client
                 if self.network.isServer():
                     # Update players
-                    players = event.clientPorts
-                    self.model.updatePlayers(players)
+                    playerIds = event.clientPorts
+                    self.model.updatePlayers(playerIds)
 
                     # Rebroadcast game to sync all clients
                     self.network.sendToClients(self.model.getGame())
@@ -542,11 +545,17 @@ class Controller:
             elif event.type == SERVER_MESSAGE_RECEIVED_EVENT:
                 # Server received message from client
                 if self.network.isServer():
-                    players = event.clientPorts
+                    playerIds = event.clientPorts
                     turn = event.message
 
+                    # Rename clientPort to playerId for better understanding in
+                    # Game class
+                    # turn.playerId = turn.__dict__.pop("clientPort")
+                    turn.playerId = getattr(turn, "clientPort")
+                    delattr(turn, "clientPort")
+
                     # Update players and make the move
-                    self.model.updatePlayers(players)
+                    self.model.updatePlayers(playerIds)
                     self.model.makeMove(turn)
 
                     # Broadcast to clients
@@ -556,8 +565,8 @@ class Controller:
                 # Server disconnected from client
                 if self.network.isServer():
                     # Update players
-                    players = event.clientPorts
-                    self.model.updatePlayers(players)
+                    playerIds = event.clientPorts
+                    self.model.updatePlayers(playerIds)
 
                     # Stop game temporarily
                     self.model.stopGame()
@@ -581,7 +590,8 @@ class Controller:
                     )
 
                 # Extract client port to save for player ID
-                self.model.updatePlayerId(game.__dict__.pop("clientPort"))
+                self.model.updatePlayerId(getattr(game, "clientPort"))
+                delattr(game, "clientPort")
 
                 self.model.updateGame(game)
                 self.view.prepareView()

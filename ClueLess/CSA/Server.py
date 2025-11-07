@@ -20,11 +20,11 @@ class Server:
     multiple client connections and sending messages to all clients.
 
     Attributes:
-        host (str):
+        host (string):
             The hostname or ip address of the server
-        port (int):
+        port (integer):
             The port of the server
-        maxClients (int):
+        maxClients (integer):
             The max number of clients that can connect to the server
     """
 
@@ -33,11 +33,11 @@ class Server:
         Initializes a new server
 
         Parameters:
-            host (str):
+            host (string):
                 The hostname or ip address of the server
-            port (int):
+            port (integer):
                 The port of the server
-            maxClients (int):
+            maxClients (integer):
                 The max number of clients that can connect to the server
         """
         # Server host and port

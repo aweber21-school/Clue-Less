@@ -1,3 +1,6 @@
+"""States for the Clue-Less Application"""
+
+
 class AppState:
     """App States"""
 
