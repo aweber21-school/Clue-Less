@@ -33,11 +33,11 @@ class Network:
         Starts a new server
 
         Parameters:
-            host (str):
+            host (string):
                 The hostname or ip address of the server
-            port (int):
+            port (integer):
                 The port of the server
-            maxClients (int):
+            maxClients (integer):
                 The max number of clients that can connect to the server
         """
         self.server = Server(host, port, maxClients)
@@ -81,9 +81,9 @@ class Network:
         Starts a new client
 
         Parameters:
-            host (str):
+            host (string):
                 The hostname or ip address of the server
-            port (int):
+            port (integer):
                 The port of the server
         """
         self.client = Client(host, port)
@@ -111,11 +111,11 @@ class Network:
         Starts a new server and a new client
 
         Parameters:
-            host (str):
+            host (string):
                 The hostname or ip address of the server
-            port (int):
+            port (integer):
                 The port of the server
-            maxClients (int):
+            maxClients (integer):
                 The max number of clients that can connect to the server
         """
         self.startServer(host, port, maxClients)

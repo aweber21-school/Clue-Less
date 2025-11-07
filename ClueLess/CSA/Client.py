@@ -20,9 +20,9 @@ class Client:
     messages to the server.
 
     Attributes:
-        host (str):
+        host (string):
             The hostname or ip address of the server
-        port (int):
+        port (integer):
             The port of the server
     """
 
@@ -31,9 +31,9 @@ class Client:
         Initializes a new client
 
         Parameters:
-            host (str):
+            host (string):
                 The hostname or ip address of the server
-            port (int):
+            port (integer):
                 The port of the server
         """
         # Server host and port

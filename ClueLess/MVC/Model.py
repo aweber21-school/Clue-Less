@@ -18,6 +18,8 @@ class Model:
             The current game state
         isServer (boolean):
             The flag of whether this model is a server model
+        playerId (ClueLess.Game):
+            The playerId of this model
         game (ClueLess.Game):
             The current game
         turn (ClueLess.Turn):
@@ -78,19 +80,27 @@ class Model:
         """Gets the game"""
         return self.game
 
+    def getTilemap(self):
+        """Gets the game's tilemap"""
+        return self.game.getTilemap()
+
     def getPlayers(self):
-        """Gets the players"""
+        """Gets the game's players"""
         return self.game.getPlayers()
 
-    def updatePlayers(self, players):
+    def getLog(self):
+        """Gets the game's log"""
+        return self.game.getLog()
+
+    def updatePlayers(self, playerIds):
         """
-        Updates the game's players
+        Updates the game's players using a list of player IDs
 
         Parameters:
-            players (list):
-                The updated list of players
+            playerIds (list):
+                The updated list of player IDs
         """
-        self.game.updatePlayers(players)
+        self.game.updatePlayers(playerIds)
 
     def getPlayerId(self):
         """Gets the model's player ID"""
@@ -108,7 +118,7 @@ class Model:
 
     def isMyTurn(self):
         """Gets whether it's my turn"""
-        return self.playerId == self.game.getCurrentPlayerId()
+        return self.playerId == self.game.getCurrentPlayer().getPlayerId()
 
     def newTurn(self):
         """Starts a new turn"""
@@ -133,8 +143,8 @@ class Model:
         if not self.game or not turn:
             # No move to make
             return
-        else:
-            self.game.makeMove(turn)
+
+        self.game.makeMove(turn)
 
     def updateGame(self, game):
         """
