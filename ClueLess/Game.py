@@ -223,6 +223,18 @@ class Game:
             #######################
             # ADD TURN LOGIC HERE #
             #######################
+            if hasattr(turn, "move"):
+                # Update player's current position
+                # NOTE: Only valid movements should be possible here, so we don't check
+                (row, col) = self.getCurrentPlayer().getLocation()
+                if getattr(turn, "move") == "UP":
+                    self.getCurrentPlayer().setLocation((row - 1, col))
+                elif getattr(turn, "move") == "DOWN":
+                    self.getCurrentPlayer().setLocation((row + 1, col))
+                elif getattr(turn, "move") == "RIGHT":
+                    self.getCurrentPlayer().setLocation((row, col + 1))
+                elif getattr(turn, "move") == "LEFT":
+                    self.getCurrentPlayer().setLocation((row, col - 1))
 
             # Log that the player made the move
             self.log = (
@@ -230,6 +242,7 @@ class Game:
                 + " successfully made a move"
             )
 
+            self.updateTilemap()
             # Move to the next player
             self.nextPlayer()
 
@@ -249,7 +262,7 @@ class Turn:
     """
 
     # Add potential attributes here so that we know what to expect within a Turn object
-    __slots__ = ["clientPort", "playerId", "red", "green"]
+    __slots__ = ["clientPort", "playerId", "red", "green", "move"]
 
     def __init__(self, **kwargs):
         """

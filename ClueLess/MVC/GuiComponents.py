@@ -755,3 +755,182 @@ class Button(Component):
             font,
             active,
         )
+
+class MovementButton(Button):
+    """
+    A movement button that can either show an arrow (for moving) or a label like 'Stay'.
+
+    Implements:
+        ClueLess.MVC.Component
+    Attributes:
+        id (string):
+            The id of the component
+        x (integer):
+            The x position
+        y (integer):
+            The y position
+        direction (string):
+            The direction this arrow button will face
+        width (integer):
+            The width
+        height (integer):
+            The height
+        borderThickness (integer):
+            The thickness of the border
+        borderRadius (integer):
+            The radius of the border
+        borderColor (ClueLess.MVC.Color):
+            The color of the border
+        inactiveFillColor (ClueLess.MVC.Color):
+            The color to fill the background when it is disabled
+        activeFillColor (ClueLess.MVC.Color):
+            The color to fill the background when it is enabled
+        text (string):
+            The string of text
+        textColor (ClueLess.MVC.Color):
+            The color of the text
+        textHighlight (ClueLess.MVC.Color):
+            The highlight of the text
+        font (ClueLess.MVC.Font):
+            The font of the text
+        active (boolean):
+            The flag to determine whether it is active
+    """
+
+    def __init__(
+        self,
+        id,
+        x,
+        y,
+        is_arrow=False,
+        direction="UP",
+        isAvailable=True,
+        width=180,
+        height=60,
+        borderThickness=2,
+        borderRadius=12,
+        borderColor=Color.BLACK,
+        inactiveFillColor=Color.DARK_GRAY,
+        activeFillColor=Color.LIGHT_GRAY,
+        text="Stay",
+        textColor=Color.BLACK,
+        textHighlight=None,
+        font=Font.DEFAULT,
+        active=False,
+    ):
+        """
+        Initializes a new button component
+
+        Parameters:
+            id (string):
+                The id of the component
+            x (integer):
+                The x position
+            y (integer):
+                The y position
+            width (integer):
+                The width
+            height (integer):
+                The height
+            borderThickness (integer):
+                The thickness of the border
+            borderRadius (integer):
+                The radius of the border
+            borderColor (ClueLess.MVC.Color):
+                The color of the border
+            inactiveFillColor (ClueLess.MVC.Color):
+                The color to fill the background when it is disabled
+            activeFillColor (ClueLess.MVC.Color):
+                The color to fill the background when it is enabled
+            text (string):
+                The string of text
+            textColor (ClueLess.MVC.Color):
+                The color of the text
+            textHighlight (ClueLess.MVC.Color):
+                The highlight of the text
+            font (ClueLess.MVC.Font):
+                The font of the text
+            active (boolean):
+                The flag to determine whether it is active
+        """
+        self.is_arrow = is_arrow
+        self.direction = direction
+        self.isAvailable = isAvailable
+        super().__init__(
+            id,
+            x,
+            y,
+            width,
+            height,
+            borderThickness,
+            borderRadius,
+            borderColor,
+            inactiveFillColor,
+            activeFillColor,
+            text,
+            textColor,
+            textHighlight,
+            font,
+            active,
+        )
+
+    def _triangle_points(self):
+        """Return 3 points for a triangle centered at (self.x,self.y) facing self.direction."""
+        x, y = self.x, self.y
+        s = int(min(self.width, self.height) * 0.28)  # arrow size relative to button
+        d = self.direction
+
+        if d == "UP":
+            return [(x, y - s), (x - s, y + s), (x + s, y + s)]
+        if d == "DOWN":
+            return [(x, y + s), (x - s, y - s), (x + s, y - s)]
+        if d == "LEFT":
+            return [(x - s, y), (x + s, y - s), (x + s, y + s)]
+        # else "RIGHT"
+        return [(x + s, y), (x - s, y - s), (x - s, y + s)]
+
+    def draw(self, surface):
+        """Draw the button background + border, then the arrow triangle."""
+        # draw button chrome
+        pygame.draw.rect(
+            surface,
+            self.activeFillColor if self.active else self.inactiveFillColor,
+            pygame.Rect(
+                self.x - (self.width // 2),
+                self.y - (self.height // 2),
+                self.width,
+                self.height,
+            ),
+            0,
+            self.borderRadius,
+        )
+        pygame.draw.rect(
+            surface,
+            self.borderColor,
+            pygame.Rect(
+                self.x - (self.width // 2),
+                self.y - (self.height // 2),
+                self.width,
+                self.height,
+            ),
+            self.borderThickness,
+            self.borderRadius,
+        )
+
+        if self.is_arrow:
+            # arrow mode
+            pts = self._triangle_points()
+            fill = self.textColor if (self.active and self.isAvailable) else self.borderColor
+            pygame.draw.polygon(surface, fill, pts)
+            # optional: crisp outline
+            pygame.draw.polygon(surface, self.borderColor, pts, 1)
+        else:
+            # label mode (e.g., "Stay")
+            rendered = self.font.render(self.text, True, self.textColor, self.textHighlight)
+            surface.blit(
+                rendered,
+                (
+                    self.x - (rendered.get_width() // 2),
+                    self.y - (rendered.get_height() // 2),
+                ),
+            )
