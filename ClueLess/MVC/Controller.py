@@ -523,6 +523,10 @@ class Controller:
                         #################################
                         # ADD TURN BUTTON HANDLING HERE #
                         #################################
+                        elif component.id in ["UpButton", "DownButton", "RightButton", "LeftButton", "StayButton"]:
+                            # Green button
+                            if component.isActive():
+                                self.network.sendToServer(Turn(move=component.direction))
 
                 elif event.button == 2:
                     # Right mouse button clicked

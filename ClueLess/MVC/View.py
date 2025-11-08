@@ -4,6 +4,7 @@ from ClueLess.Constants import LOCATION_NAMES
 from ClueLess.MVC.GuiComponents import (
     SCREEN_HEIGHT,
     SCREEN_WIDTH,
+    MovementButton,
     Box,
     Button,
     Color,
@@ -100,9 +101,16 @@ class View:
                     component.updateText(event)
 
     def activateAllButtons(self):
-        """Activates all button components"""
+        """Activates all button components, but only available movement buttons."""
         for component in self.components:
             if isinstance(component, Button):
+                if isinstance(component, MovementButton):
+                    # Determine which movement options are available to this player
+                    availableDirections = self.determineAvailableDirections()
+                    if component.direction not in availableDirections:
+                        component.deactivate()
+                        continue
+
                 component.activate()
 
     def deactivateAllButtons(self):
@@ -111,6 +119,65 @@ class View:
             if isinstance(component, Button):
                 component.deactivate()
 
+    def determineAvailableDirections(self):
+        """Determines which movements are available to a player on their turn"""
+        # Get current tilemap
+        tilemap = self.model.getGame().getTilemap()
+        # Get current player's location
+        playerRow, playerCol = self.model.getGame().getCurrentPlayer().getLocation()
+        available = {"UP", "DOWN", "RIGHT", "LEFT", "STAY"}
+        room_locations = [(0, 0), (2, 0), (4, 0), (0, 2), (2, 2), (4, 2), (0, 4), (2, 4), (4, 4)]
+        
+        # Determine if Stay is avaiable
+        if (playerRow, playerCol) not in room_locations:
+            available.remove("STAY")
+
+        # Determine if Up is available
+        if playerRow == 0:
+            # Top Row
+            available.remove("UP")
+        elif tilemap[playerRow - 1][playerCol] is None:
+            # Hallway below an empty space
+            available.remove("UP")
+        elif (playerRow, playerCol) in room_locations and len(tilemap[playerRow - 1][playerCol]) != 0:
+            # Hallway above is blocked
+            available.remove("UP")
+        
+        # Determine if Down is available
+        if playerRow == 4:
+            # Bottom Row
+            available.remove("DOWN")
+        elif tilemap[playerRow + 1][playerCol] is None:
+            # Hallway above an empty space
+            available.remove("DOWN")
+        elif (playerRow, playerCol) in room_locations and len(tilemap[playerRow + 1][playerCol]) != 0:
+            # Hallway below is blocked
+            available.remove("DOWN")
+
+        # Determine if Right is available
+        if playerCol == 4:
+            # Rightmost Column
+            available.remove("RIGHT")
+        elif tilemap[playerRow][playerCol + 1] is None:
+            # Hallway to the left of an empty space
+            available.remove("RIGHT")
+        elif (playerRow, playerCol) in room_locations and len(tilemap[playerRow][playerCol + 1]) != 0:
+            # Hallway to the right is blocked
+            available.remove("RIGHT")
+
+        # Determine if Left is available
+        if playerCol == 0:
+            # Leftmost Column
+            available.remove("LEFT")
+        elif tilemap[playerRow][playerCol - 1] is None:
+            # Hallway to the right of an empty space
+            available.remove("LEFT")
+        elif (playerRow, playerCol) in room_locations and len(tilemap[playerRow][playerCol - 1]) != 0:
+            # Hallway to the left is blocked
+            available.remove("LEFT")
+
+        return available
+    
     def prepareMenu(self):
         """
         Prepares the menu view
@@ -690,7 +757,7 @@ class View:
                         # Get the X and Y location for it
                         currentX = startX + (((roomSize + roomSpacing) // 2) * column)
                         currentY = startY + (((roomSize + roomSpacing) // 2) * row)
-
+                        
                         if row % 2 == 0 and column % 2 == 0:
                             # Room
                             self.components.append(
@@ -815,35 +882,18 @@ class View:
                     )
                 )
 
-                # Red Button
+                #########################
+                # ADD TURN BUTTONS HERE #
+                #########################
                 self.components.append(
-                    Button(
-                        id="RedButton",
-                        x=(SCREEN_WIDTH // 4) * 3,
-                        y=(SCREEN_HEIGHT // 4) * 2,
-                        width=180,
-                        height=60,
-                        borderThickness=2,
-                        borderRadius=12,
-                        borderColor=Color.BLACK,
-                        inactiveFillColor=Color.DARK_GRAY,
-                        activeFillColor=Color.RED,
-                        text="Red",
-                        textColor=Color.BLACK,
-                        textHighlight=None,
-                        font=Font.DEFAULT,
-                        active=True,
-                    )
-                )
-
-                # Green Button
-                self.components.append(
-                    Button(
-                        id="GreenButton",
-                        x=(SCREEN_WIDTH // 4) * 3,
-                        y=(SCREEN_HEIGHT // 4) * 3,
-                        width=180,
-                        height=60,
+                    MovementButton(
+                        id="UpButton",
+                        x=(SCREEN_WIDTH // 8) * 5,
+                        y=(SCREEN_HEIGHT // 2),
+                        direction="UP",
+                        is_arrow=True,
+                        width=70,
+                        height=70,
                         borderThickness=2,
                         borderRadius=12,
                         borderColor=Color.BLACK,
@@ -856,11 +906,90 @@ class View:
                         active=True,
                     )
                 )
-
-                #########################
-                # ADD TURN BUTTONS HERE #
-                #########################
-                pass
+                self.components.append(
+                    MovementButton(
+                        id="DownButton",
+                        x=(SCREEN_WIDTH // 8) * 5,
+                        y=(SCREEN_HEIGHT // 4) * 3,
+                        direction="DOWN",
+                        is_arrow=True,
+                        width=70,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="Green",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+                self.components.append(
+                    MovementButton(
+                        id="RightButton",
+                        x=(SCREEN_WIDTH // 16) * 11,
+                        y=(SCREEN_HEIGHT // 8) * 5,
+                        direction="RIGHT",
+                        is_arrow=True,
+                        width=70,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="Green",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+                self.components.append(
+                    MovementButton(
+                        id="LeftButton",
+                        x=(SCREEN_WIDTH // 16) * 9,
+                        y=(SCREEN_HEIGHT // 8) * 5,
+                        direction="LEFT",
+                        is_arrow=True,
+                        width=70,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="Green",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+                self.components.append(
+                    MovementButton(
+                        id="StayButton",
+                        x=(SCREEN_WIDTH // 8) * 5,
+                        y=(SCREEN_HEIGHT // 8) * 5,
+                        direction="STAY",
+                        is_arrow=False,
+                        width=70,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="Stay",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
 
             # Reset components
             self.components = []
