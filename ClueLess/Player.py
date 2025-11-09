@@ -22,7 +22,7 @@ class Player:
 
     ROOM_NAMES = [["Study", None, "Hall", None, "Lounge"],
                 [None, None, None, None, None],
-                ["Library", None, "Billiard Room", None, "Dining Room"],
+                ["Library", None, "Billiard", None, "Dining"],
                 [None, None, None, None, None],
                 ["Conservatory", None, "Ballroom", None, "Kitchen"]]
     
