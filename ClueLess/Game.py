@@ -23,11 +23,6 @@ class Game:
             A log message to output
         running (boolean):
             A flag to represent whether or not the Game is running
-        # Debugging
-        red (integer):
-            Red button counter
-        green (integer):
-            Green button counter
     """
 
     def __init__(self):
@@ -67,10 +62,6 @@ class Game:
 
         # Running
         self.running = False
-
-        # Debugging
-        self.red = 0
-        self.green = 0
 
         ############################
         # ADD GAME ATTRIBUTES HERE #
