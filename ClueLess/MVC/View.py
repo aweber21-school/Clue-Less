@@ -116,14 +116,14 @@ class View:
                 component.activate()
 
     def activateComponent(self, component_id):
-        """Activates a component with a specific component_id. 
+        """Activates a component with a specific component_id.
         If no matching component is found, does nothing"""
         for component in self.components:
             if component.id == component_id:
                 component.activate()
 
     def deactivateComponent(self, component_id):
-        """Deactivates a component with a specific component_id. 
+        """Deactivates a component with a specific component_id.
         If no matching component is found, does nothing"""
         for component in self.components:
             if component.id == component_id:
@@ -138,7 +138,7 @@ class View:
     def deactivateMovementButtons(self):
         """Deactivates the buttons responsible for movement"""
         for component in self.components:
-             if isinstance(component, MovementButton):
+            if isinstance(component, MovementButton):
                 component.deactivate()
 
     def determineAvailableDirections(self):
@@ -149,7 +149,7 @@ class View:
         current_player = self.model.getGame().getCurrentPlayer()
         playerRow, playerCol = current_player.getLocation()
         available = {"UP", "DOWN", "RIGHT", "LEFT", "STAY"}
-        
+
         # Determine if Stay is avaiable
         if not current_player.isInRoom():
             available.remove("STAY")
@@ -164,7 +164,7 @@ class View:
         elif current_player.isInRoom() and len(tilemap[playerRow - 1][playerCol]) != 0:
             # Hallway above is blocked
             available.remove("UP")
-        
+
         # Determine if Down is available
         if playerRow == 4:
             # Bottom Row
@@ -199,7 +199,7 @@ class View:
             available.remove("LEFT")
 
         return available
-    
+
     def prepareMenu(self):
         """
         Prepares the menu view
@@ -779,7 +779,7 @@ class View:
                         # Get the X and Y location for it
                         currentX = startX + (((roomSize + roomSpacing) // 2) * column)
                         currentY = startY + (((roomSize + roomSpacing) // 2) * row)
-                        
+
                         if row % 2 == 0 and column % 2 == 0:
                             # Room
                             self.components.append(
@@ -1151,10 +1151,7 @@ class View:
         pygame.display.flip()
 
     def openSuggestionMenu(self, room):
-        menu = SuggestionMenu(
-            room,
-            x=SCREEN_WIDTH//2,
-            y=SCREEN_HEIGHT//2
-        )
+        menu = SuggestionMenu(room, x=SCREEN_WIDTH // 2, y=SCREEN_HEIGHT // 2)
 
         return menu.open(self.screen)
+
