@@ -214,12 +214,6 @@ class Game:
         ):
             # The turn came from the correct player
 
-            # Debugging
-            if hasattr(turn, "red"):
-                self.red += turn.red
-            if hasattr(turn, "green"):
-                self.green += turn.green
-
             #######################
             # ADD TURN LOGIC HERE #
             #######################
@@ -235,13 +229,24 @@ class Game:
                     self.getCurrentPlayer().setLocation((row, col + 1))
                 elif getattr(turn, "move") == "LEFT":
                     self.getCurrentPlayer().setLocation((row, col - 1))
+                # Log that the player made the move
+                self.log = (
+                    self.findPlayerFromId(turn.playerId).getName()
+                    + " successfully made a move"
+                )
 
-            # Log that the player made the move
-            self.log = (
-                self.findPlayerFromId(turn.playerId).getName()
-                + " successfully made a move"
-            )
+            if hasattr(turn, "suggestion"):
+                (suspect, weapon, room) = getattr(turn, "suggestion")
+                for player in self.players:
+                    if player.getName() == suspect:
+                        player.setRoom(room)
+                        
+                self.log = (
+                    self.findPlayerFromId(turn.playerId).getName()
+                    + f" suggests {suspect}, {weapon}, {room}"
+                )
 
+           
             self.updateTilemap()
             # Move to the next player
             self.nextPlayer()
@@ -262,7 +267,7 @@ class Turn:
     """
 
     # Add potential attributes here so that we know what to expect within a Turn object
-    __slots__ = ["clientPort", "playerId", "red", "green", "move"]
+    __slots__ = ["clientPort", "playerId", "move", "suggestion"]
 
     def __init__(self, **kwargs):
         """

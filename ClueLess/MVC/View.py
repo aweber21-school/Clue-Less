@@ -9,6 +9,7 @@ from ClueLess.MVC.GuiComponents import (
     Button,
     Color,
     Font,
+    SuggestionMenu,
     Text,
     TextBox,
 )
@@ -110,8 +111,23 @@ class View:
                     if component.direction not in availableDirections:
                         component.deactivate()
                         continue
-
+                if component.id in ["SuggestionButton", "SubmitButton"]:
+                    continue
                 component.activate()
+
+    def activateComponent(self, component_id):
+        """Activates a component with a specific component_id. 
+        If no matching component is found, does nothing"""
+        for component in self.components:
+            if component.id == component_id:
+                component.activate()
+
+    def deactivateComponent(self, component_id):
+        """Deactivates a component with a specific component_id. 
+        If no matching component is found, does nothing"""
+        for component in self.components:
+            if component.id == component_id:
+                component.deactivate()
 
     def deactivateAllButtons(self):
         """Deactivates all button components"""
@@ -119,17 +135,23 @@ class View:
             if isinstance(component, Button):
                 component.deactivate()
 
+    def deactivateMovementButtons(self):
+        """Deactivates the buttons responsible for movement"""
+        for component in self.components:
+             if isinstance(component, MovementButton):
+                component.deactivate()
+
     def determineAvailableDirections(self):
         """Determines which movements are available to a player on their turn"""
         # Get current tilemap
         tilemap = self.model.getGame().getTilemap()
         # Get current player's location
-        playerRow, playerCol = self.model.getGame().getCurrentPlayer().getLocation()
+        current_player = self.model.getGame().getCurrentPlayer()
+        playerRow, playerCol = current_player.getLocation()
         available = {"UP", "DOWN", "RIGHT", "LEFT", "STAY"}
-        room_locations = [(0, 0), (2, 0), (4, 0), (0, 2), (2, 2), (4, 2), (0, 4), (2, 4), (4, 4)]
         
         # Determine if Stay is avaiable
-        if (playerRow, playerCol) not in room_locations:
+        if not current_player.isInRoom():
             available.remove("STAY")
 
         # Determine if Up is available
@@ -139,7 +161,7 @@ class View:
         elif tilemap[playerRow - 1][playerCol] is None:
             # Hallway below an empty space
             available.remove("UP")
-        elif (playerRow, playerCol) in room_locations and len(tilemap[playerRow - 1][playerCol]) != 0:
+        elif current_player.isInRoom() and len(tilemap[playerRow - 1][playerCol]) != 0:
             # Hallway above is blocked
             available.remove("UP")
         
@@ -150,7 +172,7 @@ class View:
         elif tilemap[playerRow + 1][playerCol] is None:
             # Hallway above an empty space
             available.remove("DOWN")
-        elif (playerRow, playerCol) in room_locations and len(tilemap[playerRow + 1][playerCol]) != 0:
+        elif current_player.isInRoom() and len(tilemap[playerRow + 1][playerCol]) != 0:
             # Hallway below is blocked
             available.remove("DOWN")
 
@@ -161,7 +183,7 @@ class View:
         elif tilemap[playerRow][playerCol + 1] is None:
             # Hallway to the left of an empty space
             available.remove("RIGHT")
-        elif (playerRow, playerCol) in room_locations and len(tilemap[playerRow][playerCol + 1]) != 0:
+        elif current_player.isInRoom() and len(tilemap[playerRow][playerCol + 1]) != 0:
             # Hallway to the right is blocked
             available.remove("RIGHT")
 
@@ -172,7 +194,7 @@ class View:
         elif tilemap[playerRow][playerCol - 1] is None:
             # Hallway to the right of an empty space
             available.remove("LEFT")
-        elif (playerRow, playerCol) in room_locations and len(tilemap[playerRow][playerCol - 1]) != 0:
+        elif current_player.isInRoom() and len(tilemap[playerRow][playerCol - 1]) != 0:
             # Hallway to the left is blocked
             available.remove("LEFT")
 
@@ -863,7 +885,7 @@ class View:
                 # Counts
                 self.components.append(
                     Text(
-                        id="Counts",
+                        id="PlayerID",
                         x=(SCREEN_WIDTH // 4) * 3,
                         y=(SCREEN_HEIGHT // 4),
                         width=180,
@@ -873,7 +895,7 @@ class View:
                         borderColor=Color.BLACK,
                         inactiveFillColor=Color.BLACK,
                         activeFillColor=Color.BLACK,
-                        text=f"Red: {self.model.game.red} Green: {self.model.game.green}",
+                        text=f"You are {self.model.game.getCurrentPlayer().getName()}",
                         # text=f"{vars(self.model.game)}",
                         textColor=Color.BLACK,
                         textHighlight=None,
@@ -990,6 +1012,44 @@ class View:
                         active=True,
                     )
                 )
+                self.components.append(
+                    Button(
+                        id="SuggestionButton",
+                        x=(SCREEN_WIDTH // 16) * 13,
+                        y=(SCREEN_HEIGHT // 2),
+                        width=200,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="Suggest",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=False,
+                    )
+                )
+                self.components.append(
+                    Button(
+                        id="SubmitButton",
+                        x=(SCREEN_WIDTH // 16) * 13,
+                        y=(SCREEN_HEIGHT // 4) * 3,
+                        width=200,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="Submit Turn",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=False,
+                    )
+                )
 
             # Reset components
             self.components = []
@@ -1089,3 +1149,12 @@ class View:
             component.draw(self.screen)
 
         pygame.display.flip()
+
+    def openSuggestionMenu(self, room):
+        menu = SuggestionMenu(
+            room,
+            x=SCREEN_WIDTH//2,
+            y=SCREEN_HEIGHT//2
+        )
+
+        return menu.open(self.screen)
