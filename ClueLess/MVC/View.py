@@ -895,7 +895,7 @@ class View:
                         borderColor=Color.BLACK,
                         inactiveFillColor=Color.BLACK,
                         activeFillColor=Color.BLACK,
-                        text=f"You are {self.model.game.getCurrentPlayer().getName()}",
+                        text=f"{self.model.game.getCurrentPlayer().getName()}'s Turn",
                         # text=f"{vars(self.model.game)}",
                         textColor=Color.BLACK,
                         textHighlight=None,
