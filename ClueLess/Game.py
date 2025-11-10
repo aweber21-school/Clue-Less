@@ -23,11 +23,6 @@ class Game:
             A log message to output
         running (boolean):
             A flag to represent whether or not the Game is running
-        # Debugging
-        red (integer):
-            Red button counter
-        green (integer):
-            Green button counter
     """
 
     def __init__(self):
@@ -53,25 +48,21 @@ class Game:
         ]
         self.updateTilemap()
 
-        # Initialize self.solution
+        # The solution or "truth" set of cards
         self.solution = None
+        
+        # Feedback to give players who just made a move
+        self.feedback = ""
 
         # Randomly choose "truth" cards
         self.pickSolution()
 
-        # Distribute cards to players (without truth set)
-        self.distributeCards()
-
-        # Log
+        # Log to update the players of the game state
         self.log = ""
 
         # Running
         self.running = False
         self.is_over = False
-
-        # Debugging
-        self.red = 0
-        self.green = 0
 
         ############################
         # ADD GAME ATTRIBUTES HERE #
@@ -147,16 +138,18 @@ class Game:
         while len(allCards) > 0:
             player = self.players[playerIndex]
 
-            # Get a random card
-            card = random.choice(allCards)
+            # Only distribute to real players
+            if player.getPlayerId() is not None:
+                # Get a random card
+                card = random.choice(allCards)
 
-            # Add the card to the player
-            playerCards = player.getCards()
-            playerCards.append(card)
-            player.setCards(playerCards)
+                # Add the card to the player
+                playerCards = player.getCards()
+                playerCards.append(card)
+                player.setCards(playerCards)
 
-            # Remove card from master list
-            allCards.remove(card)
+                # Remove card from master list
+                allCards.remove(card)
 
             # Increment player index
             playerIndex = (playerIndex + 1) % len(self.players)
@@ -173,6 +166,21 @@ class Game:
             log (string):
                 The log for the game
         """
+        self.log = log
+
+    def getFeedback(self):
+        """Gets the feedback"""
+        return self.feedback
+
+    def setFeedback(self, feedback):
+        """
+        Sets the game feedback
+
+        Parameters:
+            feedback (string):
+                The feedback for the game
+        """
+        self.feedback = feedback
 
     def findPlayerFromId(self, playerId):
         """
@@ -190,6 +198,19 @@ class Game:
         """Returns the current player ID"""
         return self.players[self.currentTurnIndex]
 
+    def getPreviousPlayer(self):
+        """Returns the previous player ID"""
+        turnIndex = self.currentTurnIndex
+        while True:
+            # Decrement turn index
+            turnIndex = (turnIndex - 1 + len(self.players)) % len(self.players)
+
+            if self.players[turnIndex].getPlayerId() is not None:
+                # Valid player was found
+                break
+
+        return self.players[turnIndex]
+
     def nextPlayer(self):
         """Sets the current player ID to the next valid player"""
         while True:
@@ -204,6 +225,15 @@ class Game:
     def start(self):
         """Starts the game"""
         self.running = True
+
+        # Randomly choose solution or "truth" cards
+        self.pickSolution()
+
+        # Debugging
+        # print(self.solution)
+
+        # Distribute cards to players (without truth set)
+        self.distributeCards()
 
     def stop(self):
         """Stops the game"""
@@ -249,13 +279,40 @@ class Game:
                 for player in self.players:
                     if player.getName() == suspect:
                         player.setRoom(room)
-
+                        
                 self.log = (
                     self.findPlayerFromId(turn.playerId).getName()
                     + f" suggests {suspect}, {weapon}, {room}"
                 )
 
-            if hasattr(turn, "accusation"):
+                # Suggestion results
+                self.feedback = "No other players have any suggestion cards"
+
+                # Loop through all players starting at the next player and
+                # excluding the current player to search for suggestion cards
+                for player in (
+                    self.players[self.currentTurnIndex + 1 :]
+                    + self.players[0 : self.currentTurnIndex]
+                ):
+                    playerCards = player.getCards()
+
+                    # Look for room first so the player knows to move rooms
+                    if room in playerCards:
+                        # Player has the room card
+                        self.feedback = f"{player.getName()} has the {room} card"
+                        break
+
+                    elif weapon in playerCards:
+                        # Player has the weapon card
+                        self.feedback = f"{player.getName()} has the {weapon} card"
+                        break
+
+                    elif suspect in playerCards:
+                        # Player has the suspect card
+                        self.feedback = f"{player.getName()} has the {suspect} card"
+                        break
+
+           if hasattr(turn, "accusation"):
                 (suspect, weapon, room) = getattr(turn, "accusation")
                 print(suspect, weapon, room)
                 self.log = (
@@ -270,7 +327,6 @@ class Game:
                     return
                 else:
                     self.players[self.currentTurnIndex].lose()
-
             self.updateTilemap()
             # Move to the next player
             self.nextPlayer()

@@ -92,6 +92,10 @@ class Model:
         """Gets the game's log"""
         return self.game.getLog()
 
+    def getFeedback(self):
+        """Gets the game's feedback"""
+        return self.game.getFeedback()
+
     def updatePlayers(self, playerIds):
         """
         Updates the game's players using a list of player IDs
@@ -119,6 +123,10 @@ class Model:
     def isMyTurn(self):
         """Gets whether it's my turn"""
         return self.playerId == self.game.getCurrentPlayer().getPlayerId()
+
+    def wasMyTurn(self):
+        """Gets whether it was my turn"""
+        return self.playerId == self.game.getPreviousPlayer().getPlayerId()
 
     def newTurn(self):
         """Starts a new turn"""
