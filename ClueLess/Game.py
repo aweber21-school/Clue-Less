@@ -135,10 +135,11 @@ class Game:
 
     def distributeCards(self):
         """Removes truth set, then distributes remaining cards to players"""
+        # Combines all of the cards
         allCards = list(Cards.CHARACTERS + Cards.WEAPONS + Cards.ROOMS)
-        for item in self.solution:
-                if item in allCards:
-                    allCards.remove(item)
+
+        # Remove the cards that are part of the solution
+        allCards = [card for card in allCards if card not in self.solution]
 
         playerIndex = 0
         while len(allCards) > 0:
