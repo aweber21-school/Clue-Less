@@ -628,7 +628,6 @@ class Controller:
 
                     # Rename clientPort to playerId for better understanding in
                     # Game class
-                    # turn.playerId = turn.__dict__.pop("clientPort")
                     turn.playerId = getattr(turn, "clientPort")
                     delattr(turn, "clientPort")
 

@@ -20,12 +20,14 @@ class Player:
             The list of cards that this player has
     """
 
-    ROOM_NAMES = [["Study", None, "Hall", None, "Lounge"],
-                [None, None, None, None, None],
-                ["Library", None, "Billiard", None, "Dining"],
-                [None, None, None, None, None],
-                ["Conservatory", None, "Ballroom", None, "Kitchen"]]
-    
+    ROOM_NAMES = [
+        ["Study", None, "Hall", None, "Lounge"],
+        [None, None, None, None, None],
+        ["Library", None, "Billiard", None, "Dining"],
+        [None, None, None, None, None],
+        ["Conservatory", None, "Ballroom", None, "Kitchen"],
+    ]
+
     def __init__(self, name):
         """
         Initializes a new Clue-Less player
@@ -85,14 +87,24 @@ class Player:
 
     def isInRoom(self):
         """Returns whether the player is in a room (vs. a hallway)"""
-        room_locations = [(0, 0), (2, 0), (4, 0), (0, 2), (2, 2), (4, 2), (0, 4), (2, 4), (4, 4)]
+        room_locations = [
+            (0, 0),
+            (2, 0),
+            (4, 0),
+            (0, 2),
+            (2, 2),
+            (4, 2),
+            (0, 4),
+            (2, 4),
+            (4, 4),
+        ]
         return self.location in room_locations
 
     def setRoom(self, room):
         for r in range(len(self.ROOM_NAMES)):
             for c in range(len(self.ROOM_NAMES[r])):
                 if self.ROOM_NAMES[r][c] == room:
-                    self.setLocation((r,c))
+                    self.setLocation((r, c))
 
     def setLocation(self, location):
         """
