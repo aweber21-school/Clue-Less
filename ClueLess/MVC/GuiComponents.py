@@ -756,6 +756,7 @@ class Button(Component):
             active,
         )
 
+
 class MovementButton(Button):
     """
     A movement button that can either show an arrow (for moving) or a label like 'Stay'.
@@ -920,13 +921,19 @@ class MovementButton(Button):
         if self.is_arrow:
             # arrow mode
             pts = self._triangle_points()
-            fill = self.textColor if (self.active and self.isAvailable) else self.borderColor
+            fill = (
+                self.textColor
+                if (self.active and self.isAvailable)
+                else self.borderColor
+            )
             pygame.draw.polygon(surface, fill, pts)
             # optional: crisp outline
             pygame.draw.polygon(surface, self.borderColor, pts, 1)
         else:
             # label mode (e.g., "Stay")
-            rendered = self.font.render(self.text, True, self.textColor, self.textHighlight)
+            rendered = self.font.render(
+                self.text, True, self.textColor, self.textHighlight
+            )
             surface.blit(
                 rendered,
                 (
@@ -941,6 +948,7 @@ class SuggestionMenu:
     Suggestion (suspect, weapon).
     Room is passed in (auto-populated).
     """
+
     def __init__(
         self,
         room,
@@ -968,8 +976,10 @@ class SuggestionMenu:
         self.navigation_buttons = self.initialize_buttons()
         self.suspect_buttons = self.initialize_suspect_buttons()
         self.weapon_buttons = self.initialize_weapon_buttons()
-        self.all_buttons = self.navigation_buttons + self.suspect_buttons + self.weapon_buttons
-    
+        self.all_buttons = (
+            self.navigation_buttons + self.suspect_buttons + self.weapon_buttons
+        )
+
         # State
         self.selected_suspect = None
         self.selected_weapon = None
@@ -977,161 +987,197 @@ class SuggestionMenu:
 
     def initialize_text(self, room):
         text = []
-        text.append(Text(
-            id= "SuggestionText",
-            x = self.x,
-            y = self.y - (self.height // 8) * 3,
-            text="Suggestion"
-        ))
-        text.append(Text(
-            id="SuspectText",
-            x = self.x - (self.width//16) * 7,
-            y = self.y - (self.height // 4),
-            text="Suspect:"
-        ))
-        text.append(Text(
-            id="WeaponText",
-            x = self.x - (self.width//16) * 7,
-            y = self.y,
-            text="Weapon:"
-        ))
-        text.append(Text(
-            id="RoomText",
-            x = self.x,
-            y = self.y + (self.height // 4),
-            text=f"Room: {room}"
-        ))
+        text.append(
+            Text(
+                id="SuggestionText",
+                x=self.x,
+                y=self.y - (self.height // 8) * 3,
+                text="Suggestion",
+            )
+        )
+        text.append(
+            Text(
+                id="SuspectText",
+                x=self.x - (self.width // 16) * 7,
+                y=self.y - (self.height // 4),
+                text="Suspect:",
+            )
+        )
+        text.append(
+            Text(
+                id="WeaponText",
+                x=self.x - (self.width // 16) * 7,
+                y=self.y,
+                text="Weapon:",
+            )
+        )
+        text.append(
+            Text(
+                id="RoomText",
+                x=self.x,
+                y=self.y + (self.height // 4),
+                text=f"Room: {room}",
+            )
+        )
 
         return text
-    
+
     def initialize_buttons(self):
         buttons = []
-        buttons.append(Button(
-            "SuggestionSubmitButton",
-            x = self.x + (self.width // 8) * 3,
-            y = self.y + (self.height // 8) * 3,
-            text="Submit",
-            active=False
-        ))
+        buttons.append(
+            Button(
+                "SuggestionSubmitButton",
+                x=self.x + (self.width // 8) * 3,
+                y=self.y + (self.height // 8) * 3,
+                text="Submit",
+                active=False,
+            )
+        )
 
-        buttons.append(Button(
-            "BackButton",
-            x = self.x - (self.width // 16) * 7,
-            y = self.y - (self.height // 16) * 7,
-            width=100,
-            height=40,
-            text="Back",
-            active=True
-        ))
+        buttons.append(
+            Button(
+                "BackButton",
+                x=self.x - (self.width // 16) * 7,
+                y=self.y - (self.height // 16) * 7,
+                width=100,
+                height=40,
+                text="Back",
+                active=True,
+            )
+        )
         return buttons
-    
+
     def initialize_suspect_buttons(self):
-        buttons=[]
-        buttons.append(Button(
-            "MissScarlett",
-            x = self.x - (self.width // 16) *  5,
-            y = self.y - (self.height // 4),
-            width=140,
-            text="Scarlett",
-            active=False
-        ))
-        buttons.append(Button(
-            "ColonelMustard",
-            x = self.x - (self.width // 16) * 3,
-            y = self.y - (self.height // 4) ,
-            width=140,
-            text="Mustard",
-            active=False
-        ))
-        buttons.append(Button(
-            "MrsWhite",
-            x = self.x - (self.width // 16),
-            y = self.y - (self.height // 4) ,
-            width=140,
-            text="White",
-            active=False
-        ))
-        buttons.append(Button(
-            "MrGreen",
-            x = self.x + (self.width // 16),
-            y = self.y - (self.height // 4) ,
-            width=140,
-            text="Green",
-            active=False
-        ))
-        buttons.append(Button(
-            "MrsPeacock",
-            x = self.x + (self.width // 16) * 3,
-            y = self.y - (self.height // 4) ,
-            width=140,
-            text="Peacock",
-            active=False
-        ))
-        buttons.append(Button(
-            "ProfessorPlum",
-            x = self.x + (self.width // 16) *  5,
-            y = self.y - (self.height // 4) ,
-            width=140,
-            text="Plum",
-            active=False
-        ))
+        buttons = []
+        buttons.append(
+            Button(
+                "MissScarlett",
+                x=self.x - (self.width // 16) * 5,
+                y=self.y - (self.height // 4),
+                width=140,
+                text="Scarlett",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "ColonelMustard",
+                x=self.x - (self.width // 16) * 3,
+                y=self.y - (self.height // 4),
+                width=140,
+                text="Mustard",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "MrsWhite",
+                x=self.x - (self.width // 16),
+                y=self.y - (self.height // 4),
+                width=140,
+                text="White",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "MrGreen",
+                x=self.x + (self.width // 16),
+                y=self.y - (self.height // 4),
+                width=140,
+                text="Green",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "MrsPeacock",
+                x=self.x + (self.width // 16) * 3,
+                y=self.y - (self.height // 4),
+                width=140,
+                text="Peacock",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "ProfessorPlum",
+                x=self.x + (self.width // 16) * 5,
+                y=self.y - (self.height // 4),
+                width=140,
+                text="Plum",
+                active=False,
+            )
+        )
 
         return buttons
-    
+
     def initialize_weapon_buttons(self):
-        buttons=[]
- 
-        buttons.append(Button(
-            "Candlestick",
-            x = self.x - (self.width // 16) *  5,
-            y = self.y,
-            width=140,
-            text="Candlestick",
-            active=False
-        ))
-        buttons.append(Button(
-            "Dagger",
-            x = self.x - (self.width // 16) * 3,
-            y = self.y,
-            width=140,
-            text="Dagger",
-            active=False
-        ))
-        buttons.append(Button(
-            "LeadPipe",
-            x = self.x - (self.width // 16),
-            y = self.y,
-            width=140,
-            text="Lead Pipe",
-            active=False
-        ))
-        buttons.append(Button(
-            "Revolver",
-            x = self.x + (self.width // 16),
-            y = self.y,
-            width=140,
-            text="Revolver",
-            active=False
-        ))
-        buttons.append(Button(
-            "Rope",
-            x = self.x + (self.width // 16) * 3,
-            y = self.y,
-            width=140,
-            text="Rope",
-            active=False
-        ))
-        buttons.append(Button(
-            "Wrench",
-            x = self.x + (self.width // 16) *  5,
-            y = self.y,
-            width=140,
-            text="Wrench",
-            active=False
-        ))
+        buttons = []
+
+        buttons.append(
+            Button(
+                "Candlestick",
+                x=self.x - (self.width // 16) * 5,
+                y=self.y,
+                width=140,
+                text="Candlestick",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "Dagger",
+                x=self.x - (self.width // 16) * 3,
+                y=self.y,
+                width=140,
+                text="Dagger",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "LeadPipe",
+                x=self.x - (self.width // 16),
+                y=self.y,
+                width=140,
+                text="Lead Pipe",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "Revolver",
+                x=self.x + (self.width // 16),
+                y=self.y,
+                width=140,
+                text="Revolver",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "Rope",
+                x=self.x + (self.width // 16) * 3,
+                y=self.y,
+                width=140,
+                text="Rope",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "Wrench",
+                x=self.x + (self.width // 16) * 5,
+                y=self.y,
+                width=140,
+                text="Wrench",
+                active=False,
+            )
+        )
 
         return buttons
-    
+
     def draw(self, surface):
         # Draw the fill and the border
         pygame.draw.rect(
@@ -1184,7 +1230,7 @@ class SuggestionMenu:
         for component in self.all_buttons:
             if component.getArea().collidepoint(point):
                 return component
-    
+
     def enableComponent(self, component_name):
         for component in self.all_buttons:
             if component.id == component_name:
@@ -1216,9 +1262,16 @@ class SuggestionMenu:
                             if component.id == "BackButton":
                                 running = False
                                 result = None
-                            elif component.id == "SuggestionSubmitButton" and component.active:
+                            elif (
+                                component.id == "SuggestionSubmitButton"
+                                and component.active
+                            ):
                                 running = False
-                                result = (self.selected_suspect, self.selected_weapon, self.selected_room)
+                                result = (
+                                    self.selected_suspect,
+                                    self.selected_weapon,
+                                    self.selected_room,
+                                )
                             elif component in self.suspect_buttons:
                                 if not component.active:
                                     # Enable this component and update self.selected_suspect, disable all other suspects
@@ -1245,6 +1298,470 @@ class SuggestionMenu:
                         pass
 
             if self.selected_suspect is not None and self.selected_weapon is not None:
+                self.enableComponent("SuggestionSubmitButton")
+
+            self.draw(surface)
+            clock.tick(60)
+
+        return result
+
+
+class AccusationMenu:
+    """
+    Suggestion (suspect, weapon, room).
+    """
+
+    def __init__(
+        self,
+        x=0,
+        y=0,
+        width=1180,
+        height=680,
+        borderThickness=2,
+        borderRadius=12,
+        borderColor=Color.BLACK,
+        fillColor=Color.GRAY,
+    ):
+        # Shape
+        self.width = width
+        self.height = height
+        self.x = x
+        self.y = y
+        self.borderThickness = borderThickness
+        self.borderRadius = borderRadius
+        self.borderColor = borderColor
+        self.fillColor = fillColor
+
+        # Layout
+        self.text = self.initialize_text()
+        self.navigation_buttons = self.initialize_buttons()
+        self.suspect_buttons = self.initialize_suspect_buttons()
+        self.weapon_buttons = self.initialize_weapon_buttons()
+        self.room_buttons = self.initialize_room_buttons()
+        self.all_buttons = (
+            self.navigation_buttons
+            + self.suspect_buttons
+            + self.weapon_buttons
+            + self.room_buttons
+        )
+
+        # State
+        self.selected_suspect = None
+        self.selected_weapon = None
+        self.selected_room = None
+
+    def initialize_text(self):
+        text = []
+        text.append(
+            Text(
+                id="SuggestionText",
+                x=self.x,
+                y=self.y - (self.height // 8) * 3,
+                text="Suggestion",
+            )
+        )
+        text.append(
+            Text(
+                id="SuspectText",
+                x=self.x - (self.width // 16) * 7,
+                y=self.y - (self.height // 4),
+                text="Suspect:",
+            )
+        )
+        text.append(
+            Text(
+                id="WeaponText",
+                x=self.x - (self.width // 16) * 7,
+                y=self.y,
+                text="Weapon:",
+            )
+        )
+        text.append(
+            Text(
+                id="RoomText",
+                x=self.x - (self.width // 16) * 7,
+                y=self.y + (self.height // 4),
+                text="Room:",
+            )
+        )
+
+        return text
+
+    def initialize_buttons(self):
+        buttons = []
+        buttons.append(
+            Button(
+                "SuggestionSubmitButton",
+                x=self.x + (self.width // 8) * 3,
+                y=self.y + (self.height // 8) * 3,
+                text="Submit",
+                active=False,
+            )
+        )
+
+        buttons.append(
+            Button(
+                "BackButton",
+                x=self.x - (self.width // 16) * 7,
+                y=self.y - (self.height // 16) * 7,
+                width=100,
+                height=40,
+                text="Back",
+                active=True,
+            )
+        )
+        return buttons
+
+    def initialize_suspect_buttons(self):
+        buttons = []
+        buttons.append(
+            Button(
+                "MissScarlett",
+                x=self.x - (self.width // 16) * 5,
+                y=self.y - (self.height // 4),
+                width=140,
+                text="Scarlett",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "ColonelMustard",
+                x=self.x - (self.width // 16) * 3,
+                y=self.y - (self.height // 4),
+                width=140,
+                text="Mustard",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "MrsWhite",
+                x=self.x - (self.width // 16),
+                y=self.y - (self.height // 4),
+                width=140,
+                text="White",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "MrGreen",
+                x=self.x + (self.width // 16),
+                y=self.y - (self.height // 4),
+                width=140,
+                text="Green",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "MrsPeacock",
+                x=self.x + (self.width // 16) * 3,
+                y=self.y - (self.height // 4),
+                width=140,
+                text="Peacock",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "ProfessorPlum",
+                x=self.x + (self.width // 16) * 5,
+                y=self.y - (self.height // 4),
+                width=140,
+                text="Plum",
+                active=False,
+            )
+        )
+
+        return buttons
+
+    def initialize_weapon_buttons(self):
+        buttons = []
+
+        buttons.append(
+            Button(
+                "Candlestick",
+                x=self.x - (self.width // 16) * 5,
+                y=self.y,
+                width=140,
+                text="Candlestick",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "Dagger",
+                x=self.x - (self.width // 16) * 3,
+                y=self.y,
+                width=140,
+                text="Dagger",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "LeadPipe",
+                x=self.x - (self.width // 16),
+                y=self.y,
+                width=140,
+                text="Lead Pipe",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "Revolver",
+                x=self.x + (self.width // 16),
+                y=self.y,
+                width=140,
+                text="Revolver",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "Rope",
+                x=self.x + (self.width // 16) * 3,
+                y=self.y,
+                width=140,
+                text="Rope",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "Wrench",
+                x=self.x + (self.width // 16) * 5,
+                y=self.y,
+                width=140,
+                text="Wrench",
+                active=False,
+            )
+        )
+
+        return buttons
+
+    def initialize_room_buttons(self):
+        buttons = []
+
+        buttons.append(
+            Button(
+                "Study",
+                x=self.x - (self.width // 16) * 5,
+                y=self.y + (self.height // 4),
+                width=140,
+                text="Study",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "Hall",
+                x=self.x - (self.width // 16) * 3,
+                y=self.y + (self.height // 4),
+                width=140,
+                text="Hall",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "Lounge",
+                x=self.x - (self.width // 16),
+                y=self.y + (self.height // 4),
+                width=140,
+                text="Lounge",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "Library",
+                x=self.x + (self.width // 16),
+                y=self.y + (self.height // 4),
+                width=140,
+                text="Library",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "Billiard",
+                x=self.x + (self.width // 16) * 3,
+                y=self.y + (self.height // 4),
+                width=140,
+                text="Billiard",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "Conservatory",
+                x=self.x - (self.width // 16) * 5,
+                y=self.y + (self.height // 8) * 3,
+                width=140,
+                text="Conservatory",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "Ballroom",
+                x=self.x - (self.width // 16) * 3,
+                y=self.y + (self.height // 8) * 3,
+                width=140,
+                text="Ballroom",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
+                "Kitchen",
+                x=self.x - (self.width // 16),
+                y=self.y + (self.height // 8) * 3,
+                width=140,
+                text="Kitchen",
+                active=False,
+            )
+        )
+        return buttons
+
+    def draw(self, surface):
+        # Draw the fill and the border
+        pygame.draw.rect(
+            surface,
+            self.fillColor,
+            pygame.Rect(
+                self.x - (self.width // 2),
+                self.y - (self.height // 2),
+                self.width,
+                self.height,
+            ),
+            0,
+            self.borderRadius,
+        )
+        pygame.draw.rect(
+            surface,
+            self.borderColor,
+            pygame.Rect(
+                self.x - (self.width // 2),
+                self.y - (self.height // 2),
+                self.width,
+                self.height,
+            ),
+            self.borderThickness,
+            self.borderRadius,
+        )
+
+        for text in self.text:
+            text.draw(surface)
+
+        for button in self.navigation_buttons:
+            button.draw(surface)
+
+        for button in self.suspect_buttons:
+            button.draw(surface)
+
+        for button in self.weapon_buttons:
+            button.draw(surface)
+
+        for button in self.room_buttons:
+            button.draw(surface)
+
+        pygame.display.flip()
+
+    def getClickedComponent(self, point):
+        """
+        Gets the clicked component of the given point
+
+        Parameters:
+            point (tuple):
+                The x and y coordinates of a point to find a component at
+        """
+        for component in self.all_buttons:
+            if component.getArea().collidepoint(point):
+                return component
+
+    def enableComponent(self, component_name):
+        for component in self.all_buttons:
+            if component.id == component_name:
+                component.active = True
+
+    def open(self, surface):
+        """Run a blocking loop until submit/cancel. Returns dict or None."""
+        clock = pygame.time.Clock()
+        running = True
+        result = None
+
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    # bubble up quit; treat as cancel so caller can handle app shutdown separately
+                    running = False
+                    result = None
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
+                        result = None
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    # Mouse button clicked
+                    if event.button == 1:
+                        # Left mouse button clicked
+                        component = self.getClickedComponent(event.pos)
+                        if component is not None:
+                            # A component was clicked
+                            if component.id == "BackButton":
+                                running = False
+                                result = None
+                            elif (
+                                component.id == "SuggestionSubmitButton"
+                                and component.active
+                            ):
+                                running = False
+                                result = (
+                                    self.selected_suspect,
+                                    self.selected_weapon,
+                                    self.selected_room,
+                                )
+                            elif component in self.suspect_buttons:
+                                if not component.active:
+                                    # Enable this component and update self.selected_suspect, disable all other suspects
+                                    self.selected_suspect = component.id
+                                    for other_component in self.suspect_buttons:
+                                        other_component.active = False
+                                    component.active = True
+                            elif component in self.weapon_buttons:
+                                if not component.active:
+                                    # Enable this component and update self.selected_weapon, disable all other weapons
+                                    self.selected_weapon = component.id
+                                    for other_component in self.weapon_buttons:
+                                        other_component.active = False
+                                    component.active = True
+                            elif component in self.room_buttons:
+                                if not component.active:
+                                    # Enable this component and update self.selected_weapon, disable all other weapons
+                                    self.selected_room = component.id
+                                    for other_component in self.room_buttons:
+                                        other_component.active = False
+                                    component.active = True
+                            else:
+                                # Any other component was clicked
+                                pass
+                    elif event.button == 2:
+                        # Right mouse button clicked
+                        pass
+
+                    else:
+                        # Any other mouse button clicked
+                        pass
+
+            if (
+                self.selected_suspect is not None
+                and self.selected_weapon is not None
+                and self.selected_room is not None
+            ):
                 self.enableComponent("SuggestionSubmitButton")
 
             self.draw(surface)

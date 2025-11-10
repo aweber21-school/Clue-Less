@@ -240,13 +240,12 @@ class Game:
                 for player in self.players:
                     if player.getName() == suspect:
                         player.setRoom(room)
-                        
+
                 self.log = (
                     self.findPlayerFromId(turn.playerId).getName()
                     + f" suggests {suspect}, {weapon}, {room}"
                 )
 
-           
             self.updateTilemap()
             # Move to the next player
             self.nextPlayer()
