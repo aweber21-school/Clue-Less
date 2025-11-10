@@ -79,7 +79,7 @@ class Player:
 
     def lose(self):
         self.lost = True
-        
+
     def getLocation(self):
         """Gets the player's location"""
         return self.location

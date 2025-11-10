@@ -55,7 +55,7 @@ class Game:
 
         # Initialize self.solution
         self.solution = None
-        
+
         # Randomly choose "truth" cards
         self.pickSolution()
 
@@ -67,6 +67,7 @@ class Game:
 
         # Running
         self.running = False
+        self.is_over = False
 
         # Debugging
         self.red = 0
@@ -264,10 +265,8 @@ class Game:
 
                 # Determine win or loss
                 if (suspect, weapon, room) == self.solution:
-                    self.log = (
-                    self.findPlayerFromId(turn.playerId).getName()
-                    + " wins!"
-                )
+                    self.log = self.findPlayerFromId(turn.playerId).getName() + " wins!"
+                    self.is_over = True
                     return
                 else:
                     self.players[self.currentTurnIndex].lose()
