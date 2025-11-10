@@ -882,10 +882,10 @@ class View:
 
             def prepareTurnDisplay():
                 """Prepares the turn display"""
-                # Counts
+                # Log
                 self.components.append(
                     Text(
-                        id="PlayerID",
+                        id="LogText",
                         x=(SCREEN_WIDTH // 4) * 3,
                         y=(SCREEN_HEIGHT // 4),
                         width=180,
@@ -895,8 +895,28 @@ class View:
                         borderColor=Color.BLACK,
                         inactiveFillColor=Color.BLACK,
                         activeFillColor=Color.BLACK,
+                        text=self.model.getLog(),
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=False,
+                    )
+                )
+
+                # Player ID whose turn it is
+                self.components.append(
+                    Text(
+                        id="PlayerID",
+                        x=(SCREEN_WIDTH // 4) * 3,
+                        y=(SCREEN_HEIGHT // 4) + 80,
+                        width=180,
+                        height=60,
+                        borderThickness=0,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.BLACK,
+                        activeFillColor=Color.BLACK,
                         text=f"{self.model.game.getCurrentPlayer().getName()}'s Turn",
-                        # text=f"{vars(self.model.game)}",
                         textColor=Color.BLACK,
                         textHighlight=None,
                         font=Font.DEFAULT,
@@ -1102,10 +1122,10 @@ class View:
             # Turn Interaction
             prepareTurnDisplay()
 
-            # Log
+            # Feedback
             self.components.append(
                 Text(
-                    id="LogText",
+                    id="FeedbackText",
                     x=(SCREEN_WIDTH // 4) * 3,
                     y=(SCREEN_HEIGHT // 10) * 9,
                     width=180,
@@ -1115,7 +1135,7 @@ class View:
                     borderColor=Color.BLACK,
                     inactiveFillColor=Color.BLACK,
                     activeFillColor=Color.BLACK,
-                    text=self.model.getLog(),
+                    text=self.model.getFeedback() if self.model.wasMyTurn() else "",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
@@ -1154,4 +1174,3 @@ class View:
         menu = SuggestionMenu(room, x=SCREEN_WIDTH // 2, y=SCREEN_HEIGHT // 2)
 
         return menu.open(self.screen)
-
