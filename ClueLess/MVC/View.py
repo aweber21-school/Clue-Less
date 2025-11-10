@@ -5,6 +5,7 @@ from ClueLess.MVC.GuiComponents import (
     SCREEN_HEIGHT,
     SCREEN_WIDTH,
     AccusationMenu,
+    GameOverMenu,
     MovementButton,
     Box,
     Button,
@@ -1195,8 +1196,13 @@ class View:
 
         return menu.open(self.screen)
 
-
     def openAccusationMenu(self):
         menu = AccusationMenu(x=SCREEN_WIDTH // 2, y=SCREEN_HEIGHT // 2)
 
         return menu.open(self.screen)
+
+    def openGameOver(self):
+        menu = GameOverMenu(
+            self.model.game.winner, x=SCREEN_WIDTH // 2, y=SCREEN_HEIGHT // 2
+        )
+        menu.open(self.screen)

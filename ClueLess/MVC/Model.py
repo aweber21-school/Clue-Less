@@ -152,7 +152,7 @@ class Model:
             # No move to make
             return
 
-        self.game.makeMove(turn)
+        return self.game.makeMove(turn)
 
     def updateGame(self, game):
         """

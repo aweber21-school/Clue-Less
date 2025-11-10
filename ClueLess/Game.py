@@ -3,6 +3,8 @@ import random
 from ClueLess.Cards import Cards
 from ClueLess.Player import Player
 
+GAME_OVER = "GAME OVER MESSAGE"
+
 
 class Game:
     """
@@ -50,7 +52,8 @@ class Game:
 
         # The solution or "truth" set of cards
         self.solution = None
-        
+        self.winner = None
+
         # Feedback to give players who just made a move
         self.feedback = ""
 
@@ -213,6 +216,16 @@ class Game:
 
     def nextPlayer(self):
         """Sets the current player ID to the next valid player"""
+        game_is_over = True
+        for player in self.players:
+            # Check to see if all players have lost
+            if player.getPlayerId() is not None:
+                if not player.lost:
+                    game_is_over = False
+
+        if game_is_over:
+            return self.endGame()
+
         while True:
             # Increment current player index
             self.currentTurnIndex = (self.currentTurnIndex + 1) % len(self.players)
@@ -220,7 +233,7 @@ class Game:
             if self.getCurrentPlayer().getPlayerId() is not None:
                 if not self.getCurrentPlayer().lost:
                     # Valid player was found
-                    return
+                    return None
 
     def start(self):
         """Starts the game"""
@@ -279,7 +292,7 @@ class Game:
                 for player in self.players:
                     if player.getName() == suspect:
                         player.setRoom(room)
-                        
+
                 self.log = (
                     self.findPlayerFromId(turn.playerId).getName()
                     + f" suggests {suspect}, {weapon}, {room}"
@@ -312,7 +325,7 @@ class Game:
                         self.feedback = f"{player.getName()} has the {suspect} card"
                         break
 
-           if hasattr(turn, "accusation"):
+            if hasattr(turn, "accusation"):
                 (suspect, weapon, room) = getattr(turn, "accusation")
                 print(suspect, weapon, room)
                 self.log = (
@@ -323,17 +336,22 @@ class Game:
                 # Determine win or loss
                 if (suspect, weapon, room) == self.solution:
                     self.log = self.findPlayerFromId(turn.playerId).getName() + " wins!"
-                    self.is_over = True
-                    return
+                    return self.endGame(self.findPlayerFromId(turn.playerId).getName())
                 else:
                     self.players[self.currentTurnIndex].lose()
+
             self.updateTilemap()
             # Move to the next player
-            self.nextPlayer()
+            if self.nextPlayer() is not None:
+                return self.endGame()
 
         else:
             # The turn came from the wrong player
             pass
+
+    def endGame(self, winner=None):
+        self.winner = winner
+        return GAME_OVER
 
 
 class Turn:

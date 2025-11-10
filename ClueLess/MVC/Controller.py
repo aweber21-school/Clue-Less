@@ -11,7 +11,7 @@ from ClueLess.Events import (
     SERVER_DISCONNECTED_EVENT,
     SERVER_MESSAGE_RECEIVED_EVENT,
 )
-from ClueLess.Game import Turn
+from ClueLess.Game import GAME_OVER, Turn
 from ClueLess.States import AppState, GameState, MenuState
 
 
@@ -671,7 +671,9 @@ class Controller:
 
                     # Update players and make the move
                     self.model.updatePlayers(playerIds)
-                    self.model.makeMove(turn)
+                    if self.model.makeMove(turn) == GAME_OVER:
+                        self.view.openGameOver()
+                        return
 
                     # Broadcast to clients
                     self.network.sendToClients(self.model.getGame())

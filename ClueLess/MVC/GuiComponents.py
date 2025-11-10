@@ -1598,6 +1598,16 @@ class AccusationMenu:
         )
         buttons.append(
             Button(
+                "Dining",
+                x=self.x + (self.width // 16) * 5,
+                y=self.y + (self.height // 4),
+                width=140,
+                text="Dining",
+                active=False,
+            )
+        )
+        buttons.append(
+            Button(
                 "Conservatory",
                 x=self.x - (self.width // 16) * 5,
                 y=self.y + (self.height // 8) * 3,
@@ -1764,6 +1774,181 @@ class AccusationMenu:
             ):
                 self.enableComponent("SuggestionSubmitButton")
 
+            self.draw(surface)
+            clock.tick(60)
+
+        return result
+
+
+class GameOverMenu:
+    """ """
+
+    def __init__(
+        self,
+        winner=None,
+        x=0,
+        y=0,
+        width=1180,
+        height=680,
+        borderThickness=2,
+        borderRadius=12,
+        borderColor=Color.BLACK,
+        fillColor=Color.GRAY,
+    ):
+        # Shape
+        self.width = width
+        self.height = height
+        self.x = x
+        self.y = y
+        self.borderThickness = borderThickness
+        self.borderRadius = borderRadius
+        self.borderColor = borderColor
+        self.fillColor = fillColor
+
+        # Layout
+        self.winner = winner
+        self.text = self.initialize_text()
+        self.buttons = self.initialize_buttons()
+
+        # State
+        self.selected_suspect = None
+        self.selected_weapon = None
+        self.selected_room = None
+
+    def initialize_text(self):
+        text = []
+        text.append(
+            Text(
+                id="GameOver",
+                x=self.x,
+                y=self.y - (self.height // 8) * 3,
+                text="Game Over",
+            )
+        )
+
+        if self.winner is not None:
+            winner_text = f"{self.winner} wins!"
+        else:
+            winner_text = "Everyone lost"
+
+        text.append(
+            Text(
+                id="Announcement",
+                x=self.x,
+                y=self.y,
+                text=winner_text,
+            )
+        )
+
+        return text
+
+    def initialize_buttons(self):
+        buttons = []
+        buttons.append(
+            Button(
+                "OkButton",
+                x=self.x + (self.width // 8) * 3,
+                y=self.y + (self.height // 8) * 3,
+                text="Ok",
+                active=False,
+            )
+        )
+
+        buttons.append(
+            Button(
+                "BackButton",
+                x=self.x - (self.width // 16) * 7,
+                y=self.y - (self.height // 16) * 7,
+                width=100,
+                height=40,
+                text="Back",
+                active=True,
+            )
+        )
+        return buttons
+
+    def draw(self, surface):
+        # Draw the fill and the border
+        pygame.draw.rect(
+            surface,
+            self.fillColor,
+            pygame.Rect(
+                self.x - (self.width // 2),
+                self.y - (self.height // 2),
+                self.width,
+                self.height,
+            ),
+            0,
+            self.borderRadius,
+        )
+        pygame.draw.rect(
+            surface,
+            self.borderColor,
+            pygame.Rect(
+                self.x - (self.width // 2),
+                self.y - (self.height // 2),
+                self.width,
+                self.height,
+            ),
+            self.borderThickness,
+            self.borderRadius,
+        )
+
+        for text in self.text:
+            text.draw(surface)
+
+        for button in self.buttons:
+            button.draw(surface)
+
+        pygame.display.flip()
+
+    def getClickedComponent(self, point):
+        """
+        Gets the clicked component of the given point
+
+        Parameters:
+            point (tuple):
+                The x and y coordinates of a point to find a component at
+        """
+        for component in self.buttons:
+            if component.getArea().collidepoint(point):
+                return component
+
+    def open(self, surface):
+        """Run a blocking loop until submit/cancel. Returns dict or None."""
+        clock = pygame.time.Clock()
+        running = True
+        result = None
+
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    # bubble up quit; treat as cancel so caller can handle app shutdown separately
+                    running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    # Mouse button clicked
+                    if event.button == 1:
+                        # Left mouse button clicked
+                        component = self.getClickedComponent(event.pos)
+                        if component is not None:
+                            # A component was clicked
+                            if component.id == "BackButton":
+                                running = False
+                            elif component.id == "OkButton":
+                                running = False
+                            else:
+                                # Any other component was clicked
+                                pass
+                    elif event.button == 2:
+                        # Right mouse button clicked
+                        pass
+
+                    else:
+                        # Any other mouse button clicked
+                        pass
             self.draw(surface)
             clock.tick(60)
 
