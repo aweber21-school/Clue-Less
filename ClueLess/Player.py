@@ -42,7 +42,7 @@ class Player:
         self.color = CHARACTER_COLORS[self.name]
 
         self.location = STARTING_LOCATIONS[self.name]
-
+        self.lost = False
         self.cards = []
 
     def getName(self):
@@ -77,6 +77,9 @@ class Player:
         """
         self.color = color
 
+    def lose(self):
+        self.lost = True
+        
     def getLocation(self):
         """Gets the player's location"""
         return self.location

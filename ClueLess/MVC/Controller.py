@@ -601,6 +601,12 @@ class Controller:
                                         self.view.deactivateComponent(
                                             "SuggestionButton"
                                         )
+
+                                        # Don't allow suggestion and accusation
+                                        self.view.deactivateComponent(
+                                            "AccusationButton"
+                                        )
+
                                         self.view.activateComponent("SubmitButton")
 
                             elif component.id == "AccusationButton":
@@ -611,10 +617,14 @@ class Controller:
                                             self.pending_turn, "accusation", accusation
                                         )
 
-                                        # After suggestion, allow submit
+                                        # After suggestion, force submit
                                         self.view.deactivateComponent(
                                             "AccusationButton"
                                         )
+                                        self.view.deactivateComponent(
+                                            "SuggestionButton"
+                                        )
+                                        self.view.deactivateMovementButtons()
                                         self.view.activateComponent("SubmitButton")
 
                             # Submit (requires movement, and suggestion if we ended in a room)

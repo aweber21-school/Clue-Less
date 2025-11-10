@@ -132,6 +132,7 @@ class Game:
             random.choice(Cards.WEAPONS),
             random.choice(Cards.ROOMS),
         )
+        print(self.solution)
 
     def distributeCards(self):
         """Removes truth set, then distributes remaining cards to players"""
@@ -195,8 +196,9 @@ class Game:
             self.currentTurnIndex = (self.currentTurnIndex + 1) % len(self.players)
 
             if self.getCurrentPlayer().getPlayerId() is not None:
-                # Valid player was found
-                return
+                if not self.getCurrentPlayer().lost:
+                    # Valid player was found
+                    return
 
     def start(self):
         """Starts the game"""
@@ -252,6 +254,24 @@ class Game:
                     + f" suggests {suspect}, {weapon}, {room}"
                 )
 
+            if hasattr(turn, "accusation"):
+                (suspect, weapon, room) = getattr(turn, "accusation")
+                print(suspect, weapon, room)
+                self.log = (
+                    self.findPlayerFromId(turn.playerId).getName()
+                    + f" accuses {suspect}, {weapon}, {room}"
+                )
+
+                # Determine win or loss
+                if (suspect, weapon, room) == self.solution:
+                    self.log = (
+                    self.findPlayerFromId(turn.playerId).getName()
+                    + " wins!"
+                )
+                    return
+                else:
+                    self.players[self.currentTurnIndex].lose()
+
             self.updateTilemap()
             # Move to the next player
             self.nextPlayer()
@@ -272,7 +292,7 @@ class Turn:
     """
 
     # Add potential attributes here so that we know what to expect within a Turn object
-    __slots__ = ["clientPort", "playerId", "move", "suggestion"]
+    __slots__ = ["clientPort", "playerId", "move", "suggestion", "accusation"]
 
     def __init__(self, **kwargs):
         """

@@ -1354,10 +1354,10 @@ class AccusationMenu:
         text = []
         text.append(
             Text(
-                id="SuggestionText",
+                id="AccusationText",
                 x=self.x,
                 y=self.y - (self.height // 8) * 3,
-                text="Suggestion",
+                text="Accusation",
             )
         )
         text.append(
