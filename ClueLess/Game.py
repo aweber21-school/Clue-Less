@@ -53,11 +53,13 @@ class Game:
         ]
         self.updateTilemap()
 
-        # Solution
+        # Initialize self.solution
         self.solution = None
+        
+        # Randomly choose "truth" cards
         self.pickSolution()
 
-        # Distribute cards to all players
+        # Distribute cards to players (without truth set)
         self.distributeCards()
 
         # Log
@@ -132,8 +134,12 @@ class Game:
         )
 
     def distributeCards(self):
-        """Distributes cards to all of the players"""
+        """Removes truth set, then distributes remaining cards to players"""
+        # Combines all of the cards
         allCards = list(Cards.CHARACTERS + Cards.WEAPONS + Cards.ROOMS)
+
+        # Remove the cards that are part of the solution
+        allCards = [card for card in allCards if card not in self.solution]
 
         playerIndex = 0
         while len(allCards) > 0:

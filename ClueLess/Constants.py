@@ -23,6 +23,7 @@ LOCATION_NAMES = [
     ],
 ]
 
+"""Origin is Study (0,0) (-y,x)"""
 STARTING_LOCATIONS = {
     "MissScarlett": (0, 3),
     "ColonelMustard": (1, 4),
