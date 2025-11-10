@@ -53,11 +53,13 @@ class Game:
         ]
         self.updateTilemap()
 
-        # Solution
+        # Initialize self.solution
         self.solution = None
+        
+        # Randomly choose "truth" cards
         self.pickSolution()
 
-        # Distribute cards to all players
+        # Distribute cards to players (without truth set)
         self.distributeCards()
 
         # Log
@@ -132,26 +134,30 @@ class Game:
         )
 
     def distributeCards(self):
-        """Distributes cards to all of the players"""
+        """Removes truth set, then distributes remaining cards to active players"""
         allCards = list(Cards.CHARACTERS + Cards.WEAPONS + Cards.ROOMS)
+        for item in self.solution:
+            if item in allCards:
+                allCards.remove(item)
+
+        # Active players (fallback to all players if none have been assigned yet)
+        active_players = [p for p in self.players if p.getPlayerId() is not None]
+        if not active_players:
+            active_players = self.players  # avoids modulo/index errors during early init
 
         playerIndex = 0
         while len(allCards) > 0:
-            player = self.players[playerIndex]
+            player = active_players[playerIndex]
 
-            # Get a random card
             card = random.choice(allCards)
 
-            # Add the card to the player
             playerCards = player.getCards()
             playerCards.append(card)
             player.setCards(playerCards)
 
-            # Remove card from master list
             allCards.remove(card)
 
-            # Increment player index
-            playerIndex = (playerIndex + 1) % len(self.players)
+            playerIndex = (playerIndex + 1) % len(active_players)
 
     def getLog(self):
         """Gets the log"""

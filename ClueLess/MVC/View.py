@@ -10,6 +10,7 @@ from ClueLess.MVC.GuiComponents import (
     Font,
     Text,
     TextBox,
+    TitleBox
 )
 from ClueLess.States import AppState, GameState, MenuState
 
@@ -820,7 +821,7 @@ class View:
                     Button(
                         id="RedButton",
                         x=(SCREEN_WIDTH // 4) * 3,
-                        y=(SCREEN_HEIGHT // 4) * 2,
+                        y=(SCREEN_HEIGHT // 4) * 1.4,
                         width=180,
                         height=60,
                         borderThickness=2,
@@ -841,7 +842,7 @@ class View:
                     Button(
                         id="GreenButton",
                         x=(SCREEN_WIDTH // 4) * 3,
-                        y=(SCREEN_HEIGHT // 4) * 3,
+                        y=(SCREEN_HEIGHT // 4) * 1.8,
                         width=180,
                         height=60,
                         borderThickness=2,
@@ -913,6 +914,64 @@ class View:
             # Turn Interaction
             prepareTurnDisplay()
 
+            # Player Cards Title Bar
+            self.components.append(
+                TitleBox(
+                    text="My Cards",
+                    x=(SCREEN_WIDTH // 4) * 3,
+                    y=(SCREEN_HEIGHT // 4) * 2.3,  # pull higher
+                    width=300,
+                    height=40
+                )
+            )
+
+            # Player Cards List
+            current_id = self.model.getPlayerId()
+            players = self.model.getPlayers()
+
+            player = next((p for p in players if p.getPlayerId() == current_id), None)
+            cards = player.grouped_cards
+
+            # Layout configuration
+            base_x = (SCREEN_WIDTH // 4) * 3 - 200   # left shift for room
+            base_y = (SCREEN_HEIGHT // 4) * 2.3 + 50 # under title bar
+            col_width = 160                          # tighter column spacing
+            line_height = 24                         # smaller vertical spacing
+
+            categories = ["CHARACTERS", "WEAPONS", "ROOMS"]
+
+            for col_index, category in enumerate(categories):
+                x = base_x + col_index * col_width
+                y = base_y
+
+                # Column title
+                self.components.append(
+                    Text(
+                        id=f"{category}_title",
+                        x=x + 70,
+                        y=y,
+                        text=category,
+                        textColor=Color.BLACK,
+                        font=Font.BUTTON,   # smaller font
+                        active=False,
+                    )
+                )
+
+                # List each card below
+                key = category.lower()
+                for row_index, card in enumerate(cards[key]):
+                    self.components.append(
+                        Text(
+                            id=f"{category}_{card}",
+                            x=x + 70,
+                            y=y + 30 + (row_index * line_height),
+                            text=card,
+                            textColor=Color.BLACK,
+                            font=Font.BUTTON,   # smaller font for readability
+                            active=False,
+                        )
+                    )
+                    
             # Log
             self.components.append(
                 Text(

@@ -1,5 +1,5 @@
 from ClueLess.Constants import CHARACTER_COLORS, STARTING_LOCATIONS
-
+from ClueLess.Cards import Cards
 
 class Player:
     """
@@ -36,6 +36,13 @@ class Player:
         self.location = STARTING_LOCATIONS[self.name]
 
         self.cards = []
+
+        ## Added for use with Player's Cards Display 
+        self.grouped_cards = {
+           "characters": [],
+           "weapons": [],
+           "rooms": []
+        }
 
     def getName(self):
         """Gets the player's name"""
@@ -87,12 +94,36 @@ class Player:
         """Gets the player's cards"""
         return self.cards
 
+
     def setCards(self, cards):
         """
         Sets the player's cards
-
+        
         Parameters:
             cards (list):
                 The new location for this player
         """
         self.cards = cards
+        self._categorizeCards()
+        
+    def _categorizeCards(self):
+        """
+        Generates dictionary of categorized cards for GUI
+        """
+        characters = []
+        weapons =[]
+        rooms = []
+
+        for card in self.cards:
+            if card in Cards.CHARACTERS:
+                characters.append(card)
+            elif card in Cards.WEAPONS:
+                weapons.append(card)
+            elif card in Cards.ROOMS:
+                rooms.append(card)
+        
+        self.grouped_cards = {
+            "characters": characters,
+            "weapons": weapons,
+            "rooms": rooms
+        }
