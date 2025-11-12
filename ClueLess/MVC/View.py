@@ -4,10 +4,12 @@ from ClueLess.Constants import LOCATION_NAMES
 from ClueLess.MVC.GuiComponents import (
     SCREEN_HEIGHT,
     SCREEN_WIDTH,
+    MovementButton,
     Box,
     Button,
     Color,
     Font,
+    SuggestionMenu,
     Text,
     TextBox,
     TitleBox
@@ -101,16 +103,103 @@ class View:
                     component.updateText(event)
 
     def activateAllButtons(self):
-        """Activates all button components"""
+        """Activates all button components, but only available movement buttons."""
         for component in self.components:
             if isinstance(component, Button):
+                if isinstance(component, MovementButton):
+                    # Determine which movement options are available to this player
+                    availableDirections = self.determineAvailableDirections()
+                    if component.direction not in availableDirections:
+                        component.deactivate()
+                        continue
+                if component.id in ["SuggestionButton", "SubmitButton"]:
+                    continue
                 component.activate()
+
+    def activateComponent(self, component_id):
+        """Activates a component with a specific component_id.
+        If no matching component is found, does nothing"""
+        for component in self.components:
+            if component.id == component_id:
+                component.activate()
+
+    def deactivateComponent(self, component_id):
+        """Deactivates a component with a specific component_id.
+        If no matching component is found, does nothing"""
+        for component in self.components:
+            if component.id == component_id:
+                component.deactivate()
 
     def deactivateAllButtons(self):
         """Deactivates all button components"""
         for component in self.components:
             if isinstance(component, Button):
                 component.deactivate()
+
+    def deactivateMovementButtons(self):
+        """Deactivates the buttons responsible for movement"""
+        for component in self.components:
+            if isinstance(component, MovementButton):
+                component.deactivate()
+
+    def determineAvailableDirections(self):
+        """Determines which movements are available to a player on their turn"""
+        # Get current tilemap
+        tilemap = self.model.getGame().getTilemap()
+        # Get current player's location
+        current_player = self.model.getGame().getCurrentPlayer()
+        playerRow, playerCol = current_player.getLocation()
+        available = {"UP", "DOWN", "RIGHT", "LEFT", "STAY"}
+
+        # Determine if Stay is avaiable
+        if not current_player.isInRoom():
+            available.remove("STAY")
+
+        # Determine if Up is available
+        if playerRow == 0:
+            # Top Row
+            available.remove("UP")
+        elif tilemap[playerRow - 1][playerCol] is None:
+            # Hallway below an empty space
+            available.remove("UP")
+        elif current_player.isInRoom() and len(tilemap[playerRow - 1][playerCol]) != 0:
+            # Hallway above is blocked
+            available.remove("UP")
+
+        # Determine if Down is available
+        if playerRow == 4:
+            # Bottom Row
+            available.remove("DOWN")
+        elif tilemap[playerRow + 1][playerCol] is None:
+            # Hallway above an empty space
+            available.remove("DOWN")
+        elif current_player.isInRoom() and len(tilemap[playerRow + 1][playerCol]) != 0:
+            # Hallway below is blocked
+            available.remove("DOWN")
+
+        # Determine if Right is available
+        if playerCol == 4:
+            # Rightmost Column
+            available.remove("RIGHT")
+        elif tilemap[playerRow][playerCol + 1] is None:
+            # Hallway to the left of an empty space
+            available.remove("RIGHT")
+        elif current_player.isInRoom() and len(tilemap[playerRow][playerCol + 1]) != 0:
+            # Hallway to the right is blocked
+            available.remove("RIGHT")
+
+        # Determine if Left is available
+        if playerCol == 0:
+            # Leftmost Column
+            available.remove("LEFT")
+        elif tilemap[playerRow][playerCol - 1] is None:
+            # Hallway to the right of an empty space
+            available.remove("LEFT")
+        elif current_player.isInRoom() and len(tilemap[playerRow][playerCol - 1]) != 0:
+            # Hallway to the left is blocked
+            available.remove("LEFT")
+
+        return available
 
     def prepareMenu(self):
         """
@@ -794,10 +883,10 @@ class View:
 
             def prepareTurnDisplay():
                 """Prepares the turn display"""
-                # Counts
+                # Log
                 self.components.append(
                     Text(
-                        id="Counts",
+                        id="LogText",
                         x=(SCREEN_WIDTH // 4) * 3,
                         y=(SCREEN_HEIGHT // 4),
                         width=180,
@@ -807,8 +896,7 @@ class View:
                         borderColor=Color.BLACK,
                         inactiveFillColor=Color.BLACK,
                         activeFillColor=Color.BLACK,
-                        text=f"Red: {self.model.game.red} Green: {self.model.game.green}",
-                        # text=f"{vars(self.model.game)}",
+                        text=self.model.getLog(),
                         textColor=Color.BLACK,
                         textHighlight=None,
                         font=Font.DEFAULT,
@@ -816,28 +904,30 @@ class View:
                     )
                 )
 
-                # Red Button
+                # Player ID whose turn it is
                 self.components.append(
-                    Button(
-                        id="RedButton",
+                    Text(
+                        id="PlayerID",
                         x=(SCREEN_WIDTH // 4) * 3,
-                        y=(SCREEN_HEIGHT // 4) * 1.4,
+                        y=(SCREEN_HEIGHT // 4) + 80,
                         width=180,
                         height=60,
-                        borderThickness=2,
+                        borderThickness=0,
                         borderRadius=12,
                         borderColor=Color.BLACK,
-                        inactiveFillColor=Color.DARK_GRAY,
-                        activeFillColor=Color.RED,
-                        text="Red",
+                        inactiveFillColor=Color.BLACK,
+                        activeFillColor=Color.BLACK,
+                        text=f"{self.model.game.getCurrentPlayer().getName()}'s Turn",
                         textColor=Color.BLACK,
                         textHighlight=None,
                         font=Font.DEFAULT,
-                        active=True,
+                        active=False,
                     )
                 )
 
-                # Green Button
+                #########################
+                # ADD TURN BUTTONS HERE #
+                #########################
                 self.components.append(
                     Button(
                         id="GreenButton",
@@ -857,11 +947,128 @@ class View:
                         active=True,
                     )
                 )
-
-                #########################
-                # ADD TURN BUTTONS HERE #
-                #########################
-                pass
+                self.components.append(
+                    MovementButton(
+                        id="DownButton",
+                        x=(SCREEN_WIDTH // 8) * 5,
+                        y=(SCREEN_HEIGHT // 4) * 3,
+                        direction="DOWN",
+                        is_arrow=True,
+                        width=70,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="Green",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+                self.components.append(
+                    MovementButton(
+                        id="RightButton",
+                        x=(SCREEN_WIDTH // 16) * 11,
+                        y=(SCREEN_HEIGHT // 8) * 5,
+                        direction="RIGHT",
+                        is_arrow=True,
+                        width=70,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="Green",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+                self.components.append(
+                    MovementButton(
+                        id="LeftButton",
+                        x=(SCREEN_WIDTH // 16) * 9,
+                        y=(SCREEN_HEIGHT // 8) * 5,
+                        direction="LEFT",
+                        is_arrow=True,
+                        width=70,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="Green",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+                self.components.append(
+                    MovementButton(
+                        id="StayButton",
+                        x=(SCREEN_WIDTH // 8) * 5,
+                        y=(SCREEN_HEIGHT // 8) * 5,
+                        direction="STAY",
+                        is_arrow=False,
+                        width=70,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="Stay",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+                self.components.append(
+                    Button(
+                        id="SuggestionButton",
+                        x=(SCREEN_WIDTH // 16) * 13,
+                        y=(SCREEN_HEIGHT // 2),
+                        width=200,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="Suggest",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=False,
+                    )
+                )
+                self.components.append(
+                    Button(
+                        id="SubmitButton",
+                        x=(SCREEN_WIDTH // 16) * 13,
+                        y=(SCREEN_HEIGHT // 4) * 3,
+                        width=200,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="Submit Turn",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=False,
+                    )
+                )
 
             # Reset components
             self.components = []
@@ -918,8 +1125,8 @@ class View:
             self.components.append(
                 TitleBox(
                     text="My Cards",
-                    x=(SCREEN_WIDTH // 4) * 3,
-                    y=(SCREEN_HEIGHT // 4) * 2.3,  # pull higher
+                    x=(SCREEN_WIDTH // 4) * 3.1,
+                    y=(SCREEN_HEIGHT // 4) * 2.6,  # pull higher
                     width=300,
                     height=40
                 )
@@ -933,8 +1140,8 @@ class View:
             cards = player.grouped_cards
 
             # Layout configuration
-            base_x = (SCREEN_WIDTH // 4) * 3 - 200   # left shift for room
-            base_y = (SCREEN_HEIGHT // 4) * 2.3 + 50 # under title bar
+            base_x = (SCREEN_WIDTH // 4) * 3.1 - 180   # left shift for room
+            base_y = (SCREEN_HEIGHT // 4) * 2.6 + 50 # under title bar
             col_width = 160                          # tighter column spacing
             line_height = 24                         # smaller vertical spacing
 
@@ -973,9 +1180,10 @@ class View:
                     )
                     
             # Log
+            # Feedback
             self.components.append(
                 Text(
-                    id="LogText",
+                    id="FeedbackText",
                     x=(SCREEN_WIDTH // 4) * 3,
                     y=(SCREEN_HEIGHT // 10) * 9,
                     width=180,
@@ -985,7 +1193,7 @@ class View:
                     borderColor=Color.BLACK,
                     inactiveFillColor=Color.BLACK,
                     activeFillColor=Color.BLACK,
-                    text=self.model.getLog(),
+                    text=self.model.getFeedback() if self.model.wasMyTurn() else "",
                     textColor=Color.BLACK,
                     textHighlight=None,
                     font=Font.DEFAULT,
@@ -1019,3 +1227,8 @@ class View:
             component.draw(self.screen)
 
         pygame.display.flip()
+
+    def openSuggestionMenu(self, room):
+        menu = SuggestionMenu(room, x=SCREEN_WIDTH // 2, y=SCREEN_HEIGHT // 2)
+
+        return menu.open(self.screen)

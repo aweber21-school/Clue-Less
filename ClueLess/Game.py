@@ -23,11 +23,6 @@ class Game:
             A log message to output
         running (boolean):
             A flag to represent whether or not the Game is running
-        # Debugging
-        red (integer):
-            Red button counter
-        green (integer):
-            Green button counter
     """
 
     def __init__(self):
@@ -61,16 +56,17 @@ class Game:
 
         # Distribute cards to players (without truth set)
         self.distributeCards()
+        # The solution or "truth" set of cards
+        self.solution = None
 
-        # Log
+        # Feedback to give players who just made a move
+        self.feedback = ""
+
+        # Log to update the players of the game state
         self.log = ""
 
         # Running
         self.running = False
-
-        # Debugging
-        self.red = 0
-        self.green = 0
 
         ############################
         # ADD GAME ATTRIBUTES HERE #
@@ -135,6 +131,8 @@ class Game:
 
     def distributeCards(self):
         """Removes truth set, then distributes remaining cards to active players"""
+        """Removes truth set, then distributes remaining cards to players"""
+        # Combines all of the cards
         allCards = list(Cards.CHARACTERS + Cards.WEAPONS + Cards.ROOMS)
         for item in self.solution:
             if item in allCards:
@@ -144,6 +142,9 @@ class Game:
         active_players = [p for p in self.players if p.getPlayerId() is not None]
         if not active_players:
             active_players = self.players  # avoids modulo/index errors during early init
+
+        # Remove the cards that are part of the solution
+        allCards = [card for card in allCards if card not in self.solution]
 
         playerIndex = 0
         while len(allCards) > 0:
@@ -156,6 +157,18 @@ class Game:
             player.setCards(playerCards)
 
             allCards.remove(card)
+            # Only distribute to real players
+            if player.getPlayerId() is not None:
+                # Get a random card
+                card = random.choice(allCards)
+
+                # Add the card to the player
+                playerCards = player.getCards()
+                playerCards.append(card)
+                player.setCards(playerCards)
+
+                # Remove card from master list
+                allCards.remove(card)
 
             playerIndex = (playerIndex + 1) % len(active_players)
 
@@ -171,6 +184,21 @@ class Game:
             log (string):
                 The log for the game
         """
+        self.log = log
+
+    def getFeedback(self):
+        """Gets the feedback"""
+        return self.feedback
+
+    def setFeedback(self, feedback):
+        """
+        Sets the game feedback
+
+        Parameters:
+            feedback (string):
+                The feedback for the game
+        """
+        self.feedback = feedback
 
     def findPlayerFromId(self, playerId):
         """
@@ -188,6 +216,19 @@ class Game:
         """Returns the current player ID"""
         return self.players[self.currentTurnIndex]
 
+    def getPreviousPlayer(self):
+        """Returns the previous player ID"""
+        turnIndex = self.currentTurnIndex
+        while True:
+            # Decrement turn index
+            turnIndex = (turnIndex - 1 + len(self.players)) % len(self.players)
+
+            if self.players[turnIndex].getPlayerId() is not None:
+                # Valid player was found
+                break
+
+        return self.players[turnIndex]
+
     def nextPlayer(self):
         """Sets the current player ID to the next valid player"""
         while True:
@@ -201,6 +242,15 @@ class Game:
     def start(self):
         """Starts the game"""
         self.running = True
+
+        # Randomly choose solution or "truth" cards
+        self.pickSolution()
+
+        # Debugging
+        # print(self.solution)
+
+        # Distribute cards to players (without truth set)
+        self.distributeCards()
 
     def stop(self):
         """Stops the game"""
@@ -220,22 +270,66 @@ class Game:
         ):
             # The turn came from the correct player
 
-            # Debugging
-            if hasattr(turn, "red"):
-                self.red += turn.red
-            if hasattr(turn, "green"):
-                self.green += turn.green
-
             #######################
             # ADD TURN LOGIC HERE #
             #######################
+            if hasattr(turn, "move"):
+                # Update player's current position
+                # NOTE: Only valid movements should be possible here, so we don't check
+                (row, col) = self.getCurrentPlayer().getLocation()
+                if getattr(turn, "move") == "UP":
+                    self.getCurrentPlayer().setLocation((row - 1, col))
+                elif getattr(turn, "move") == "DOWN":
+                    self.getCurrentPlayer().setLocation((row + 1, col))
+                elif getattr(turn, "move") == "RIGHT":
+                    self.getCurrentPlayer().setLocation((row, col + 1))
+                elif getattr(turn, "move") == "LEFT":
+                    self.getCurrentPlayer().setLocation((row, col - 1))
+                # Log that the player made the move
+                self.log = (
+                    self.findPlayerFromId(turn.playerId).getName()
+                    + " successfully made a move"
+                )
 
-            # Log that the player made the move
-            self.log = (
-                self.findPlayerFromId(turn.playerId).getName()
-                + " successfully made a move"
-            )
+            if hasattr(turn, "suggestion"):
+                (suspect, weapon, room) = getattr(turn, "suggestion")
+                for player in self.players:
+                    if player.getName() == suspect:
+                        player.setRoom(room)
 
+                self.log = (
+                    self.findPlayerFromId(turn.playerId).getName()
+                    + f" suggests {suspect}, {weapon}, {room}"
+                )
+
+                # Suggestion results
+                self.feedback = "No other players have any suggestion cards"
+
+                # Loop through all players starting at the next player and
+                # excluding the current player to search for suggestion cards
+                for player in (
+                    self.players[self.currentTurnIndex + 1 :]
+                    + self.players[0 : self.currentTurnIndex]
+                ):
+                    playerCards = player.getCards()
+
+                    # Look for room first so the player knows to move rooms
+                    if room in playerCards:
+                        # Player has the room card
+                        self.feedback = f"{player.getName()} has the {room} card"
+                        break
+
+                    elif weapon in playerCards:
+                        # Player has the weapon card
+                        self.feedback = f"{player.getName()} has the {weapon} card"
+                        break
+
+                    elif suspect in playerCards:
+                        # Player has the suspect card
+                        self.feedback = f"{player.getName()} has the {suspect} card"
+                        break
+
+            self.updateTilemap()
             # Move to the next player
             self.nextPlayer()
 
@@ -255,7 +349,7 @@ class Turn:
     """
 
     # Add potential attributes here so that we know what to expect within a Turn object
-    __slots__ = ["clientPort", "playerId", "red", "green"]
+    __slots__ = ["clientPort", "playerId", "move", "suggestion"]
 
     def __init__(self, **kwargs):
         """

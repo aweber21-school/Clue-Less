@@ -1,5 +1,6 @@
 import pygame
 
+from ClueLess.Constants import LOCATION_NAMES
 from ClueLess.Events import (
     CLIENT_CONNECTED_EVENT,
     CLIENT_COULD_NOT_CONNECT_EVENT,
@@ -46,6 +47,8 @@ class Controller:
         self.model = model
         self.view = view
         self.network = network
+        self.pending_turn = None      # holds the in-progress Turn
+        self.room = None
 
     def handleMenuInput(self, event):
         """
@@ -258,6 +261,32 @@ class Controller:
             return handleClientMenuInput()
 
         return True
+
+    def _start_pending_turn(self):
+        """Create a pending turn if one doesn't exist."""
+        if self.pending_turn is None:
+            self.pending_turn = Turn()
+            # If your networking layer needs clientPort on the turn now, attach it:
+            if hasattr(self.network, "getClientPort"):
+                setattr(self.pending_turn, "clientPort", self.network.getClientPort())
+
+    def _reset_pending_turn(self):
+        """Clear pending turn + UI."""
+        self.pending_turn = None
+
+        # Put any UI resets you want here:
+        # self.view.deactivateAllButtons()
+        # self.view.activateMovementButtons()  # if that’s your flow
+
+    def _enable_post_move_ui(self, in_room: bool):
+        """Enable the right buttons after movement."""
+        self.view.deactivateMovementButtons()
+        if in_room:
+            self.view.activateComponent("SuggestionButton")
+            self.view.deactivateComponent("SubmitButton")
+        else:
+            self.view.deactivateComponent("SuggestionButton")
+            self.view.activateComponent("SubmitButton")
 
     def handleGameInput(self, event):
         """
@@ -488,16 +517,7 @@ class Controller:
 
                     if component is not None:
                         # A component was clicked
-                        if component.id == "RedButton":
-                            # Red button
-                            if component.isActive():
-                                turn = Turn(red=1)
-                                self.network.sendToServer(Turn(red=1))
-                        elif component.id == "GreenButton":
-                            # Green button
-                            if component.isActive():
-                                self.network.sendToServer(Turn(green=1))
-                        elif component.id == "BackButton":
+                        if component.id == "BackButton":
                             # Back button
                             if self.network.isServer():
                                 # The network is a server
@@ -523,6 +543,64 @@ class Controller:
                         #################################
                         # ADD TURN BUTTON HANDLING HERE #
                         #################################
+                        else:
+                            # Build up a single pending turn across multiple clicks
+                            self._start_pending_turn()
+
+                            if component.id in ["UpButton", "DownButton", "RightButton", "LeftButton", "StayButton"]:
+                                # Movement buttons
+                                if component.isActive():
+                                    setattr(self.pending_turn, "move", component.direction)
+                                    # Get new position and determine if player is in a room
+                                    row, col = self.model.getGame().getCurrentPlayer().getLocation()
+                                    if component.direction == "UP":
+                                        row -= 1
+                                    elif component.direction == "DOWN":
+                                        row += 1
+                                    elif component.direction == "LEFT":
+                                        col -= 1
+                                    elif component.direction == "RIGHT":
+                                        col += 1
+
+                                    in_room = col % 2 == 0 and row % 2 == 0
+                                    # Disable movement after one move has been done
+                                    self.view.deactivateMovementButtons()
+
+                                    # Enable suggestion if in a room
+                                    if in_room:
+                                        self.room = LOCATION_NAMES[row][col]
+                                        self.view.activateComponent("SuggestionButton")
+                                    else:
+                                        # Otherwise enable submit
+                                        self.view.activateComponent("SubmitButton")
+                                
+                                    self._enable_post_move_ui(in_room)
+
+
+                            # Suggestion (only after movement and only once)
+                            elif component.id == "SuggestionButton":
+                                if component.isActive():
+                                    suggestion = self.view.openSuggestionMenu(self.room)
+                                    if suggestion is not None:
+                                        setattr(self.pending_turn, "suggestion", suggestion)
+
+                                        # After suggestion, allow submit
+                                        self.view.deactivateComponent("SuggestionButton")
+                                        self.view.activateComponent("SubmitButton")
+
+                            # Submit (requires movement, and suggestion if we ended in a room)
+                            elif component.id == "SubmitButton":
+                                if component.isActive():
+                                    # Send the fully built turn to the server
+                                    self.network.sendToServer(self.pending_turn)
+
+                                    # Lock UI for non-servers if that's your pattern
+                                    if not self.model.isServer:
+                                        self.view.deactivateAllButtons()
+
+                                    # Clear local state for next turn
+                                    self._reset_pending_turn()
+
 
                 elif event.button == 2:
                     # Right mouse button clicked
@@ -550,7 +628,6 @@ class Controller:
 
                     # Rename clientPort to playerId for better understanding in
                     # Game class
-                    # turn.playerId = turn.__dict__.pop("clientPort")
                     turn.playerId = getattr(turn, "clientPort")
                     delattr(turn, "clientPort")
 
