@@ -908,8 +908,8 @@ class View:
                 self.components.append(
                     Text(
                         id="PlayerID",
-                        x=(SCREEN_WIDTH // 4) * 3,
-                        y=(SCREEN_HEIGHT // 4) + 80,
+                        x=(SCREEN_WIDTH // 2),
+                        y=(SCREEN_HEIGHT // 4)-100,
                         width=180,
                         height=60,
                         borderThickness=0,
@@ -918,40 +918,21 @@ class View:
                         inactiveFillColor=Color.BLACK,
                         activeFillColor=Color.BLACK,
                         text=f"{self.model.game.getCurrentPlayer().getName()}'s Turn",
-                        textColor=Color.BLACK,
+                        textColor=Color.BLUE,
                         textHighlight=None,
                         font=Font.DEFAULT,
                         active=False,
                     )
                 )
-
+                
                 #########################
                 # ADD TURN BUTTONS HERE #
                 #########################
                 self.components.append(
-                    Button(
-                        id="GreenButton",
-                        x=(SCREEN_WIDTH // 4) * 3,
-                        y=(SCREEN_HEIGHT // 4) * 1.8,
-                        width=180,
-                        height=60,
-                        borderThickness=2,
-                        borderRadius=12,
-                        borderColor=Color.BLACK,
-                        inactiveFillColor=Color.DARK_GRAY,
-                        activeFillColor=Color.GREEN,
-                        text="Green",
-                        textColor=Color.BLACK,
-                        textHighlight=None,
-                        font=Font.DEFAULT,
-                        active=True,
-                    )
-                )
-                self.components.append(
                     MovementButton(
                         id="DownButton",
                         x=(SCREEN_WIDTH // 8) * 5,
-                        y=(SCREEN_HEIGHT // 4) * 3,
+                        y=(SCREEN_HEIGHT // 4) * 3+120,
                         direction="DOWN",
                         is_arrow=True,
                         width=70,
@@ -972,7 +953,7 @@ class View:
                     MovementButton(
                         id="RightButton",
                         x=(SCREEN_WIDTH // 16) * 11,
-                        y=(SCREEN_HEIGHT // 8) * 5,
+                        y=(SCREEN_HEIGHT // 8) * 5+120,
                         direction="RIGHT",
                         is_arrow=True,
                         width=70,
@@ -993,7 +974,7 @@ class View:
                     MovementButton(
                         id="LeftButton",
                         x=(SCREEN_WIDTH // 16) * 9,
-                        y=(SCREEN_HEIGHT // 8) * 5,
+                        y=(SCREEN_HEIGHT // 8) * 5+120,
                         direction="LEFT",
                         is_arrow=True,
                         width=70,
@@ -1014,7 +995,7 @@ class View:
                     MovementButton(
                         id="StayButton",
                         x=(SCREEN_WIDTH // 8) * 5,
-                        y=(SCREEN_HEIGHT // 8) * 5,
+                        y=(SCREEN_HEIGHT // 8) * 5+120,
                         direction="STAY",
                         is_arrow=False,
                         width=70,
@@ -1024,8 +1005,8 @@ class View:
                         borderColor=Color.BLACK,
                         inactiveFillColor=Color.DARK_GRAY,
                         activeFillColor=Color.GREEN,
-                        text="Stay",
-                        textColor=Color.BLACK,
+                        text="STAY",
+                        textColor=Color.WHITE,
                         textHighlight=None,
                         font=Font.DEFAULT,
                         active=True,
@@ -1035,7 +1016,7 @@ class View:
                     Button(
                         id="SuggestionButton",
                         x=(SCREEN_WIDTH // 16) * 13,
-                        y=(SCREEN_HEIGHT // 2),
+                        y=(SCREEN_HEIGHT // 8) * 5+120,
                         width=200,
                         height=70,
                         borderThickness=2,
@@ -1043,8 +1024,8 @@ class View:
                         borderColor=Color.BLACK,
                         inactiveFillColor=Color.DARK_GRAY,
                         activeFillColor=Color.GREEN,
-                        text="Suggest",
-                        textColor=Color.BLACK,
+                        text="SUGGEST",
+                        textColor=Color.WHITE,
                         textHighlight=None,
                         font=Font.DEFAULT,
                         active=False,
@@ -1054,7 +1035,7 @@ class View:
                     Button(
                         id="SubmitButton",
                         x=(SCREEN_WIDTH // 16) * 13,
-                        y=(SCREEN_HEIGHT // 4) * 3,
+                        y=(SCREEN_HEIGHT // 4) * 3+120,
                         width=200,
                         height=70,
                         borderThickness=2,
@@ -1062,14 +1043,14 @@ class View:
                         borderColor=Color.BLACK,
                         inactiveFillColor=Color.DARK_GRAY,
                         activeFillColor=Color.GREEN,
-                        text="Submit Turn",
-                        textColor=Color.BLACK,
+                        text="SUBMIT TURN",
+                        textColor=Color.WHITE,
                         textHighlight=None,
                         font=Font.DEFAULT,
                         active=False,
                     )
                 )
-
+              
             # Reset components
             self.components = []
 
@@ -1078,7 +1059,7 @@ class View:
                 Text(
                     id="Title",
                     x=SCREEN_WIDTH // 2,
-                    y=100,
+                    y=50,
                     width=180,
                     height=60,
                     borderThickness=0,
@@ -1086,8 +1067,8 @@ class View:
                     borderColor=Color.BLACK,
                     inactiveFillColor=Color.BLACK,
                     activeFillColor=Color.BLACK,
-                    text="Gameplay",
-                    textColor=Color.BLACK,
+                    text="[  GAME STATUS  ]",
+                    textColor=Color.BLUE,
                     textHighlight=None,
                     font=Font.DEFAULT,
                     active=False,
@@ -1122,12 +1103,19 @@ class View:
             prepareTurnDisplay()
 
             # Player Cards Title Bar
+            player_name = "Player"
+            current_id = self.model.getPlayerId()
+            players = self.model.getPlayers()
+            player = next((p for p in players if p.getPlayerId() == current_id), None)
+            if player:
+                player_name = player.getName()
+
             self.components.append(
                 TitleBox(
-                    text="My Cards",
-                    x=(SCREEN_WIDTH // 4) * 3.1,
-                    y=(SCREEN_HEIGHT // 4) * 2.6,  # pull higher
-                    width=300,
+                    text=f"{player_name}'s Cards",
+                    x=(SCREEN_WIDTH // 4) * 2.875,
+                    y=165,  # align with top of game board
+                    width=450,
                     height=40
                 )
             )
@@ -1140,10 +1128,14 @@ class View:
             cards = player.grouped_cards
 
             # Layout configuration
-            base_x = (SCREEN_WIDTH // 4) * 3.1 - 180   # left shift for room
-            base_y = (SCREEN_HEIGHT // 4) * 2.6 + 50 # under title bar
-            col_width = 160                          # tighter column spacing
-            line_height = 24                         # smaller vertical spacing
+            title_y = 165
+            title_height = 40
+            spacing_below_title = 20
+
+            base_y = title_y + title_height + spacing_below_title  # neatly below title bar
+            base_x = (SCREEN_WIDTH // 4) * 2.875 - 215             # align with title's X
+            col_width = 150                                        # balanced spacing between columns
+            line_height = 24                                       # same vertical spacing
 
             categories = ["CHARACTERS", "WEAPONS", "ROOMS"]
 
@@ -1163,7 +1155,6 @@ class View:
                         active=False,
                     )
                 )
-
                 # List each card below
                 key = category.lower()
                 for row_index, card in enumerate(cards[key]):
@@ -1181,6 +1172,7 @@ class View:
                     
             # Log
             # Feedback
+            
             self.components.append(
                 Text(
                     id="FeedbackText",
@@ -1200,6 +1192,7 @@ class View:
                     active=False,
                 )
             )
+            
 
         if self.model.gameState == GameState.GAME_MENU:
             # Game Menu

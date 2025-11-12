@@ -48,14 +48,6 @@ class Game:
         ]
         self.updateTilemap()
 
-        # Initialize self.solution
-        self.solution = None
-        
-        # Randomly choose "truth" cards
-        self.pickSolution()
-
-        # Distribute cards to players (without truth set)
-        self.distributeCards()
         # The solution or "truth" set of cards
         self.solution = None
 
@@ -130,33 +122,17 @@ class Game:
         )
 
     def distributeCards(self):
-        """Removes truth set, then distributes remaining cards to active players"""
         """Removes truth set, then distributes remaining cards to players"""
         # Combines all of the cards
         allCards = list(Cards.CHARACTERS + Cards.WEAPONS + Cards.ROOMS)
-        for item in self.solution:
-            if item in allCards:
-                allCards.remove(item)
-
-        # Active players (fallback to all players if none have been assigned yet)
-        active_players = [p for p in self.players if p.getPlayerId() is not None]
-        if not active_players:
-            active_players = self.players  # avoids modulo/index errors during early init
 
         # Remove the cards that are part of the solution
         allCards = [card for card in allCards if card not in self.solution]
 
         playerIndex = 0
         while len(allCards) > 0:
-            player = active_players[playerIndex]
+            player = self.players[playerIndex]
 
-            card = random.choice(allCards)
-
-            playerCards = player.getCards()
-            playerCards.append(card)
-            player.setCards(playerCards)
-
-            allCards.remove(card)
             # Only distribute to real players
             if player.getPlayerId() is not None:
                 # Get a random card
@@ -170,7 +146,8 @@ class Game:
                 # Remove card from master list
                 allCards.remove(card)
 
-            playerIndex = (playerIndex + 1) % len(active_players)
+            # Increment player index
+            playerIndex = (playerIndex + 1) % len(self.players)
 
     def getLog(self):
         """Gets the log"""
