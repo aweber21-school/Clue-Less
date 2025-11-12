@@ -882,52 +882,73 @@ class View:
                             )
 
             def prepareTurnDisplay():
-                """Prepares the turn display"""
-                # Log
-                self.components.append(
-                    Text(
-                        id="LogText",
-                        x=(SCREEN_WIDTH // 4) * 3,
-                        y=(SCREEN_HEIGHT // 4),
-                        width=180,
-                        height=60,
-                        borderThickness=0,
-                        borderRadius=12,
-                        borderColor=Color.BLACK,
-                        inactiveFillColor=Color.BLACK,
-                        activeFillColor=Color.BLACK,
-                        text=self.model.getLog(),
-                        textColor=Color.BLACK,
-                        textHighlight=None,
-                        font=Font.DEFAULT,
-                        active=False,
-                    )
+            """Prepares the turn display"""
+            # Log
+            self.components.append(
+                Text(
+                    id="LogText",
+                    x=base_x,  # align with Characters column
+                    y=(SCREEN_HEIGHT // 10) * 8,
+                    width=600,
+                    height=40,
+                    borderThickness=0,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    inactiveFillColor=Color.BLACK,
+                    activeFillColor=Color.BLACK,
+                    text=self.model.getLog(),
+                    textColor=Color.BLACK,
+                    font=Font.DEFAULT,
+                    active=False,
                 )
+            )
 
-                # Player ID whose turn it is
-                self.components.append(
-                    Text(
-                        id="PlayerID",
-                        x=(SCREEN_WIDTH // 2),
-                        y=(SCREEN_HEIGHT // 4)-100,
-                        width=180,
-                        height=60,
-                        borderThickness=0,
-                        borderRadius=12,
-                        borderColor=Color.BLACK,
-                        inactiveFillColor=Color.BLACK,
-                        activeFillColor=Color.BLACK,
-                        text=f"{self.model.game.getCurrentPlayer().getName()}'s Turn",
-                        textColor=Color.BLUE,
-                        textHighlight=None,
-                        font=Font.DEFAULT,
-                        active=False,
-                    )
+            # Player ID whose turn it is
+            self.components.append(
+                Text(
+                    id="PlayerID",
+                    x=(SCREEN_WIDTH // 2),
+                    y=(SCREEN_HEIGHT // 4)-100,
+                    width=180,
+                    height=60,
+                    borderThickness=0,
+                    borderRadius=12,
+                    borderColor=Color.BLACK,
+                    inactiveFillColor=Color.BLACK,
+                    activeFillColor=Color.BLACK,
+                    text=f"{self.model.game.getCurrentPlayer().getName()}'s Turn",
+                    textColor=Color.BLUE,
+                    textHighlight=None,
+                    font=Font.DEFAULT,
+                    active=False,
                 )
+            )
                 
                 #########################
                 # ADD TURN BUTTONS HERE #
                 #########################
+                self.components.append(
+                    MovementButton(
+                        id="UpButton",
+                        x=(SCREEN_WIDTH // 8) * 5,
+                        y=(SCREEN_HEIGHT // 2)+120,
+                        direction="UP",
+                        is_arrow=True,
+                        width=70,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="Green",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
                 self.components.append(
                     MovementButton(
                         id="DownButton",
@@ -1176,8 +1197,8 @@ class View:
             self.components.append(
                 Text(
                     id="FeedbackText",
-                    x=(SCREEN_WIDTH // 4) * 3,
-                    y=(SCREEN_HEIGHT // 10) * 9,
+                    x=(SCREEN_WIDTH // 3) * 2 + 100,
+                    y=(SCREEN_HEIGHT // 2) + 50,
                     width=180,
                     height=60,
                     borderThickness=0,
@@ -1186,7 +1207,7 @@ class View:
                     inactiveFillColor=Color.BLACK,
                     activeFillColor=Color.BLACK,
                     text=self.model.getFeedback() if self.model.wasMyTurn() else "",
-                    textColor=Color.BLACK,
+                    textColor=Color.BLUE,
                     textHighlight=None,
                     font=Font.DEFAULT,
                     active=False,
