@@ -882,56 +882,59 @@ class View:
                             )
 
             def prepareTurnDisplay():
-            """Prepares the turn display"""
-            # Log
-            self.components.append(
-                Text(
-                    id="LogText",
-                    x=base_x,  # align with Characters column
-                    y=(SCREEN_HEIGHT // 10) * 8,
-                    width=600,
-                    height=40,
-                    borderThickness=0,
-                    borderRadius=12,
-                    borderColor=Color.BLACK,
-                    inactiveFillColor=Color.BLACK,
-                    activeFillColor=Color.BLACK,
-                    text=self.model.getLog(),
-                    textColor=Color.BLACK,
-                    font=Font.DEFAULT,
-                    active=False,
-                )
-            )
+                """Prepares the turn display"""
+                base_x = (SCREEN_WIDTH // 4) * 2.875
 
-            # Player ID whose turn it is
-            self.components.append(
-                Text(
-                    id="PlayerID",
-                    x=(SCREEN_WIDTH // 2),
-                    y=(SCREEN_HEIGHT // 4)-100,
-                    width=180,
-                    height=60,
-                    borderThickness=0,
-                    borderRadius=12,
-                    borderColor=Color.BLACK,
-                    inactiveFillColor=Color.BLACK,
-                    activeFillColor=Color.BLACK,
-                    text=f"{self.model.game.getCurrentPlayer().getName()}'s Turn",
-                    textColor=Color.BLUE,
-                    textHighlight=None,
-                    font=Font.DEFAULT,
-                    active=False,
+                # Log (aligned with Characters column)
+                self.components.append(
+                    Text(
+                        id="LogText",
+                        x=base_x + 20,  # align with Characters column
+                        y=(SCREEN_HEIGHT // 2)+20,
+                        width=600,
+                        height=40,
+                        borderThickness=0,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.BLACK,
+                        activeFillColor=Color.BLACK,
+                        text=self.model.getLog(),
+                        textColor=Color.BLUE,
+                        font=Font.DEFAULT,
+                        active=False,
+                    )
                 )
-            )
-                
+
+                # Player whose turn it is
+                self.components.append(
+                    Text(
+                        id="PlayerID",
+                        x=(SCREEN_WIDTH // 2),
+                        y=(SCREEN_HEIGHT // 4) - 100,
+                        width=180,
+                        height=60,
+                        borderThickness=0,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.BLACK,
+                        activeFillColor=Color.BLACK,
+                        text=f"{self.model.game.getCurrentPlayer().getName()}'s Turn",
+                        textColor=Color.BLUE,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=False,
+                    )
+                )
+
                 #########################
-                # ADD TURN BUTTONS HERE #
+                # MOVEMENT BUTTONS BELOW #
                 #########################
+
                 self.components.append(
                     MovementButton(
                         id="UpButton",
                         x=(SCREEN_WIDTH // 8) * 5,
-                        y=(SCREEN_HEIGHT // 2)+120,
+                        y=(SCREEN_HEIGHT // 2) + 120,
                         direction="UP",
                         is_arrow=True,
                         width=70,
@@ -953,7 +956,7 @@ class View:
                     MovementButton(
                         id="DownButton",
                         x=(SCREEN_WIDTH // 8) * 5,
-                        y=(SCREEN_HEIGHT // 4) * 3+120,
+                        y=(SCREEN_HEIGHT // 4) * 3 + 120,
                         direction="DOWN",
                         is_arrow=True,
                         width=70,
@@ -970,11 +973,12 @@ class View:
                         active=True,
                     )
                 )
+
                 self.components.append(
                     MovementButton(
                         id="RightButton",
                         x=(SCREEN_WIDTH // 16) * 11,
-                        y=(SCREEN_HEIGHT // 8) * 5+120,
+                        y=(SCREEN_HEIGHT // 8) * 5 + 120,
                         direction="RIGHT",
                         is_arrow=True,
                         width=70,
@@ -991,11 +995,12 @@ class View:
                         active=True,
                     )
                 )
+
                 self.components.append(
                     MovementButton(
                         id="LeftButton",
                         x=(SCREEN_WIDTH // 16) * 9,
-                        y=(SCREEN_HEIGHT // 8) * 5+120,
+                        y=(SCREEN_HEIGHT // 8) * 5 + 120,
                         direction="LEFT",
                         is_arrow=True,
                         width=70,
@@ -1012,11 +1017,12 @@ class View:
                         active=True,
                     )
                 )
+
                 self.components.append(
                     MovementButton(
                         id="StayButton",
                         x=(SCREEN_WIDTH // 8) * 5,
-                        y=(SCREEN_HEIGHT // 8) * 5+120,
+                        y=(SCREEN_HEIGHT // 8) * 5 + 120,
                         direction="STAY",
                         is_arrow=False,
                         width=70,
@@ -1033,11 +1039,12 @@ class View:
                         active=True,
                     )
                 )
+
                 self.components.append(
                     Button(
                         id="SuggestionButton",
                         x=(SCREEN_WIDTH // 16) * 13,
-                        y=(SCREEN_HEIGHT // 8) * 5+120,
+                        y=(SCREEN_HEIGHT // 8) * 5 + 120,
                         width=200,
                         height=70,
                         borderThickness=2,
@@ -1052,11 +1059,12 @@ class View:
                         active=False,
                     )
                 )
+
                 self.components.append(
                     Button(
                         id="SubmitButton",
                         x=(SCREEN_WIDTH // 16) * 13,
-                        y=(SCREEN_HEIGHT // 4) * 3+120,
+                        y=(SCREEN_HEIGHT // 4) * 3 + 120,
                         width=200,
                         height=70,
                         borderThickness=2,
@@ -1149,9 +1157,9 @@ class View:
             cards = player.grouped_cards
 
             # Layout configuration
-            title_y = 165
+            title_y = 155
             title_height = 40
-            spacing_below_title = 20
+            spacing_below_title = 10
 
             base_y = title_y + title_height + spacing_below_title  # neatly below title bar
             base_x = (SCREEN_WIDTH // 4) * 2.875 - 215             # align with title's X
