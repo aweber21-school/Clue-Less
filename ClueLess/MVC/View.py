@@ -12,7 +12,7 @@ from ClueLess.MVC.GuiComponents import (
     SuggestionMenu,
     Text,
     TextBox,
-    TitleBox
+    TitleBox,
 )
 from ClueLess.States import AppState, GameState, MenuState
 
@@ -890,7 +890,7 @@ class View:
                     Text(
                         id="LogText",
                         x=base_x + 20,  # align with Characters column
-                        y=(SCREEN_HEIGHT // 2)+20,
+                        y=(SCREEN_HEIGHT // 2) + 20,
                         width=600,
                         height=40,
                         borderThickness=0,
@@ -1079,7 +1079,7 @@ class View:
                         active=False,
                     )
                 )
-              
+
             # Reset components
             self.components = []
 
@@ -1145,7 +1145,7 @@ class View:
                     x=(SCREEN_WIDTH // 4) * 2.875,
                     y=165,  # align with top of game board
                     width=450,
-                    height=40
+                    height=40,
                 )
             )
 
@@ -1161,10 +1161,12 @@ class View:
             title_height = 40
             spacing_below_title = 10
 
-            base_y = title_y + title_height + spacing_below_title  # neatly below title bar
-            base_x = (SCREEN_WIDTH // 4) * 2.875 - 215             # align with title's X
-            col_width = 150                                        # balanced spacing between columns
-            line_height = 24                                       # same vertical spacing
+            base_y = (
+                title_y + title_height + spacing_below_title
+            )  # neatly below title bar
+            base_x = (SCREEN_WIDTH // 4) * 2.875 - 215  # align with title's X
+            col_width = 150  # balanced spacing between columns
+            line_height = 24  # same vertical spacing
 
             categories = ["CHARACTERS", "WEAPONS", "ROOMS"]
 
@@ -1180,7 +1182,7 @@ class View:
                         y=y,
                         text=category,
                         textColor=Color.BLACK,
-                        font=Font.BUTTON,   # smaller font
+                        font=Font.BUTTON,  # smaller font
                         active=False,
                     )
                 )
@@ -1194,14 +1196,14 @@ class View:
                             y=y + 30 + (row_index * line_height),
                             text=card,
                             textColor=Color.BLACK,
-                            font=Font.BUTTON,   # smaller font for readability
+                            font=Font.BUTTON,  # smaller font for readability
                             active=False,
                         )
                     )
-                    
+
             # Log
             # Feedback
-            
+
             self.components.append(
                 Text(
                     id="FeedbackText",
@@ -1221,7 +1223,6 @@ class View:
                     active=False,
                 )
             )
-            
 
         if self.model.gameState == GameState.GAME_MENU:
             # Game Menu

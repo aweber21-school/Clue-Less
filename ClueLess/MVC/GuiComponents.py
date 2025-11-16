@@ -506,6 +506,7 @@ class Box(Component):
             active,
         )
 
+
 class TitleBox(Box):
     """
     A simple gray header with centered black text.
@@ -539,7 +540,8 @@ class TitleBox(Box):
             font=font,
             active=True,
         )
-        
+
+
 class TextBox(Component):
     """
     A Text Box Component for Clue-Less View
