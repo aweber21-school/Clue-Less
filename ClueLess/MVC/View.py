@@ -1272,6 +1272,26 @@ class View:
                     )
                 )
 
+                self.components.append(
+                    Button(
+                        id="ResetTurnButton",
+                        x=(SCREEN_WIDTH // 16) * 15,
+                        y=(SCREEN_HEIGHT // 4) * 3 + 120,
+                        width=100,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="RESET",
+                        textColor=Color.WHITE,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=False,
+                    )
+                )
+
             # Reset components
             self.components = []
 
@@ -1393,9 +1413,7 @@ class View:
                         )
                     )
 
-            # Log
             # Feedback
-
             self.components.append(
                 Text(
                     id="FeedbackText",
