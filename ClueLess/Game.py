@@ -216,6 +216,10 @@ class Game:
                 # Valid player was found
                 return
 
+    def clearFeedback(self):
+        """Clears the suggestion feedback"""
+        self.feedback = ""
+
     def start(self):
         """Starts the game"""
         self.running = True
@@ -305,6 +309,9 @@ class Game:
                             f"RESULT: {player.getName()} has the {suspect} card."
                         )
                         break
+            else:
+                # Suggestion is not made
+                self.feedback = ""
 
             self.updateTilemap()
             # Move to the next player

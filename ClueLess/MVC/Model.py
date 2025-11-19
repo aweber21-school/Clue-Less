@@ -96,6 +96,10 @@ class Model:
         """Gets the game's feedback"""
         return self.game.getFeedback()
 
+    def clearFeedback(self):
+        """Clears the game's suggestion feedback"""
+        return self.game.clearFeedback()
+
     def updatePlayers(self, playerIds):
         """
         Updates the game's players using a list of player IDs
