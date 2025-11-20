@@ -22,6 +22,7 @@ class Color:
     YELLOW = (255, 255, 0)
     GREEN = (0, 255, 0)
     BLUE = (0, 0, 255)
+    CYAN = (0, 255, 255)
     PURPLE = (128, 0, 128)
 
 
@@ -839,6 +840,7 @@ class MovementButton(Button):
         x,
         y,
         is_arrow=False,
+        is_shortcut=False,
         direction="UP",
         isAvailable=True,
         width=180,

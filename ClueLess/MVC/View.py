@@ -149,7 +149,7 @@ class View:
         # Get current player's location
         current_player = self.model.getGame().getCurrentPlayer()
         playerRow, playerCol = current_player.getLocation()
-        available = {"UP", "DOWN", "RIGHT", "LEFT", "STAY"}
+        available = {"UP", "DOWN", "RIGHT", "LEFT", "STAY", "NW", "SW", "SE", "NE"}
 
         # Determine if Stay is avaiable
         if not current_player.isInRoom():
@@ -198,6 +198,17 @@ class View:
         elif current_player.isInRoom() and len(tilemap[playerRow][playerCol - 1]) != 0:
             # Hallway to the left is blocked
             available.remove("LEFT")
+
+        # Determine if any shortcuts are available
+        room = current_player.getRoom()
+        if room != "Lounge":
+            available.remove("SW")
+        if room != "Kitchen":
+            available.remove("NW")
+        if room != "Study":
+            available.remove("SE")
+        if room != "Conservatory":
+            available.remove("NE")
 
         return available
 
@@ -881,6 +892,95 @@ class View:
                                 )
                             )
 
+                # Shortcuts
+                self.components.append(
+                    Box(
+                        id="NWShortcutBox",
+                        x=startX
+                        + (((roomSize + roomSpacing) // 2) * 4)
+                        - roomSize // 2,
+                        y=startY
+                        + (((roomSize + roomSpacing) // 2) * 4)
+                        - roomSize // 2,
+                        width=roomSize // 4,
+                        height=roomSize // 4,
+                        borderThickness=2,
+                        borderRadius=2,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.BROWN,
+                        activeFillColor=Color.ORANGE,
+                        text="",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
+                self.components.append(
+                    Box(
+                        id="NEShortcutBox",
+                        x=startX + roomSize // 2,
+                        y=startY
+                        + (((roomSize + roomSpacing) // 2) * 4)
+                        - roomSize // 2,
+                        width=roomSize // 4,
+                        height=roomSize // 4,
+                        borderThickness=2,
+                        borderRadius=2,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.BROWN,
+                        activeFillColor=Color.CYAN,
+                        text="",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
+                self.components.append(
+                    Box(
+                        id="SWShortcutBox",
+                        x=startX
+                        + (((roomSize + roomSpacing) // 2) * 4)
+                        - roomSize // 2,
+                        y=startY + (roomSize // 2),
+                        width=roomSize // 4,
+                        height=roomSize // 4,
+                        borderThickness=2,
+                        borderRadius=2,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.BROWN,
+                        activeFillColor=Color.CYAN,
+                        text="",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
+                self.components.append(
+                    Box(
+                        id="SEShortcutBox",
+                        x=startX + roomSize // 2,
+                        y=startY + (roomSize // 2),
+                        width=roomSize // 4,
+                        height=roomSize // 4,
+                        borderThickness=2,
+                        borderRadius=2,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.BROWN,
+                        activeFillColor=Color.ORANGE,
+                        text="",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
             def prepareTurnDisplay():
                 """Prepares the turn display"""
                 base_x = (SCREEN_WIDTH // 4) * 2.875
@@ -934,7 +1034,7 @@ class View:
                     MovementButton(
                         id="UpButton",
                         x=(SCREEN_WIDTH // 8) * 5,
-                        y=(SCREEN_HEIGHT // 2) + 120,
+                        y=(SCREEN_HEIGHT // 2) + 140,
                         direction="UP",
                         is_arrow=True,
                         width=70,
@@ -978,7 +1078,7 @@ class View:
                     MovementButton(
                         id="RightButton",
                         x=(SCREEN_WIDTH // 16) * 11,
-                        y=(SCREEN_HEIGHT // 8) * 5 + 120,
+                        y=(SCREEN_HEIGHT // 8) * 5 + 130,
                         direction="RIGHT",
                         is_arrow=True,
                         width=70,
@@ -1000,7 +1100,7 @@ class View:
                     MovementButton(
                         id="LeftButton",
                         x=(SCREEN_WIDTH // 16) * 9,
-                        y=(SCREEN_HEIGHT // 8) * 5 + 120,
+                        y=(SCREEN_HEIGHT // 8) * 5 + 130,
                         direction="LEFT",
                         is_arrow=True,
                         width=70,
@@ -1022,7 +1122,7 @@ class View:
                     MovementButton(
                         id="StayButton",
                         x=(SCREEN_WIDTH // 8) * 5,
-                        y=(SCREEN_HEIGHT // 8) * 5 + 120,
+                        y=(SCREEN_HEIGHT // 8) * 5 + 130,
                         direction="STAY",
                         is_arrow=False,
                         width=70,
@@ -1041,10 +1141,102 @@ class View:
                 )
 
                 self.components.append(
+                    MovementButton(
+                        id="SWShortcut",
+                        x=(SCREEN_WIDTH // 16) * 9 + 15,
+                        y=(SCREEN_HEIGHT // 4) * 3 + 105,
+                        direction="SW",
+                        is_arrow=False,
+                        is_shortcut=True,
+                        width=40,
+                        height=40,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.CYAN,
+                        text="",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
+                self.components.append(
+                    MovementButton(
+                        id="SEShortcut",
+                        x=(SCREEN_WIDTH // 16) * 11 - 15,
+                        y=(SCREEN_HEIGHT // 4) * 3 + 105,
+                        direction="SE",
+                        is_arrow=False,
+                        is_shortcut=True,
+                        width=40,
+                        height=40,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.ORANGE,
+                        text="",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
+                self.components.append(
+                    MovementButton(
+                        id="NWShortcut",
+                        x=(SCREEN_WIDTH // 16) * 9 + 15,
+                        y=(SCREEN_HEIGHT // 2) + 155,
+                        direction="NW",
+                        is_arrow=False,
+                        is_shortcut=True,
+                        width=40,
+                        height=40,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.ORANGE,
+                        text="",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
+                self.components.append(
+                    MovementButton(
+                        id="NEShortcut",
+                        x=(SCREEN_WIDTH // 16) * 11 - 15,
+                        y=(SCREEN_HEIGHT // 2) + 155,
+                        direction="NE",
+                        is_arrow=False,
+                        is_shortcut=True,
+                        width=40,
+                        height=40,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.CYAN,
+                        text="",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
+                self.components.append(
                     Button(
                         id="SuggestionButton",
                         x=(SCREEN_WIDTH // 16) * 13,
-                        y=(SCREEN_HEIGHT // 8) * 5 + 120,
+                        y=(SCREEN_HEIGHT // 8) * 5 + 130,
                         width=200,
                         height=70,
                         borderThickness=2,

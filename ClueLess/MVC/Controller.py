@@ -47,7 +47,7 @@ class Controller:
         self.model = model
         self.view = view
         self.network = network
-        self.pending_turn = None      # holds the in-progress Turn
+        self.pending_turn = None  # holds the in-progress Turn
         self.room = None
 
     def handleMenuInput(self, event):
@@ -547,12 +547,28 @@ class Controller:
                             # Build up a single pending turn across multiple clicks
                             self._start_pending_turn()
 
-                            if component.id in ["UpButton", "DownButton", "RightButton", "LeftButton", "StayButton"]:
+                            if component.id in [
+                                "UpButton",
+                                "DownButton",
+                                "RightButton",
+                                "LeftButton",
+                                "StayButton",
+                                "NWShortcut",
+                                "NEShortcut",
+                                "SEShortcut",
+                                "SWShortcut",
+                            ]:
                                 # Movement buttons
                                 if component.isActive():
-                                    setattr(self.pending_turn, "move", component.direction)
+                                    setattr(
+                                        self.pending_turn, "move", component.direction
+                                    )
                                     # Get new position and determine if player is in a room
-                                    row, col = self.model.getGame().getCurrentPlayer().getLocation()
+                                    row, col = (
+                                        self.model.getGame()
+                                        .getCurrentPlayer()
+                                        .getLocation()
+                                    )
                                     if component.direction == "UP":
                                         row -= 1
                                     elif component.direction == "DOWN":
@@ -561,6 +577,14 @@ class Controller:
                                         col -= 1
                                     elif component.direction == "RIGHT":
                                         col += 1
+                                    elif component.direction == "NW":
+                                        row, col = 0, 0
+                                    elif component.direction == "NE":
+                                        row, col = 0, 4
+                                    elif component.direction == "SE":
+                                        row, col = 4, 4
+                                    elif component.direction == "SW":
+                                        row, col = 4, 0
 
                                     in_room = col % 2 == 0 and row % 2 == 0
                                     # Disable movement after one move has been done
@@ -573,19 +597,22 @@ class Controller:
                                     else:
                                         # Otherwise enable submit
                                         self.view.activateComponent("SubmitButton")
-                                
-                                    self._enable_post_move_ui(in_room)
 
+                                    self._enable_post_move_ui(in_room)
 
                             # Suggestion (only after movement and only once)
                             elif component.id == "SuggestionButton":
                                 if component.isActive():
                                     suggestion = self.view.openSuggestionMenu(self.room)
                                     if suggestion is not None:
-                                        setattr(self.pending_turn, "suggestion", suggestion)
+                                        setattr(
+                                            self.pending_turn, "suggestion", suggestion
+                                        )
 
                                         # After suggestion, allow submit
-                                        self.view.deactivateComponent("SuggestionButton")
+                                        self.view.deactivateComponent(
+                                            "SuggestionButton"
+                                        )
                                         self.view.activateComponent("SubmitButton")
 
                             # Submit (requires movement, and suggestion if we ended in a room)
@@ -600,7 +627,6 @@ class Controller:
 
                                     # Clear local state for next turn
                                     self._reset_pending_turn()
-
 
                 elif event.button == 2:
                     # Right mouse button clicked
