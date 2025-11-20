@@ -156,4 +156,3 @@ class Player:
             "weapons": weapons,
             "rooms": rooms,
         }
-
