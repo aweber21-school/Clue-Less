@@ -224,11 +224,12 @@ class Game:
         """Starts the game"""
         self.running = True
 
-        # Randomly choose solution or "truth" cards
-        self.pickSolution()
+        if self.solution is None:
+            # Randomly choose solution or "truth" cards
+            self.pickSolution()
 
-        # Distribute cards to players (without truth set)
-        self.distributeCards()
+            # Distribute cards to players (without truth set)
+            self.distributeCards()
 
     def stop(self):
         """Stops the game"""
