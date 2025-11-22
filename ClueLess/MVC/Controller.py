@@ -638,6 +638,9 @@ class Controller:
                     # Broadcast to clients
                     self.network.sendToClients(self.model.getGame())
 
+                    # Clear feedback for next move
+                    self.model.clearFeedback()
+
             elif event.type == SERVER_DISCONNECTED_EVENT:
                 # Server disconnected from client
                 if self.network.isServer():
