@@ -263,6 +263,15 @@ class Game:
                     self.getCurrentPlayer().setLocation((row, col + 1))
                 elif getattr(turn, "move") == "LEFT":
                     self.getCurrentPlayer().setLocation((row, col - 1))
+                elif getattr(turn, "move") == "NW":
+                    self.getCurrentPlayer().setRoom("Study")
+                elif getattr(turn, "move") == "NE":
+                    self.getCurrentPlayer().setRoom("Lounge")
+                elif getattr(turn, "move") == "SE":
+                    self.getCurrentPlayer().setRoom("Kitchen")
+                elif getattr(turn, "move") == "SW":
+                    self.getCurrentPlayer().setRoom("Conservatory")
+
                 # Log that the player made the move
                 self.log = (
                     self.findPlayerFromId(turn.playerId).getName()
