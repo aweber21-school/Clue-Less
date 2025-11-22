@@ -1274,7 +1274,7 @@ class View:
 
                 self.components.append(
                     Button(
-                        id="ResetTurnButton",
+                        id="ResetButton",
                         x=(SCREEN_WIDTH // 16) * 15,
                         y=(SCREEN_HEIGHT // 4) * 3 + 120,
                         width=100,
