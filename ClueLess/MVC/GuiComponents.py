@@ -22,6 +22,7 @@ class Color:
     YELLOW = (255, 255, 0)
     GREEN = (0, 255, 0)
     BLUE = (0, 0, 255)
+    CYAN = (0, 255, 255)
     PURPLE = (128, 0, 128)
 
 
@@ -507,6 +508,41 @@ class Box(Component):
         )
 
 
+class TitleBox(Box):
+    """
+    A simple gray header with centered black text.
+    """
+
+    def __init__(
+        self,
+        text,
+        x,
+        y,
+        width=300,
+        height=40,
+        bg=Color.GRAY,
+        textColor=Color.BLACK,
+        font=Font.TITLE,
+    ):
+        # call Box constructor for base rectangle
+        super().__init__(
+            id="titlebox",
+            x=x,
+            y=y,
+            width=width,
+            height=height,
+            borderThickness=2,
+            borderRadius=8,
+            borderColor=Color.BLACK,
+            inactiveFillColor=bg,
+            activeFillColor=bg,
+            text=text,
+            textColor=textColor,
+            font=font,
+            active=True,
+        )
+
+
 class TextBox(Component):
     """
     A Text Box Component for Clue-Less View
@@ -804,6 +840,7 @@ class MovementButton(Button):
         x,
         y,
         is_arrow=False,
+        is_shortcut=False,
         direction="UP",
         isAvailable=True,
         width=180,

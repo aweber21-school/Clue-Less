@@ -266,6 +266,8 @@ class Controller:
         """Create a pending turn if one doesn't exist."""
         if self.pending_turn is None:
             self.pending_turn = Turn()
+            self.view.deactivateComponent("ResetButton")
+
             # If your networking layer needs clientPort on the turn now, attach it:
             if hasattr(self.network, "getClientPort"):
                 setattr(self.pending_turn, "clientPort", self.network.getClientPort())
@@ -274,13 +276,15 @@ class Controller:
         """Clear pending turn + UI."""
         self.pending_turn = None
 
-        # Put any UI resets you want here:
-        # self.view.deactivateAllButtons()
-        # self.view.activateMovementButtons()  # if that’s your flow
+        self.view.activateAllButtons()
+        self.view.deactivateComponent("SuggestionButton")
+        self.view.deactivateComponent("SubmitButton")
+        self.view.deactivateComponent("ResetButton")
 
     def _enable_post_move_ui(self, in_room: bool):
         """Enable the right buttons after movement."""
         self.view.deactivateMovementButtons()
+        self.view.activateComponent("ResetButton")
         if in_room:
             self.view.activateComponent("SuggestionButton")
             self.view.deactivateComponent("SubmitButton")
@@ -464,6 +468,13 @@ class Controller:
                 if not self.model.isServer:
                     self.view.deactivateAllButtons()
 
+                # Activate or deactivate inputs as needed
+                if self.model.isMyTurn():
+                    self.view.activateAllButtons()
+                    self.view.deactivateComponent("ResetButton")
+                else:
+                    self.view.deactivateAllButtons()
+
             elif event.type == CLIENT_DISCONNECTED_EVENT:
                 # Client disconnected from server
                 self.model.updateState(
@@ -573,6 +584,14 @@ class Controller:
                                         col -= 1
                                     elif component.direction == "RIGHT":
                                         col += 1
+                                    elif component.direction == "NW":
+                                        row, col = 0, 0
+                                    elif component.direction == "NE":
+                                        row, col = 0, 4
+                                    elif component.direction == "SE":
+                                        row, col = 4, 4
+                                    elif component.direction == "SW":
+                                        row, col = 4, 0
 
                                     in_room = col % 2 == 0 and row % 2 == 0
                                     # Disable movement after one move has been done
@@ -678,6 +697,9 @@ class Controller:
                     # Broadcast to clients
                     self.network.sendToClients(self.model.getGame())
 
+                    # Clear feedback for next move
+                    self.model.clearFeedback()
+
             elif event.type == SERVER_DISCONNECTED_EVENT:
                 # Server disconnected from client
                 if self.network.isServer():
@@ -716,6 +738,7 @@ class Controller:
                 # Activate or deactivate inputs as needed
                 if self.model.isMyTurn():
                     self.view.activateAllButtons()
+                    self.view.deactivateComponent("ResetButton")
                 else:
                     self.view.deactivateAllButtons()
 

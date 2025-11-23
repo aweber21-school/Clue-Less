@@ -235,18 +235,20 @@ class Game:
                     # Valid player was found
                     return None
 
+    def clearFeedback(self):
+        """Clears the suggestion feedback"""
+        self.feedback = ""
+
     def start(self):
         """Starts the game"""
         self.running = True
 
-        # Randomly choose solution or "truth" cards
-        self.pickSolution()
+        if self.solution is None:
+            # Randomly choose solution or "truth" cards
+            self.pickSolution()
 
-        # Debugging
-        # print(self.solution)
-
-        # Distribute cards to players (without truth set)
-        self.distributeCards()
+            # Distribute cards to players (without truth set)
+            self.distributeCards()
 
     def stop(self):
         """Stops the game"""
@@ -281,6 +283,15 @@ class Game:
                     self.getCurrentPlayer().setLocation((row, col + 1))
                 elif getattr(turn, "move") == "LEFT":
                     self.getCurrentPlayer().setLocation((row, col - 1))
+                elif getattr(turn, "move") == "NW":
+                    self.getCurrentPlayer().setRoom("Study")
+                elif getattr(turn, "move") == "NE":
+                    self.getCurrentPlayer().setRoom("Lounge")
+                elif getattr(turn, "move") == "SE":
+                    self.getCurrentPlayer().setRoom("Kitchen")
+                elif getattr(turn, "move") == "SW":
+                    self.getCurrentPlayer().setRoom("Conservatory")
+
                 # Log that the player made the move
                 self.log = (
                     self.findPlayerFromId(turn.playerId).getName()
@@ -293,13 +304,10 @@ class Game:
                     if player.getName() == suspect:
                         player.setRoom(room)
 
-                self.log = (
-                    self.findPlayerFromId(turn.playerId).getName()
-                    + f" suggests {suspect}, {weapon}, {room}"
-                )
+                self.log = f"SUGGESTION: {suspect}, {weapon}, {room}."
 
                 # Suggestion results
-                self.feedback = "No other players have any suggestion cards"
+                self.feedback = "No other players have any suggested cards."
 
                 # Loop through all players starting at the next player and
                 # excluding the current player to search for suggestion cards
@@ -312,18 +320,27 @@ class Game:
                     # Look for room first so the player knows to move rooms
                     if room in playerCards:
                         # Player has the room card
-                        self.feedback = f"{player.getName()} has the {room} card"
+                        self.feedback = (
+                            f"RESULT: {player.getName()} has the {room} card."
+                        )
                         break
 
                     elif weapon in playerCards:
                         # Player has the weapon card
-                        self.feedback = f"{player.getName()} has the {weapon} card"
+                        self.feedback = (
+                            f"RESULT: {player.getName()} has the {weapon} card."
+                        )
                         break
 
                     elif suspect in playerCards:
                         # Player has the suspect card
-                        self.feedback = f"{player.getName()} has the {suspect} card"
+                        self.feedback = (
+                            f"RESULT: {player.getName()} has the {suspect} card."
+                        )
                         break
+            else:
+                # Suggestion is not made
+                self.feedback = ""
 
             if hasattr(turn, "accusation"):
                 (suspect, weapon, room) = getattr(turn, "accusation")

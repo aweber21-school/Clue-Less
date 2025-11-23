@@ -14,6 +14,7 @@ from ClueLess.MVC.GuiComponents import (
     SuggestionMenu,
     Text,
     TextBox,
+    TitleBox,
 )
 from ClueLess.States import AppState, GameState, MenuState
 
@@ -150,7 +151,7 @@ class View:
         # Get current player's location
         current_player = self.model.getGame().getCurrentPlayer()
         playerRow, playerCol = current_player.getLocation()
-        available = {"UP", "DOWN", "RIGHT", "LEFT", "STAY"}
+        available = {"UP", "DOWN", "RIGHT", "LEFT", "STAY", "NW", "SW", "SE", "NE"}
 
         # Determine if Stay is avaiable
         if not current_player.isInRoom():
@@ -199,6 +200,17 @@ class View:
         elif current_player.isInRoom() and len(tilemap[playerRow][playerCol - 1]) != 0:
             # Hallway to the left is blocked
             available.remove("LEFT")
+
+        # Determine if any shortcuts are available
+        room = current_player.getRoom()
+        if room != "Lounge":
+            available.remove("SW")
+        if room != "Kitchen":
+            available.remove("NW")
+        if room != "Study":
+            available.remove("SE")
+        if room != "Conservatory":
+            available.remove("NE")
 
         return available
 
@@ -882,35 +894,125 @@ class View:
                                 )
                             )
 
+                # Shortcuts
+                self.components.append(
+                    Box(
+                        id="NWShortcutBox",
+                        x=startX
+                        + (((roomSize + roomSpacing) // 2) * 4)
+                        - roomSize // 2,
+                        y=startY
+                        + (((roomSize + roomSpacing) // 2) * 4)
+                        - roomSize // 2,
+                        width=roomSize // 4,
+                        height=roomSize // 4,
+                        borderThickness=2,
+                        borderRadius=2,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.BROWN,
+                        activeFillColor=Color.ORANGE,
+                        text="",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
+                self.components.append(
+                    Box(
+                        id="NEShortcutBox",
+                        x=startX + roomSize // 2,
+                        y=startY
+                        + (((roomSize + roomSpacing) // 2) * 4)
+                        - roomSize // 2,
+                        width=roomSize // 4,
+                        height=roomSize // 4,
+                        borderThickness=2,
+                        borderRadius=2,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.BROWN,
+                        activeFillColor=Color.CYAN,
+                        text="",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
+                self.components.append(
+                    Box(
+                        id="SWShortcutBox",
+                        x=startX
+                        + (((roomSize + roomSpacing) // 2) * 4)
+                        - roomSize // 2,
+                        y=startY + (roomSize // 2),
+                        width=roomSize // 4,
+                        height=roomSize // 4,
+                        borderThickness=2,
+                        borderRadius=2,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.BROWN,
+                        activeFillColor=Color.CYAN,
+                        text="",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
+                self.components.append(
+                    Box(
+                        id="SEShortcutBox",
+                        x=startX + roomSize // 2,
+                        y=startY + (roomSize // 2),
+                        width=roomSize // 4,
+                        height=roomSize // 4,
+                        borderThickness=2,
+                        borderRadius=2,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.BROWN,
+                        activeFillColor=Color.ORANGE,
+                        text="",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
             def prepareTurnDisplay():
                 """Prepares the turn display"""
-                # Log
+                base_x = (SCREEN_WIDTH // 4) * 2.875
+
+                # Log (aligned with Characters column)
                 self.components.append(
                     Text(
                         id="LogText",
-                        x=(SCREEN_WIDTH // 4) * 3,
-                        y=(SCREEN_HEIGHT // 4),
-                        width=180,
-                        height=60,
+                        x=base_x + 20,  # align with Characters column
+                        y=(SCREEN_HEIGHT // 2) + 20,
+                        width=600,
+                        height=40,
                         borderThickness=0,
                         borderRadius=12,
                         borderColor=Color.BLACK,
                         inactiveFillColor=Color.BLACK,
                         activeFillColor=Color.BLACK,
                         text=self.model.getLog(),
-                        textColor=Color.BLACK,
-                        textHighlight=None,
+                        textColor=Color.BLUE,
                         font=Font.DEFAULT,
                         active=False,
                     )
                 )
 
-                # Player ID whose turn it is
+                # Player whose turn it is
                 self.components.append(
                     Text(
                         id="PlayerID",
-                        x=(SCREEN_WIDTH // 4) * 3,
-                        y=(SCREEN_HEIGHT // 4) + 80,
+                        x=(SCREEN_WIDTH // 2),
+                        y=(SCREEN_HEIGHT // 4) - 100,
                         width=180,
                         height=60,
                         borderThickness=0,
@@ -919,7 +1021,7 @@ class View:
                         inactiveFillColor=Color.BLACK,
                         activeFillColor=Color.BLACK,
                         text=f"{self.model.game.getCurrentPlayer().getName()}'s Turn",
-                        textColor=Color.BLACK,
+                        textColor=Color.BLUE,
                         textHighlight=None,
                         font=Font.DEFAULT,
                         active=False,
@@ -927,13 +1029,14 @@ class View:
                 )
 
                 #########################
-                # ADD TURN BUTTONS HERE #
+                # MOVEMENT BUTTONS BELOW #
                 #########################
+
                 self.components.append(
                     MovementButton(
                         id="UpButton",
                         x=(SCREEN_WIDTH // 8) * 5,
-                        y=(SCREEN_HEIGHT // 2),
+                        y=(SCREEN_HEIGHT // 2) + 140,
                         direction="UP",
                         is_arrow=True,
                         width=70,
@@ -950,11 +1053,12 @@ class View:
                         active=True,
                     )
                 )
+
                 self.components.append(
                     MovementButton(
                         id="DownButton",
                         x=(SCREEN_WIDTH // 8) * 5,
-                        y=(SCREEN_HEIGHT // 4) * 3,
+                        y=(SCREEN_HEIGHT // 4) * 3 + 120,
                         direction="DOWN",
                         is_arrow=True,
                         width=70,
@@ -971,11 +1075,12 @@ class View:
                         active=True,
                     )
                 )
+
                 self.components.append(
                     MovementButton(
                         id="RightButton",
                         x=(SCREEN_WIDTH // 16) * 11,
-                        y=(SCREEN_HEIGHT // 8) * 5,
+                        y=(SCREEN_HEIGHT // 8) * 5 + 130,
                         direction="RIGHT",
                         is_arrow=True,
                         width=70,
@@ -992,11 +1097,12 @@ class View:
                         active=True,
                     )
                 )
+
                 self.components.append(
                     MovementButton(
                         id="LeftButton",
                         x=(SCREEN_WIDTH // 16) * 9,
-                        y=(SCREEN_HEIGHT // 8) * 5,
+                        y=(SCREEN_HEIGHT // 8) * 5 + 130,
                         direction="LEFT",
                         is_arrow=True,
                         width=70,
@@ -1013,11 +1119,12 @@ class View:
                         active=True,
                     )
                 )
+
                 self.components.append(
                     MovementButton(
                         id="StayButton",
                         x=(SCREEN_WIDTH // 8) * 5,
-                        y=(SCREEN_HEIGHT // 8) * 5,
+                        y=(SCREEN_HEIGHT // 8) * 5 + 130,
                         direction="STAY",
                         is_arrow=False,
                         width=70,
@@ -1027,18 +1134,111 @@ class View:
                         borderColor=Color.BLACK,
                         inactiveFillColor=Color.DARK_GRAY,
                         activeFillColor=Color.GREEN,
-                        text="Stay",
+                        text="STAY",
+                        textColor=Color.WHITE,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
+                self.components.append(
+                    MovementButton(
+                        id="SWShortcut",
+                        x=(SCREEN_WIDTH // 16) * 9 + 15,
+                        y=(SCREEN_HEIGHT // 4) * 3 + 105,
+                        direction="SW",
+                        is_arrow=False,
+                        is_shortcut=True,
+                        width=40,
+                        height=40,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.CYAN,
+                        text="",
                         textColor=Color.BLACK,
                         textHighlight=None,
                         font=Font.DEFAULT,
                         active=True,
                     )
                 )
+
+                self.components.append(
+                    MovementButton(
+                        id="SEShortcut",
+                        x=(SCREEN_WIDTH // 16) * 11 - 15,
+                        y=(SCREEN_HEIGHT // 4) * 3 + 105,
+                        direction="SE",
+                        is_arrow=False,
+                        is_shortcut=True,
+                        width=40,
+                        height=40,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.ORANGE,
+                        text="",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
+                self.components.append(
+                    MovementButton(
+                        id="NWShortcut",
+                        x=(SCREEN_WIDTH // 16) * 9 + 15,
+                        y=(SCREEN_HEIGHT // 2) + 155,
+                        direction="NW",
+                        is_arrow=False,
+                        is_shortcut=True,
+                        width=40,
+                        height=40,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.ORANGE,
+                        text="",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
+                self.components.append(
+                    MovementButton(
+                        id="NEShortcut",
+                        x=(SCREEN_WIDTH // 16) * 11 - 15,
+                        y=(SCREEN_HEIGHT // 2) + 155,
+                        direction="NE",
+                        is_arrow=False,
+                        is_shortcut=True,
+                        width=40,
+                        height=40,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.CYAN,
+                        text="",
+                        textColor=Color.BLACK,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=True,
+                    )
+                )
+
                 self.components.append(
                     Button(
                         id="SuggestionButton",
                         x=(SCREEN_WIDTH // 16) * 13,
-                        y=(SCREEN_HEIGHT // 2),
+                        y=(SCREEN_HEIGHT // 8) * 5 + 130,
                         width=200,
                         height=70,
                         borderThickness=2,
@@ -1046,13 +1246,14 @@ class View:
                         borderColor=Color.BLACK,
                         inactiveFillColor=Color.DARK_GRAY,
                         activeFillColor=Color.GREEN,
-                        text="Suggest",
-                        textColor=Color.BLACK,
+                        text="SUGGEST",
+                        textColor=Color.WHITE,
                         textHighlight=None,
                         font=Font.DEFAULT,
                         active=False,
                     )
                 )
+
                 self.components.append(
                     Button(
                         id="AccusationButton",
@@ -1076,7 +1277,7 @@ class View:
                     Button(
                         id="SubmitButton",
                         x=(SCREEN_WIDTH // 16) * 13,
-                        y=(SCREEN_HEIGHT // 4) * 3,
+                        y=(SCREEN_HEIGHT // 4) * 3 + 120,
                         width=200,
                         height=70,
                         borderThickness=2,
@@ -1084,8 +1285,28 @@ class View:
                         borderColor=Color.BLACK,
                         inactiveFillColor=Color.DARK_GRAY,
                         activeFillColor=Color.GREEN,
-                        text="Submit Turn",
-                        textColor=Color.BLACK,
+                        text="SUBMIT TURN",
+                        textColor=Color.WHITE,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=False,
+                    )
+                )
+
+                self.components.append(
+                    Button(
+                        id="ResetButton",
+                        x=(SCREEN_WIDTH // 16) * 15,
+                        y=(SCREEN_HEIGHT // 4) * 3 + 120,
+                        width=100,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.GREEN,
+                        text="RESET",
+                        textColor=Color.WHITE,
                         textHighlight=None,
                         font=Font.DEFAULT,
                         active=False,
@@ -1100,7 +1321,7 @@ class View:
                 Text(
                     id="Title",
                     x=SCREEN_WIDTH // 2,
-                    y=100,
+                    y=50,
                     width=180,
                     height=60,
                     borderThickness=0,
@@ -1108,8 +1329,8 @@ class View:
                     borderColor=Color.BLACK,
                     inactiveFillColor=Color.BLACK,
                     activeFillColor=Color.BLACK,
-                    text="Gameplay",
-                    textColor=Color.BLACK,
+                    text="[  GAME STATUS  ]",
+                    textColor=Color.BLUE,
                     textHighlight=None,
                     font=Font.DEFAULT,
                     active=False,
@@ -1143,12 +1364,82 @@ class View:
             # Turn Interaction
             prepareTurnDisplay()
 
+            # Player Cards Title Bar
+            player_name = "Player"
+            current_id = self.model.getPlayerId()
+            players = self.model.getPlayers()
+            player = next((p for p in players if p.getPlayerId() == current_id), None)
+            if player:
+                player_name = player.getName()
+
+            self.components.append(
+                TitleBox(
+                    text=f"{player_name}'s Cards",
+                    x=(SCREEN_WIDTH // 4) * 2.875,
+                    y=165,  # align with top of game board
+                    width=450,
+                    height=40,
+                )
+            )
+
+            # Player Cards List
+            current_id = self.model.getPlayerId()
+            players = self.model.getPlayers()
+
+            player = next((p for p in players if p.getPlayerId() == current_id), None)
+            cards = player.grouped_cards
+
+            # Layout configuration
+            title_y = 155
+            title_height = 40
+            spacing_below_title = 10
+
+            base_y = (
+                title_y + title_height + spacing_below_title
+            )  # neatly below title bar
+            base_x = (SCREEN_WIDTH // 4) * 2.875 - 215  # align with title's X
+            col_width = 150  # balanced spacing between columns
+            line_height = 24  # same vertical spacing
+
+            categories = ["CHARACTERS", "WEAPONS", "ROOMS"]
+
+            for col_index, category in enumerate(categories):
+                x = base_x + col_index * col_width
+                y = base_y
+
+                # Column title
+                self.components.append(
+                    Text(
+                        id=f"{category}_title",
+                        x=x + 70,
+                        y=y,
+                        text=category,
+                        textColor=Color.BLACK,
+                        font=Font.BUTTON,  # smaller font
+                        active=False,
+                    )
+                )
+                # List each card below
+                key = category.lower()
+                for row_index, card in enumerate(cards[key]):
+                    self.components.append(
+                        Text(
+                            id=f"{category}_{card}",
+                            x=x + 70,
+                            y=y + 30 + (row_index * line_height),
+                            text=card,
+                            textColor=Color.BLACK,
+                            font=Font.BUTTON,  # smaller font for readability
+                            active=False,
+                        )
+                    )
+
             # Feedback
             self.components.append(
                 Text(
                     id="FeedbackText",
-                    x=(SCREEN_WIDTH // 4) * 3,
-                    y=(SCREEN_HEIGHT // 10) * 9,
+                    x=(SCREEN_WIDTH // 3) * 2 + 100,
+                    y=(SCREEN_HEIGHT // 2) + 50,
                     width=180,
                     height=60,
                     borderThickness=0,
@@ -1157,7 +1448,7 @@ class View:
                     inactiveFillColor=Color.BLACK,
                     activeFillColor=Color.BLACK,
                     text=self.model.getFeedback() if self.model.wasMyTurn() else "",
-                    textColor=Color.BLACK,
+                    textColor=Color.BLUE,
                     textHighlight=None,
                     font=Font.DEFAULT,
                     active=False,
