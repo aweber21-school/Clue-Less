@@ -63,6 +63,8 @@ class Game:
         ############################
         # ADD GAME ATTRIBUTES HERE #
         ############################
+        self.winner = None
+        self.finished = False
 
     def getPlayers(self):
         """Gets the players"""
@@ -86,6 +88,7 @@ class Game:
             elif player.playerId != playerIds[playerIdIndex]:
                 # Assign all players to characters in order
                 player.setPlayerId(playerIds[playerIdIndex])
+                player.lost = False
 
             playerIdIndex += 1
 
@@ -208,6 +211,10 @@ class Game:
 
     def nextPlayer(self):
         """Sets the current player ID to the next valid player"""
+        if all([player.lost for player in self.players]):
+            self.finished = True
+            self.gameOver(everyone_lost=True)
+
         while True:
             # Increment current player index
             self.currentTurnIndex = (self.currentTurnIndex + 1) % len(self.players)
@@ -234,6 +241,9 @@ class Game:
     def stop(self):
         """Stops the game"""
         self.running = False
+
+    def gameOver(self, everyone_lost=False):
+        pass
 
     def makeMove(self, turn):
         """
@@ -279,6 +289,29 @@ class Game:
                     + " successfully made a move"
                 )
 
+            if hasattr(turn, "accusation"):
+                (suspect, weapon, room) = getattr(turn, "accusation")
+
+                self.log = f"ACCUSATION: {suspect}, {weapon}, {room}."
+
+                if (suspect, weapon, room) == self.getSolution():
+                    self.winner = self.getCurrentPlayer().getName()
+
+                    self.feedback = "Correct! You win!"
+                    self.finished = True
+                    self.updateTilemap()
+                    # Move to the next player
+                    self.nextPlayer()
+                    return
+
+                else:
+                    self.feedback = "Incorrect! You lose!"
+                    self.getCurrentPlayer().lose()
+                    self.updateTilemap()
+                    # Move to the next player
+                    self.nextPlayer()
+                    return
+
             if hasattr(turn, "suggestion"):
                 (suspect, weapon, room) = getattr(turn, "suggestion")
                 for player in self.players:
@@ -287,7 +320,7 @@ class Game:
 
                 self.log = f"SUGGESTION: {suspect}, {weapon}, {room}."
 
-                # Suggestion results
+                # Suggestion results    ``
                 self.feedback = "No other players have any suggested cards."
 
                 # Loop through all players starting at the next player and
@@ -343,7 +376,7 @@ class Turn:
     """
 
     # Add potential attributes here so that we know what to expect within a Turn object
-    __slots__ = ["clientPort", "playerId", "move", "suggestion"]
+    __slots__ = ["clientPort", "playerId", "move", "suggestion", "accusation"]
 
     def __init__(self, **kwargs):
         """

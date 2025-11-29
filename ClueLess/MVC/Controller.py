@@ -611,6 +611,25 @@ class Controller:
 
                                     self._enable_post_move_ui(in_room)
 
+                            # Accusationi (Any point during turn, but only once)
+                            elif component.id == "AccusationButton":
+                                if component.isActive():
+                                    accusation = self.view.openAccusationMenu()
+                                    if accusation is not None:
+                                        setattr(
+                                            self.pending_turn, "accusation", accusation
+                                        )
+
+                                        # After accusation, allow submit, but disable everything else
+                                        self.view.deactivateComponent(
+                                            "AccusationButton"
+                                        )
+                                        self.view.deactivateComponent(
+                                            "SuggestionButton"
+                                        )
+                                        self.view.deactivateMovementButtons()
+                                        self.view.activateComponent("SubmitButton")
+
                             # Suggestion (only after movement and only once)
                             elif component.id == "SuggestionButton":
                                 if component.isActive():
