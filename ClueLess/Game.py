@@ -124,6 +124,9 @@ class Game:
             random.choice(Cards.ROOMS),
         )
 
+        # Demo Purposes
+        print(self.solution)
+
     def distributeCards(self):
         """Removes truth set, then distributes remaining cards to players"""
         # Combines all of the cards
