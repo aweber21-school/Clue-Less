@@ -4,6 +4,7 @@ from ClueLess.Constants import LOCATION_NAMES
 from ClueLess.MVC.GuiComponents import (
     SCREEN_HEIGHT,
     SCREEN_WIDTH,
+    AccusationMenu,
     MovementButton,
     Box,
     Button,
@@ -106,6 +107,24 @@ class View:
         """Activates all button components, but only available movement buttons."""
         for component in self.components:
             if isinstance(component, Button):
+                current_player = self.model.getGame().getCurrentPlayer()
+
+                # If the game is over, no more buttons can be pressed
+                if self.model.getGame().finished:
+                    if component.id == "BackButton":
+                        component.activate()
+                    else:
+                        component.deactivate()
+                        continue
+
+                # If this player has lost, the only available button should be submit (and back)
+                if current_player.lost:
+                    if component.id == "SubmitButton" or component.id == "BackButton":
+                        component.activate()
+                    else:
+                        component.deactivate()
+                        continue
+
                 if isinstance(component, MovementButton):
                     # Determine which movement options are available to this player
                     availableDirections = self.determineAvailableDirections()
@@ -1234,6 +1253,26 @@ class View:
 
                 self.components.append(
                     Button(
+                        id="AccusationButton",
+                        x=(SCREEN_WIDTH // 16) * 13,
+                        y=(SCREEN_HEIGHT // 2) + 140,
+                        width=200,
+                        height=70,
+                        borderThickness=2,
+                        borderRadius=12,
+                        borderColor=Color.BLACK,
+                        inactiveFillColor=Color.DARK_GRAY,
+                        activeFillColor=Color.RED,
+                        text="ACCUSE",
+                        textColor=Color.WHITE,
+                        textHighlight=None,
+                        font=Font.DEFAULT,
+                        active=False,
+                    )
+                )
+
+                self.components.append(
+                    Button(
                         id="SuggestionButton",
                         x=(SCREEN_WIDTH // 16) * 13,
                         y=(SCREEN_HEIGHT // 8) * 5 + 130,
@@ -1459,9 +1498,22 @@ class View:
             # Draw each component
             component.draw(self.screen)
 
+        if self.model.getGame() is not None:
+            if self.model.getGame().finished:
+                pid = self.getComponentById("PlayerID")
+                if self.model.getGame().winner is None:
+                    pid.text = "Everyone lost!"
+                else:
+                    pid.text = f"{self.model.getGame().winner} wins!"
+
         pygame.display.flip()
 
     def openSuggestionMenu(self, room):
         menu = SuggestionMenu(room, x=SCREEN_WIDTH // 2, y=SCREEN_HEIGHT // 2)
+
+        return menu.open(self.screen)
+
+    def openAccusationMenu(self):
+        menu = AccusationMenu(x=SCREEN_WIDTH // 2, y=SCREEN_HEIGHT // 2)
 
         return menu.open(self.screen)

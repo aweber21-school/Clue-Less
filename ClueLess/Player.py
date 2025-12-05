@@ -48,6 +48,7 @@ class Player:
 
         ## Added for use with Player's Cards Display
         self.grouped_cards = {"characters": [], "weapons": [], "rooms": []}
+        self.lost = True
 
     def getName(self):
         """Gets the player's name"""
@@ -56,6 +57,9 @@ class Player:
     def getPlayerId(self):
         """Gets the player ID"""
         return self.playerId
+
+    def lose(self):
+        self.lost = True
 
     def setPlayerId(self, playerId):
         """
